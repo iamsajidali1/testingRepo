@@ -47,3 +47,28 @@ build/
 
 ### Test Output ###
 test-output/
+
+
+### My added ignores ###
+__pycache__
+conf.ini
+*~
+.DS_Store
+.vscode
+local.sh
+.dockerenv
+htmlcov
+
+.scannerwork
+.venv
+.env
+build.env
+
+test*
+
+files/*
+config/*
+!config/.gitkeep
+
+venv
+static
