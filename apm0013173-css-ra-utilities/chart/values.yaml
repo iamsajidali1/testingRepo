@@ -1,0 +1,41 @@
+# This is a YAML-formatted file.
+# Declare COMMON (irrespective of ENV) variables to be passed into your templates.
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: 
+  linkerd.io/inject: enabled
+  config.linkerd.io/proxy-cpu-limit: 250m
+  config.linkerd.io/proxy-memory-limit: 256Mi
+  config.linkerd.io/proxy-cpu-request: 250m
+  config.linkerd.io/proxy-memory-request: 256Mi
+  config.linkerd.io/skip-outbound-ports: "443,3128,8443"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: 
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 10001
+
+service:
+  type: ClusterIP
+  port: 8000
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

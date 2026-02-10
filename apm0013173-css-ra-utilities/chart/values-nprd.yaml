@@ -1,0 +1,154 @@
+# Development Environment values for css-ra-utilities.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+serviceName: css-ra-utilities
+namespace: com-att-one
+replicaCount: 1
+keyVaultName: eastus2-one-nprdkv
+
+image:
+  repository: oneeastus2cr2azn0hvf.azurecr.io/css-ra-utilities
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "dev-latest"
+  containerPort: 8000
+  env:
+    - name: AAF_USERNAME
+      value: "one-aaf-username@azurekeyvault"
+    - name: AAF_PASSWORD
+      value: "one-aaf-password@azurekeyvault"
+    - name: SCRIPT_NAME
+      value: "/svc/utilities"
+    - name: SECRET_KEY
+      value: "utilities-django-secret@azurekeyvault"
+    - name: PHS_USERNAME
+      value: "phs-username@azurekeyvault"
+    - name: PHS_PASSWORD
+      value: "phs-password@azurekeyvault"
+    - name: GDUI_USERNAME
+      value: "gdui-basic-auth-username@azurekeyvault"
+    - name: GDUI_PASSWORD
+      value: "gdui-basic-auth-password@azurekeyvault"
+    - name: EDF_HOST
+      value: "utilities-edf-host@azurekeyvault"
+    - name: EDF_USERNAME
+      value: "utilities-edf-username@azurekeyvault"
+    - name: EDF_PASSWORD
+      value: "utilities-edf-password@azurekeyvault"
+    - name: EDF_SERVICE_NAME
+      value: "utilities-edf-service-name@azurekeyvault"
+    - name: MCAP_USER_NAME
+      value: "one-mcap-username@azurekeyvault"
+    - name: MCAP_USER_PASSWORD
+      value: "one-mcap-userpwd@azurekeyvault"
+    - name: BOOTSTRAP_SSH_RSA
+      value: "bootstrap-ssh-rsa@azurekeyvault"
+    - name: BOOTSTRAP_SSH_DSA
+      value: "bootstrap-ssh-dsa@azurekeyvault"
+    - name: GEOLOCATION_API
+      value: "geolocation-api@azurekeyvault"
+    - name: BOOTSTRAP_USERNAME
+      value: "bootstrap-basic-auth-username@azurekeyvault"
+    - name: BOOTSTRAP_PASSWORD
+      value: "bootstrap-basic-auth-password@azurekeyvault"
+    - name: BOOTSTRAP_URL
+      value: "bootstrap-url@azurekeyvault"
+    - name: STORAGE_NAME
+      value: "one-app-storage-name@azurekeyvault"
+    - name: AZURE_CLIENT_ID
+      value: "one-app-storage-clientid@azurekeyvault"
+    - name: AZURE_CLIENT_SECRET
+      value: "one-app-storage-clientsecret@azurekeyvault"
+    - name: AZURE_TENANT_ID
+      value: "one-app-storage-tenantid@azurekeyvault"
+    - name: SERVICE_BASE_URI
+      value: "one-app-storage-servicebaseuri@azurekeyvault"
+    - name: CONTAINER_NAME
+      value: "one-app-storage-containername@azurekeyvault"
+    - name: EDF_M11102_USERNAME
+      value: "edf-m11102-username@azurekeyvault"
+    - name: EDF_M11102_PASSWORD
+      value: "edf-m11102-password@azurekeyvault"
+    - name: EDF_M33397_USERNAME
+      value: "edf-m33397-username@azurekeyvault"
+    - name: EDF_M33397_PASSWORD
+      value: "edf-m33397-password@azurekeyvault"
+    - name: EDF_M28805_USERNAME
+      value: "edf-m28805-username@azurekeyvault"
+    - name: EDF_M28805_PASSWORD
+      value: "edf-m28805-password@azurekeyvault"
+
+    - name: https_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: http_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: no_proxy
+      value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com,.blob.core.windows.net"
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    linkerd.io/inject: enabled
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+  hosts:
+    - host: selfservice.dev.att.com
+      paths:
+        - path: /svc/utilities(/|$)(.*)
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: selfservice-dev-tls-certificate
+      hosts:
+        - selfservice.dev.att.com
+
+volumeMounts:
+  - mountPath: /app/static
+    name: utilities-config
+  - mountPath: /app/config
+    name: utilities-config
+  - mountPath: /var/lib/nginx/logs
+    name: nginx-config
+  - mountPath: /var/lib/nginx/tmp
+    name: nginx-config
+  - mountPath: /var/lib/nginx/body
+    name: nginx-config
+  - mountPath: /var/lib/nginx/proxy
+    name: nginx-config
+  - mountPath: /var/lib/nginx/fastcgi
+    name: nginx-config
+  - mountPath: /var/lib/nginx/scgi
+    name: nginx-config
+  - mountPath: /var/lib/nginx/uwsgi
+    name: nginx-config
+  - mountPath: /var/lib/nginx/cache
+    name: nginx-config
+  - mountPath: /tmp
+    name: nginx-config
+
+volumes:
+  - name: utilities-config
+    emptyDir: {}
+  - name: nginx-config
+    emptyDir: {}
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 4Gi
+  requests:
+    cpu: 250m
+    memory: 2Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

@@ -1,0 +1,215 @@
+variables:
+  imageName: css-ra-utilities
+  serviceName: css-ra-utilities
+  namespace: com-att-one
+  vmssPool: 29786-ONE-DevOps-eastus2-AgentPool
+
+  # service connection names
+  imageRegistry: ONEAzureACR-NPRD
+  nprdServiceConnection: 29786-ONE-NPRD-ServiceConnection-WIF
+  prodServiceConnection: 29786-ONE-PROD-ServiceConnection-WIF
+
+  devAzEnv: nprd
+  prodAzEnv: prod
+
+  devResourceGroup: one-eastus2-nprd-infr-rg
+  prodResourceGroup: one-eastus2-prod-infr-rg
+
+  devCluster: eastus2-one-nprd-aks
+  prodCluster: eastus2-one-prod-aks
+
+  devopsKeyvault: dev-29786-eastus2-kv0
+
+  acrName: oneeastus2cr2azn0hvf
+
+trigger:
+  - azure/dev
+  - azure/prod
+
+# No PR Tirgger
+pr: none
+
+jobs:
+  - job: prereq
+    pool:
+      name: ${{ variables.vmssPool }}
+
+    steps:
+      - bash: |
+          set -xe
+          sudo apt-get update && sudo apt-get install --only-upgrade -y azure-cli
+        displayName: Update packages
+      - task: DockerInstaller@0
+        displayName: Docker installer
+        inputs:
+          dockerVersion: 17.09.0-ce
+          releaseType: stable
+      - bash: |
+          set -xe
+          for item in $(sudo lsof /var/lib/dpkg/lock|awk '{print $2}'|sed -e 1d)
+          do
+              sudo kill -9 $item
+          done
+          sudo rm /var/lib/dpkg/lock ||true
+          sudo rm /var/lib/dpkg/lock-frontend ||true
+          sudo dpkg --configure -a
+          sudo apt-get install -y unzip
+        displayName: Install unzip for Helm installer
+
+  - job: build
+    dependsOn: prereq
+    pool:
+      name: ${{ variables.vmssPool }}
+
+    steps:
+      # dead on a fresh instance ?
+      - bash: |
+          set -xe
+          which docker
+          sudo service docker status
+          sudo service docker restart
+          sudo service docker status
+        displayName: Restart docker daemon
+      
+      - bash: |
+          echo "##vso[task.setvariable variable=GitHash;isoutput=true]$(git rev-parse --short HEAD)"
+        name: BuildVars
+        displayName: Setting build variables
+
+      - task: Docker@2
+        displayName: Login to ACR
+        inputs:
+          command: login
+          containerRegistry: ${{ variables.imageRegistry }}
+
+      - task: AzureKeyVault@2
+        displayName: Get build secrets from KeyVault
+        inputs:
+          azureSubscription: ${{ variables.nprdServiceConnection }}
+          KeyVaultName: ${{ variables.devopsKeyvault }}
+          SecretsFilter: 'jfrog-username,jfrog-token'
+
+      - bash: |
+          echo "JFROG_USERNAME=$(echo $(jfrog-username))" >> build.env
+          echo "JFROG_TOKEN=$(echo $(jfrog-token))" >> build.env
+        displayName: Create build.env with KeyVault secrets          
+
+      - task: Docker@2
+        displayName: Build image
+        inputs:
+          command: build
+          repository: ${{ variables.imageName }}
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+          arguments:
+            --build-arg ENV=$(Build.SourceBranchName)
+            --build-arg HTTP_PROXY=$(http_proxy)
+            --build-arg HTTPS_PROXY=$(http_proxy)
+            --build-arg NO_PROXY=.extensions.svc,.vault.azure.net,10.0.0.0/8,.svc.cluster.local,.azurecr.io,.azure.com,.blob.core.windows.net
+            --secret id=build_secrets,src=./build.env 
+
+      - task: Docker@2
+        displayName: Push image
+        inputs:
+          command: push
+          repository: ${{ variables.imageName }}
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+
+      - task: Docker@2
+        displayName: Logout of ACR
+        inputs:
+          command: logout
+          containerRegistry: ${{ variables.imageRegistry }}
+          
+  - job: deploy
+    dependsOn: build
+    variables:
+      buildHash: $[ dependencies.build.outputs['BuildVars.GitHash'] ]
+    pool:
+      name: ${{ variables.vmssPool }}
+
+    steps:
+      - checkout: self
+        submodules: true
+
+      # - task: KubectlInstaller@0
+      #   displayName: Kubectl installer
+      #   inputs:
+      #     kubectlVersion: latest
+
+      - task: HelmInstaller@1
+        displayName: Helm installer
+        inputs:
+          helmVersionToInstall: latest
+
+      - task: KubeloginInstaller@0
+        displayName: Kubelogin installer
+        inputs:
+          kubeloginVersion: 'latest'
+
+      - bash: az --version
+        displayName: 'Show Azure CLI version'
+
+      - task: AzureCLI@2
+        displayName: "Upgrade Helm deployment"
+        inputs:
+          ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
+            azureSubscription: "${{ variables.nprdServiceConnection }}"
+          ${{ if eq(variables['Build.SourceBranchName'], 'prod') }}:
+            azureSubscription: "${{ variables.prodServiceConnection }}"
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            set -xe
+            branch="${{ variables['Build.SourceBranchName'] }}"
+            build="$(Build.BuildNumber)"
+
+            if [ "$branch" = "dev" ]
+            then
+                azEnv="${{ variables.devAzEnv }}"
+                resourceGroup="${{ variables.devResourceGroup }}"
+                cluster="${{ variables.devCluster }}"
+            elif [ "$branch" = "prod" ]
+            then
+                azEnv="${{ variables.prodAzenv }}"
+                resourceGroup="${{ variables.prodResourceGroup }}"
+                cluster="${{ variables.prodCluster }}"
+            else
+                azEnv="-"
+                resourceGroup="-"
+                cluster="-"
+            fi
+
+            context=${cluster}-admin
+            echo $azEnv, $resourceGroup, $cluster, $context
+
+            export KUBECONFIG=~/.kube/config
+            rm $KUBECONFIG ||true
+
+            az aks get-credentials \
+                --name $cluster \
+                --resource-group $resourceGroup \
+                --overwrite-existing \
+                --file $KUBECONFIG \
+                --context $context
+            
+            # Pass kubeconfig to kubelogin to access k8s API
+            kubelogin convert-kubeconfig -l azurecli
+
+            helm upgrade --install ${{ variables.serviceName }}-$azEnv \
+                ./chart \
+                --values ./chart/values-$azEnv.yaml \
+                --set image.tag=${branch}-$(buildHash) \
+                --namespace ${{ variables.namespace }} \
+                --wait --debug
+      - task: AzureCLI@2
+        displayName: Delete image from ACR
+        inputs:
+          azureSubscription: "${{ variables.nprdServiceConnection }}"
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            image_tag="$(Build.SourceBranchName)-$(buildHash)"
+            echo "Deleting image: $(imageName):$image_tag from ACR: $(acrName)"
+            az acr repository delete --name $(acrName) --image $(imageName):$image_tag --yes

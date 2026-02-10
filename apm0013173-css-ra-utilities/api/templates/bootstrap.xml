@@ -1,0 +1,17 @@
+<input>
+  <unique-id>$serial</unique-id>
+  <source-address>$jdmip</source-address>
+  <notification-type>bootstrap-complete</notification-type>
+  <message>Device already has latest image. Applied bootstrap configuration</message>
+  <ssh-host-keys>
+    <ssh-host-key>
+      <format>ssh-rsa</format>
+      <key-data>$sshRsa</key-data>
+    </ssh-host-key>
+    <ssh-host-key>
+      <format>ssh-dsa</format>
+      <key-data>$sshDsa</key-data>
+    </ssh-host-key>
+  </ssh-host-keys>
+  <opaque-data>not_used</opaque-data>
+</input>
