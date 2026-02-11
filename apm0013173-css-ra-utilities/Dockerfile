@@ -1,4 +1,4 @@
-FROM oneeastus2cr2azn0hvf.azurecr.io/debian:trixie-slim
+FROM oneeastus2cr2azn0hvf.azurecr.io/debian:bookworm-slim
 
 SHELL ["/bin/bash", "-c"]
 
@@ -26,7 +26,7 @@ RUN --mount=type=secret,id=build_secrets \
     touch /etc/apt/sources.list.d/jfrog.sources && \
     echo "Types: deb" > /etc/apt/sources.list.d/jfrog.sources && \
     echo "URIs: https://artifact.it.att.com/artifactory/apm0013173-deb-group" >> /etc/apt/sources.list.d/jfrog.sources && \
-    echo "Suites: trixie trixie-updates trixie-security" >> /etc/apt/sources.list.d/jfrog.sources && \
+    echo "Suites: bookworm bookworm-updates bookworm-security" >> /etc/apt/sources.list.d/jfrog.sources && \
     echo "Components: main contrib" >> /etc/apt/sources.list.d/jfrog.sources && \
     echo "Trusted: yes" >> /etc/apt/sources.list.d/jfrog.sources && \
     rm /etc/apt/sources.list.d/debian.sources && \
@@ -35,7 +35,7 @@ RUN --mount=type=secret,id=build_secrets \
     echo 'Acquire::https::artifact.it.att.com::Verify-Host "false";' >> /etc/apt/apt.conf.d/99insecure && \
     apt-get clean && apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends debian-archive-keyring ca-certificates build-essential \
-    python3-pip uwsgi-plugin-python3 python3-dev python3-venv nginx libffi-dev wget unzip libaio1t64 libaio-dev openssl && \
+    python3-pip uwsgi-plugin-python3 python3-dev python3-venv nginx libffi-dev wget unzip libaio1 libaio-dev openssl && \
     update-ca-certificates && \
     apt-get update && apt-get upgrade -y && \
     #remove jfrog token
@@ -49,7 +49,9 @@ ENV ORACLE_HOME=/usr/local/instantclient
 ENV LD_LIBRARY_PATH=$ORACLE_HOME
 ENV PATH=$ORACLE_HOME:$PATH
 
-RUN ln -sf /usr/lib/$(gcc -print-multiarch)/libaio.so.1t64 /usr/lib/$(gcc -print-multiarch)/libaio.so.1 && \
+RUN if [ -e /usr/lib/$(gcc -print-multiarch)/libaio.so.1t64 ]; then \
+        ln -sf /usr/lib/$(gcc -print-multiarch)/libaio.so.1t64 /usr/lib/$(gcc -print-multiarch)/libaio.so.1; \
+    fi && \
     ln -sf /usr/lib/$(gcc -print-multiarch)/libaio.so.1 /usr/lib/$(gcc -print-multiarch)/libaio.so && \
     if [ "$(uname -m)" = "x86_64" ]; then \
         wget -O /tmp/instantclient-basic.zip https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basiclite-linux.x64-23.26.0.0.0.zip; \
