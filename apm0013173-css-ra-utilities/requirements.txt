@@ -1,4 +1,5 @@
 pip
+wheel>=0.46.2
 
 Django==6.0.1
 djangorestframework==3.16.1
@@ -6,7 +7,7 @@ drf-spectacular==0.29.0
 oracledb==3.4.1
 gunicorn
 
-setuptools==78.1.1
+setuptools==80.9.0          # old 78.1.1
 requests
 coverage
 xmltodict
