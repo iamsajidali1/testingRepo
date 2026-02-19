@@ -80,16 +80,21 @@ COPY . $APP_DIR
 
 RUN --mount=type=secret,id=build_secrets \
     source /run/secrets/build_secrets && \
-    python3 -m venv venv && python3 --version && \ 
+    python3 -m venv venv && python3 --version && \
     ./venv/bin/pip config set global.index-url "https://${JFROG_USERNAME}:${JFROG_TOKEN}@artifact.it.att.com/artifactory/api/pypi/pypi-proxy/simple" && \
     ./venv/bin/pip config set global.trusted-host "artifact.it.att.com" && \
     ./venv/bin/pip install --upgrade pip && \
     ./venv/bin/pip install --no-cache-dir -r requirements.txt && \
     #remove jfrog token
     ./venv/bin/pip config unset global.index-url && \
-    ./venv/bin/pip config unset global.trusted-host
+    ./venv/bin/pip config unset global.trusted-host && \
+    #remove build-only packages from final image layer
+    apt-get purge -y --auto-remove build-essential python3-dev libffi-dev libaio-dev libexpat1-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 CMD ./run.sh
+
+
 
 ENV USERNAME=utilities
 ENV GROUP=utilities

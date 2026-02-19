@@ -91,7 +91,10 @@ RUN --mount=type=secret,id=build_secrets \
     ./venv/bin/pip install --no-cache-dir -r requirements.txt && \
     #remove jfrog token
     ./venv/bin/pip config unset global.index-url && \
-    ./venv/bin/pip config unset global.trusted-host
+    ./venv/bin/pip config unset global.trusted-host && \
+    #remove build-only packages from final image layer
+    apt-get purge -y --auto-remove build-essential python3-dev libffi-dev libaio-dev libexpat1-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 CMD ./run.sh
 
