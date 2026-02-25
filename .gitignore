@@ -72,3 +72,10 @@ config/*
 
 venv
 static
+
+
+.DS_Store
+.vscode
+.scannerwork
+.env
+build.env

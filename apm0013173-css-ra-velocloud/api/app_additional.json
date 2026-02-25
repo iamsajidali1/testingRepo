@@ -1,0 +1,258 @@
+[
+    {
+        "id": 3624,
+        "name": "APP_NETFLIX_VIDEO",
+        "displayName": "Netflix Streaming services",
+        "class": 2,
+        "description": "Classify traffic related to Netflix Streaming service. Most of that traffic goes to Open Connect Appliances (https://openconnect.netflix.com) which are deployed on ISP/IXP side to speed up throughput and so user experience. Fast.com is a Netflix application using the same servers to assess quality of Internet connection to Netflix service.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3530,
+        "name": "N/A",
+        "displayName": "Google Video hosting service",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3497,
+        "name": "N/A",
+        "displayName": "TikTok (Musical.ly) ",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3374,
+        "name": "N/A",
+        "displayName": "Microsoft Teams",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3920,
+        "name": "VMWARE HORIZON VDI APP Bypass",
+        "displayName": "VMWARE HORIZON VDI APP Bypass",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3733,
+        "name": "Milestone Systems",
+        "displayName": "Milestone Systems",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    } ,
+    {
+        "id": 3749,
+        "name": "L_RT_E_XPROTECT-CAMERA",
+        "displayName": "L_RT_E_XPROTECT-CAMERA",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3427,
+        "name": "L_TNX_E_TANIUM",
+        "displayName": "L_TNX_E_TANIUM",
+        "class": 2,
+        "description": "N/A",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3805,
+        "name": "APP_CITRIX",
+        "displayName": "Citrix",
+        "class": 19,
+        "description": "This protocol is a generic layer used as a base for all the Citrix protocols. Citrix is a cloud computing company. This plugin also classifies website traffic.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3475,
+        "name": "APP_CISCO_SPARK",
+        "displayName": "Cisco Webex Teams",
+        "class": 5,
+        "description": "Cisco Spark (aka Cisco Webex teams) is a communication and collaboration service, delivered from the Cisco Collaboration Cloud.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },        
+    {
+        "id": 3773,
+        "name": "APP_SERVICE_NOW",
+        "displayName": "Service Now",
+        "class": 19,
+        "description": "ServiceNow is a web platform to develop custom workflow based applications for enterprise, similar to a ticket management system. This plugin classifies the website, API, and mobile applications.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "name": "APP_VEEAM",
+        "displayName": "Veeam",
+        "description": "Veeam is a backup for virtual and physical hosts. It is compatible with major virtualization software and cloud storage products,and has specific methods for backing-up certain software products,each of which is classified by its own plugin. This plugin classifies the Veeam website and the Veeam backup agent.",
+        "id": 3990,
+        "class": 7,
+        "mustNotPerformDpi": null,
+        "knownIpPortMapping": {
+            "subnets": [],
+            "tcpPorts": [],
+            "udpPorts": []
+        },
+        "protocolPortMapping": {
+            "tcpPorts": [
+                6180
+            ],
+            "udpPorts": []
+        }
+    },
+    {
+        "id": 3565,
+        "name": "APP_DICOM",
+        "displayName": "DICOM",
+        "class": 13,
+        "description": "DICOM stands for Digital Imaging and Communications in Medicine,supported traffic on usual TCP port 104,11112 (decrypted traffic,no support of DICOM-TLS or DICOM-ISCL).",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3498,
+        "name": "APP_CISCO_UCM",
+        "displayName": "Cisco Unified Communication Manager",
+        "class": 12,
+        "description": "Cisco Unified Communication Manager is an IP PBX for enterprises. This plugin classify Cisco specific protocols between Cisco Unified Communication components and devices; and classifies the administration web interface.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "name": "APP_CISCO_UCM_RT",
+        "displayName": "Cisco Unified Communication Manager_RT",
+        "description": "User-defined App setting to Real_Time_Audio",
+        "id": 5015,
+        "class": 2,
+        "mustNotPerformDpi": null,
+        "knownIpPortMapping": {
+            "subnets": [],
+            "tcpPorts": [],
+            "udpPorts": []
+        },
+        "protocolPortMapping": {
+            "tcpPorts": [
+                5060
+            ],
+            "udpPorts": [
+                5060
+            ]
+        }
+    },
+    {
+        "id": 5016,
+        "name": "APP_CISCO_UCM_RT_TCP",
+        "displayName": "Cisco Unified Communication Manager",
+        "class": 12,
+        "description": "Cisco Unified Communication Manager is an IP PBX for enterprises. This plugin classify Cisco specific protocols between Cisco Unified Communication components and devices; and classifies the administration web interface.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3975,
+        "name": "APP_MS_STREAM",
+        "displayName": "Microsoft Stream",
+        "class": 2,
+        "description": "Microsoft Stream is the corporate video-sharing service of Microsoft Office365.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 7011,
+        "name": "invalid",
+        "displayName": "unknown",
+        "class": 2,
+        "description": "unknown",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3726,
+        "name": "APP_APPLE_TV_PLUS",
+        "displayName": "Apple TV Plus",
+        "class": 2,
+        "description": "Apple TV Plus offers paid VOD distributed by Apple. This plugin classifies the video streams related to Apple TV Plus option and web site tv.apple.com. This plugin does not cover streams related to Apple TV application.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3725,
+        "name": "APP_DISNEY_PLUS",
+        "displayName": "Disney Plus",
+        "class": 2,
+        "description": "Disney Plus is a Video On Demand (VOD) service.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3822,
+        "name": "APP_PLUTO_TV",
+        "displayName": "Pluto TV",
+        "class": 2,
+        "description": "Pluto Tv is an Internet television platform. Not yet available in all countries.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3825,
+        "name": "APP_TUBI_TV",
+        "displayName": "Tubi TV",
+        "class": 2,
+        "description": "Tubi TV is a video streaming platform owned by adRise.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 3684,
+        "name": "APP_DISCOVERY_INC",
+        "displayName": "Discovery Inc",
+        "class": 2,
+        "description": "Discovery Inc,is an American global media and entertainment company. This plugin classifies website traffic.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+    {
+        "class": 13,
+        "description": "manually defined app ,missin in system",
+        "displayName": "Distributed File System",
+        "id": 3722,
+        "knownIpPortMapping": {},
+        "name": "APP_DFS",
+        "protocolPortMapping": {}
+    },
+    {
+        "id": 4047,
+        "name": "APP_TRACEROUTE",
+        "displayName": "Traceroute",
+        "class": 13,
+        "description": "This plugin classifies IP packets issued by the traceroute command,a network diagnostic command for obtaining the route to a given IP address. This plugin supports traceroute with UDP and ICMP methods.",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    },
+        {
+        "id": 4003,
+        "name": "Youtube TV",
+        "displayName": "Youtube TV",
+        "class": 13,
+        "description": "Youtube TV",
+        "knownIpPortMapping": {},
+        "protocolPortMapping": {}
+    }
+]
