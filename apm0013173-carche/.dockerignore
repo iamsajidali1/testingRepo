@@ -1,0 +1,5 @@
+.dockerenv
+.git
+*.log
+chart
+config
