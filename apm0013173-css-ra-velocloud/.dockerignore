@@ -1,8 +1,0 @@
-.dockerenv
-.gitignore
-.scannerwork
-local.sh
-.git
-build.env
-ymls
-chart
