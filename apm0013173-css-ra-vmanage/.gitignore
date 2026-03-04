@@ -1,0 +1,12 @@
+__pycache__
+conf.ini
+*~
+.DS_Store
+.vscode
+local.sh
+.dockerenv
+htmlcov
+.scannerwork
+
+config/*
+!config/.gitkeep

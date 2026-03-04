@@ -1,0 +1,79 @@
+# Development Environment values for css-ra-vmanage.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+serviceName: css-ra-vmanage
+namespace: com-att-one
+replicaCount: 1
+keyVaultName: eastus2-one-nprdkv
+
+image:
+  repository: oneeastus2cr2azn0hvf.azurecr.io/css-ra-vmanage
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "dev-latest"
+  containerPort: 8000
+  env:
+    - name: SCRIPT_NAME
+      value: "/svc/vmanage"
+    - name: SECRET_KEY
+      value: "vmanage-django-secret@azurekeyvault"
+
+    - name: https_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: http_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: no_proxy
+      value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    linkerd.io/inject: enabled
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+  hosts:
+    - host: selfservice.dev.att.com
+      paths:
+        - path: /svc/vmanage(/|$)(.*)
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: selfservice-dev-tls-certificate
+      hosts:
+        - selfservice.dev.att.com
+
+volumeMounts:
+  - mountPath: /app/static
+    name: vmanage-config
+  - mountPath: /app/config
+    name: vmanage-config
+  - mountPath: /var/lib/nginx/logs
+    name: nginx-config
+  - mountPath: /var/lib/nginx/tmp
+    name: nginx-config
+  - mountPath: /tmp
+    name: nginx-config
+
+volumes:
+  - name: vmanage-config
+    emptyDir: {}
+  - name: nginx-config
+    emptyDir: {}
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
