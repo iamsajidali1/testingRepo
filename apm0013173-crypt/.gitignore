@@ -1,0 +1,7 @@
+__pycache__
+conf.ini
+*~
+.DS_Store
+local.sh
+.dockerenv
+htmlcov
