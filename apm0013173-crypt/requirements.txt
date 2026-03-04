@@ -1,9 +1,0 @@
-Django==3.2.3
-djangorestframework==3.11.1
-pykeepass>=4.0.0
-piwikapi
-pymysql
-drf-yasg
-packaging
-coverage
-requests
