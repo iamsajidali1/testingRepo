@@ -1,0 +1,95 @@
+# Development Environment values for paperplane.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+serviceName: paperplane
+namespace: com-att-one
+replicaCount: 1
+keyVaultName: eastus2-one-nprdkv
+
+image:
+  repository: oneeastus2cr2azn0hvf.azurecr.io/paperplane
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "dev-latest"
+  containerPort: 8000
+  env:
+    - name: PP_CACERT
+      value: "/app/cert.pem"
+    - name: PP_HOST
+      value: "ppln-mysql-host@azurekeyvault"
+    - name: PP_PORT
+      value: "ppln-mysql-port@azurekeyvault"
+    - name: PP_NAME
+      value: "ppln-mysql-database@azurekeyvault"
+    - name: PP_USER
+      value: "ppln-mysql-user@azurekeyvault"
+    - name: PP_PASSWORD
+      value: "ppln-mysql-password@azurekeyvault"
+    - name: TMATOMO_API_TOKEN
+      value: "ppln-tmatomo-api-token@azurekeyvault"
+    
+    - name: SMTP_HOST
+      value: "ppln-smtp-host@azurekeyvault"
+    - name: SMTP_PORT
+      value: "ppln-smtp-port@azurekeyvault"
+    - name: SMTP_USER
+      value: "ppln-smtp-username@azurekeyvault"
+    - name: SMTP_PASSWORD
+      value: "ppln-smtp-password@azurekeyvault"
+
+    - name: https_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: http_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: no_proxy
+      value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    linkerd.io/inject: enabled
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+  hosts:
+    - host: paperplane.dev.att.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: ppln-dev-tls-certificate
+      hosts:
+        - paperplane.dev.att.com
+
+volumeMounts:
+  - mountPath: /app/backend/api/static/
+    name: ppln-config
+  - mountPath: /app/config/
+    name: ppln-config
+  - mountPath: /var/lib/nginx/logs/
+    name: nginx-config
+  - mountPath: /var/lib/nginx/tmp/
+    name: nginx-config
+
+volumes:
+  - name: ppln-config
+    emptyDir: {}
+  - name: nginx-config
+    emptyDir: {}
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 1024Mi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80

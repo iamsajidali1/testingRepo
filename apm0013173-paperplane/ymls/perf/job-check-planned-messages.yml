@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: paperplane-check-planned-messages
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      completions: 1
+      activeDeadlineSeconds: 30
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - image: dockercentral.it.att.com:5100/com.att.bok/curl-alpine
+            name: paperplane-check-planned-messages
+            env:
+            - name: AAF_USER
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: aaf-auth-paperplane
+            - name: AAF_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: pass
+                  name: aaf-auth-paperplane
+            args:
+            - curl
+            - --user
+            - '$(AAF_USER):$(AAF_PASS)'
+            - -X
+            - POST
+            - https://paperplane.perf.att.com/api/trigger/planned-messages
+            - --insecure
+            - --fail
+            - --verbose

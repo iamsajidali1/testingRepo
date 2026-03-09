@@ -1,0 +1,8 @@
+.dockerenv
+.git
+.env
+ymls
+dev.sh
+prod.sh
+chart
+.scannerwork
