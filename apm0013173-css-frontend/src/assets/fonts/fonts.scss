@@ -1,0 +1,120 @@
+/* Implement standard AT&T Fonts*/
+
+@font-face {
+  font-family: 'font-thin';
+  font-style: normal;
+  font-weight: normal;
+  src: url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Th.woff2')
+      format('woff2'),
+    url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Th.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'font-light';
+  font-style: normal;
+  font-weight: normal;
+  src: url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Lt.woff2')
+      format('woff2'),
+    url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Lt.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'font-regular';
+  font-style: normal;
+  font-weight: normal;
+  src: url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Rg.woff2')
+      format('woff2'),
+    url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Rg.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'font-medium';
+  font-style: normal;
+  font-weight: normal;
+  src: url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Md.woff2')
+      format('woff2'),
+    url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Md.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'font-bold';
+  font-style: normal;
+  font-weight: normal;
+  src: url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Bd.woff2')
+      format('woff2'),
+    url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Bd.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'font-black';
+  font-style: normal;
+  font-weight: normal;
+  src: url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Blk.woff2')
+      format('woff2'),
+    url('https://www.att.com/ui/frameworks/fonts/ATTAleckSans_W_Blk.woff')
+      format('woff');
+}
+
+[class*='font-'] {
+  font-style: normal;
+  font-weight: normal;
+}
+
+.font-thin {
+  font-family: font-thin, sans-serif;
+}
+
+.font-thin-italic {
+  font-family: font-thin, sans-serif;
+  font-style: italic;
+}
+
+.font-light {
+  font-family: font-light, sans-serif;
+}
+
+.font-light-italic {
+  font-family: font-light, sans-serif;
+  font-style: italic;
+}
+
+.font-regular {
+  font-family: font-regular, sans-serif;
+}
+
+.font-italic {
+  font-family: font-regular, sans-serif;
+  font-style: italic;
+}
+
+.font-medium {
+  font-family: font-medium, sans-serif;
+}
+
+.font-medium-italic {
+  font-family: font-medium, sans-serif;
+  font-style: italic;
+}
+
+.font-bold {
+  font-family: font-bold, sans-serif;
+}
+
+.font-bold-italic {
+  font-family: font-bold, sans-serif;
+  font-style: italic;
+}
+
+.font-black {
+  font-family: font-black, sans-serif;
+}
+
+.font-black-italic {
+  font-family: font-black, sans-serif;
+  font-style: italic;
+}

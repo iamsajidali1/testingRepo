@@ -1,0 +1,52 @@
+<div *ngIf="visible" class="chart-modal-overlay">
+  <div class="chart-modal">
+    <h3>{{ title }}</h3>
+    <div style="margin-bottom:2rem; display:flex; align-items:center; gap:1rem;">
+      <label for="statSelect" style="font-weight:500;">Select Statistic:</label>
+      <p-dropdown
+        id="statSelect"
+        [options]="statOptions"
+        [(ngModel)]="selectedStat"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="w-15rem"
+        placeholder="Choose statistic"
+        [showClear]="true"
+        [filter]="true"
+      ></p-dropdown>
+    </div>
+    <div *ngIf="selectedChart" class="chart-section">
+      <ngx-charts-line-chart
+        *ngIf="selectedChart.type === 'line'"
+        [results]="[selectedChart]"
+        [scheme]="'vivid'"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisLabel]="'Timestamp'"
+        [yAxisLabel]="yAxisLabel"
+        [autoScale]="true"
+        [view]="[1200, 400]"
+      >
+      </ngx-charts-line-chart>
+      <ngx-charts-bar-vertical
+        *ngIf="selectedChart.type === 'bar'"
+        [results]="[selectedChart]"
+        [scheme]="'vivid'"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        [xAxisLabel]="'Timestamp'"
+        [yAxisLabel]="yAxisLabel"
+        [view]="[1200, 400]"
+      ></ngx-charts-bar-vertical>
+    </div>
+  <button pButton type="button" label="Close" class="p-button-rounded p-button-sm chart-modal-close-btn chart-modal-close-btn-strong" (click)="close()">
+    <span class="pi pi-times" style="margin-right:0.5rem;"></span>
+  </button>
+  </div>
+</div>

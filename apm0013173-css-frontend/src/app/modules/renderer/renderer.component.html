@@ -1,0 +1,50 @@
+<section class="renderer-wrapper">
+  <header class="container">
+    <!-- HEADER STARTS HERE-->
+    <app-header></app-header>
+    <!-- HEADER ENDS HERE-->
+
+    <!--  TRANSACTION STARTS  -->
+    <div
+      class="transaction-wrapper"
+      *ngIf="transactionId && isTransactionReady"
+    >
+      <div class="transaction-texts">
+        <p>
+          <span class="transaction-label">TRANSACTION:</span>
+          {{ transactionId }}
+        </p>
+      </div>
+      <div class="transaction-actions">
+        <button
+          [cdkCopyToClipboard]="transactionId"
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-copy"
+          pTooltip="Copy to Clipboard"
+          class="p-button-rounded p-button-text p-button-plain"
+        ></button>
+      </div>
+    </div>
+    <!--  TRANSACTION ENDS  -->
+
+    <!-- BREADCRUMBS STARTS -->
+    <div class="mb-3" *ngIf="items.length >= 2">
+      <p-breadcrumb [model]="items"></p-breadcrumb>
+    </div>
+    <!-- BREADCRUMBS ENDS -->
+  </header>
+
+  <main class="container">
+    <!--  BODY STARTS HERE  -->
+    <router-outlet></router-outlet>
+    <!--  BODY ENDS HERE  -->
+  </main>
+
+  <footer class="container">
+    <!-- FOOTER STARTS HERE-->
+    <app-footer></app-footer>
+    <!-- FOOTER ENDS HERE-->
+  </footer>
+</section>

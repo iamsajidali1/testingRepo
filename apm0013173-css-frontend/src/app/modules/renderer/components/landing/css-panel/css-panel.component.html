@@ -1,0 +1,223 @@
+<!-- CUSTOMER SELECTED OPTIONS STARTS HERE -->
+<section class="flex mt-1 p-3 form-container" *ngIf="customer?.id">
+  <div class="flex-1 justify-content-start">
+    <!-- FORM GROUP OF USER INPUT FOR THE FLOW STARTS HERE -->
+    <section class="pr-3 mr-3">
+      <h5 class="mt-0 pl-3">Self-Service Network Management Attributes</h5>
+      <div class="accordion-wrapper">
+        <p-accordion class="p-2" expandIcon="" collapseIcon="">
+          <p-accordionTab [(selected)]="activeState[0]">
+            <p-header>
+              <p-badge
+                value="1"
+                styleClass="mr-3"
+                [severity]="firstFormGroup.valid ? 'success' : ''"
+              >
+              </p-badge>
+              <span class="font-medium">AT&T Service</span>
+            </p-header>
+            <form class="form-width" [formGroup]="firstFormGroup">
+              <div class="row">
+                <div class="col-12 p-fluid">
+                  <ng-container
+                    *ngIf="loaders?.services; else services_dropdown"
+                  >
+                    <p-skeleton width="5rem" styleClass="mb-1"></p-skeleton>
+                    <p-skeleton height="2rem"></p-skeleton>
+                  </ng-container>
+
+                  <ng-template #services_dropdown>
+                    <span class="p-float-label" *ngIf="!loaders?.services">
+                      <p-dropdown
+                        id="service-select"
+                        formControlName="service"
+                        [options]="services"
+                        placeholder="&nbsp;"
+                        styleClass="p-inputtext-sm"
+                        optionLabel="name"
+                        (onChange)="onServicePicked($event.value)"
+                      >
+                      </p-dropdown>
+                      <label for="service-select">AT&T Service</label>
+                    </span>
+                  </ng-template>
+                </div>
+              </div>
+            </form>
+          </p-accordionTab>
+
+          <p-accordionTab
+            [(selected)]="activeState[1]"
+            [disabled]="!firstFormGroup.valid"
+          >
+            <p-header>
+              <p-badge
+                value="2"
+                styleClass="mr-3"
+                [severity]="secondFormGroup.valid ? 'success' : ''"
+              >
+              </p-badge>
+              <span class="font-medium">Devices & Actions</span>
+            </p-header>
+
+            <form class="form-width" [formGroup]="secondFormGroup">
+              <div class="row">
+                <div class="col-12 p-fluid">
+                  <ng-container *ngIf="loaders?.devices; else devices_dropdown">
+                    <p-skeleton width="5rem" styleClass="mb-1"></p-skeleton>
+                    <p-skeleton height="2rem"></p-skeleton>
+                  </ng-container>
+
+                  <ng-template #devices_dropdown>
+                    <span class="p-float-label">
+                      <p-dropdown
+                        id="device-select"
+                        [options]="filteredDevices"
+                        (onChange)="onDevicePicked($event.value)"
+                        formControlName="device"
+                        styleClass="p-inputtext-sm"
+                        placeholder="&nbsp;"
+                        optionLabel="HOSTNAME"
+                        [filter]="true"
+                        filterBy="HOSTNAME"
+                      >
+                      </p-dropdown>
+                      <label for="device-select">Device</label>
+                    </span>
+                  </ng-template>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-6 p-fluid">
+                  <ng-container
+                    *ngIf="loaders?.actions; else actions_type_dropdown"
+                  >
+                    <p-skeleton height="2rem"></p-skeleton>
+                  </ng-container>
+
+                  <ng-template #actions_type_dropdown>
+                    <span class="p-float-label">
+                      <p-dropdown
+                        id="action-type-select"
+                        [options]="actionTypes"
+                        (onChange)="onActionTypePicked()"
+                        formControlName="actionType"
+                        styleClass="p-inputtext-sm"
+                        placeholder="&nbsp;"
+                      >
+                      </p-dropdown>
+                      <label for="action-type-select">Action Type</label>
+                    </span>
+                  </ng-template>
+                </div>
+                <div class="col-6 p-fluid">
+                  <ng-container *ngIf="loaders?.actions; else actions_dropdown">
+                    <p-skeleton height="2rem"></p-skeleton>
+                  </ng-container>
+
+                  <ng-template #actions_dropdown>
+                    <span class="p-float-label">
+                      <p-dropdown
+                        id="action-select"
+                        [options]="filteredActions"
+                        (onChange)="onActionPicked($event.value)"
+                        formControlName="action"
+                        styleClass="p-inputtext-sm"
+                        placeholder="&nbsp;"
+                        optionLabel="name"
+                        [filter]="true"
+                        filterBy="name"
+                      >
+                        <ng-template let-action pTemplate="item">
+                          <span [pTooltip]="action.description">
+                            {{ action.name }}
+                          </span>
+                        </ng-template>
+                      </p-dropdown>
+                      <label for="action-select">Action</label>
+                    </span>
+                  </ng-template>
+                </div>
+              </div>
+            </form>
+          </p-accordionTab>
+
+          <p-accordionTab
+            [(selected)]="activeState[2]"
+            [disabled]="!(firstFormGroup.valid && secondFormGroup.valid)"
+          >
+            <p-header>
+              <p-badge value="3" styleClass="mr-3"></p-badge>
+              <span class="font-medium">Summary</span>
+            </p-header>
+
+            <div class="form-width">
+              <p class="customer-name">{{ customer?.name }}</p>
+              <p class="summary-p">
+                SERVICE:
+                <span class="font-medium">{{
+                  firstFormGroup.value.service?.name
+                }}</span
+                ><br />
+                DEVICE:
+                <span class="font-medium">{{
+                  secondFormGroup.getRawValue()?.device?.HOSTNAME || 'N/A'
+                }}</span
+                ><br />
+                ACTION TYPE:
+                <span class="font-medium">{{
+                  secondFormGroup.value?.actionType || 'N/A'
+                }}</span
+                ><br />
+                ACTION:
+                <span class="font-medium">{{
+                  secondFormGroup.value.action?.name
+                }}</span>
+                <br />
+                <span class="description-holder">
+                  {{
+                    secondFormGroup.value.action?.description ||
+                      'No Description Available!'
+                  }}
+                </span>
+              </p>
+            </div>
+          </p-accordionTab>
+        </p-accordion>
+      </div>
+
+      <div class="mt-3">
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-replay"
+          [disabled]="isLoading"
+          (click)="onResetForm()"
+          label="Reset"
+          class="p-button-rounded p-button-secondary"
+        ></button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          [icon]="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+          [disabled]="
+            !(firstFormGroup.valid && secondFormGroup.valid) || isLoading
+          "
+          (click)="onContinue()"
+          label="Continue"
+          class="p-button-rounded ml-2"
+        ></button>
+      </div>
+    </section>
+    <!-- FORM GROUP OF USER INPUT FOR THE FLOW ENDS HERE -->
+  </div>
+  <div class="flex-1 justify-content-center">
+    <ng-container *ngIf="shouldLoadMap">
+      <app-bingmap [geoAddress]="deviceGeoAddress"></app-bingmap>
+    </ng-container>
+  </div>
+</section>
+<!-- CUSTOMER SELECTED OPTIONS ENDS HERE -->

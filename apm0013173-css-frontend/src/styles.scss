@@ -1,0 +1,549 @@
+/* Customer Self-Service Network Management Portal (ONE-29786)
+ * Author: Arif, Toslim (ta147p)
+ * Dated: January 19th, 2022
+*/
+
+// Import NgPrime Styles
+@import 'primeicons/primeicons.css';
+@import 'primeflex/primeflex.css';
+@import 'primeng/resources/primeng.min.css';
+
+// Import Bootstrap for Grids only
+@import 'bootstrap/dist/css/bootstrap-grid.min.css';
+
+// Import AT&T Custom Fonts
+@import '/src/assets/fonts/fonts';
+
+html {
+  height: 100%;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: scroll;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--surface-ground);
+  color: var(--text-color);
+  font-family: font-regular, sans-serif;
+  height: 100%;
+  line-height: 1.2;
+  position: relative;
+}
+
+.bg-status-running {
+  color: var(--primary-color-text) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.bg-status-passed {
+  color: var(--primary-color-text) !important;
+  background-color: var(--bg-success) !important;
+}
+
+.bg-status-failed {
+  color: var(--primary-color-text) !important;
+  background-color: var(--bg-danger) !important;
+}
+
+.bg-status-not-available {
+  color: var(--primary-color-text) !important;
+  background-color: var(--gray-500) !important;
+}
+
+.border-radius-2 {
+  border-radius: 0.5rem !important;
+}
+.border-radius-3 {
+  border-radius: 0.75rem !important;
+}
+.border-radius-4 {
+  border-radius: 1rem !important;
+}
+.border-radius-5 {
+  border-radius: 1.5rem !important;
+}
+
+.map-card .p-card-content {
+  padding: 0;
+}
+
+.p-accordion .p-accordion-header .p-accordion-header-link {
+  padding: 1rem 1.25rem !important;
+}
+
+.p-autocomplete .p-autocomplete-panel {
+  max-height: 216px !important;
+}
+
+.p-breadcrumb {
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  ul {
+    font-size: 12px;
+    font-weight: bold;
+    li:last-child span {
+      // If you want to play with the last element of the breadcrumb
+    }
+  }
+}
+
+.p-button {
+  font-weight: bold;
+  padding: 0.5rem 1.75rem;
+}
+
+.p-card {
+  border-radius: 1rem !important;
+}
+
+.p-component-overlay {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  transition-duration: 0.2s;
+}
+
+.p-dialog,
+.p-dialog-content {
+  border-radius: 0.75rem !important;
+}
+
+.p-fieldset .p-fieldset-legend {
+  border: 1px solid var(--border-color);
+  background-color: var(--surface-100);
+}
+
+.p-splitter {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem !important;
+}
+
+.p-steps {
+  padding: 0.5rem 0;
+}
+
+.p-steps ul {
+  height: 3rem !important;
+}
+
+.p-steps-title {
+  font-size: 0.75rem !important;
+}
+
+.p-steps-item.p-steps-current .p-menuitem-link {
+  border-radius: 0.5rem !important;
+  padding: 0.5rem !important;
+}
+
+.p-steps .p-steps-item .p-menuitem-link {
+  padding: 0.5rem !important;
+}
+
+.p-steps .p-steps-item::before {
+  border-top-style: dashed !important;
+}
+
+.p-tabview .p-tabview-panels {
+  padding: 0 !important;
+}
+
+.p-timeline-event {
+  min-height: 0 !important;
+}
+
+.step-router-outlet-card {
+  // overflow-y: scroll;
+}
+
+.step-header {
+  font-size: medium;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  text-align: center;
+}
+
+.user-menu-overlay {
+  width: 300px;
+  border-radius: 1rem !important;
+}
+
+// AT&T Color Scheme:
+// Src https://www.att.com/ui/frameworks/css/v1.0.0/core-global-styles-fonts.css
+.color-att-blue {
+  color: #009fdb !important;
+}
+
+.color-cobalt {
+  color: #0057b8 !important;
+}
+
+.color-mint {
+  color: #49eedc !important;
+}
+
+.color-lime {
+  color: #91dc00 !important;
+}
+
+.color-tangerine {
+  color: #ffb000 !important;
+}
+
+.color-berry {
+  color: #ff585d !important;
+}
+
+.color-purple {
+  color: #af29bb !important;
+}
+
+.color-black {
+  color: #000000 !important;
+}
+
+.color-ui-black {
+  color: #1d2329 !important;
+}
+
+.color-ui-dark-gray {
+  color: #454b52 !important;
+}
+
+.color-ui-medium-gray {
+  color: #686e74 !important;
+}
+
+.color-ui-gray {
+  color: #878c94 !important;
+}
+
+.color-ui-light-gray {
+  color: #dcdfe3 !important;
+}
+
+.color-ui-background-gray {
+  color: #f2f2f2 !important;
+}
+
+.color-ui-white {
+  color: #fff !important;
+}
+
+.color-functional-blue {
+  color: #0057b8 !important;
+}
+
+.color-functional-dk-green {
+  color: #2d7e24 !important;
+}
+
+.color-functional-lt-green {
+  color: #3da930 !important;
+}
+
+.color-functional-dk-red {
+  color: #c70032 !important;
+}
+
+.color-functional-lt-red {
+  color: #ff4349 !important;
+}
+
+.color-functional-dk-orange {
+  color: #ea712f !important;
+}
+
+.color-functional-lt-orange {
+  color: #ff8500 !important;
+}
+
+.bg-att-blue {
+  background-color: #009fdb !important;
+}
+
+.bg-cobalt {
+  background-color: #0057b8 !important;
+}
+
+.bg-mint {
+  background-color: #49eedc !important;
+}
+
+.bg-lime {
+  background-color: #91dc00 !important;
+}
+
+.bg-tangerine {
+  background-color: #ffb000 !important;
+}
+
+.bg-berry {
+  background-color: #ff585d !important;
+}
+
+.bg-purple {
+  background-color: #af29bb !important;
+}
+
+.bg-black {
+  background-color: #000000 !important;
+}
+
+.bg-ui-black {
+  background-color: #1d2329 !important;
+}
+
+.bg-ui-dark-gray {
+  background-color: #454b52 !important;
+}
+
+.bg-ui-medium-gray {
+  background-color: #686e74 !important;
+}
+
+.bg-ui-gray {
+  background-color: #878c94 !important;
+}
+
+.bg-ui-light-gray {
+  background-color: #dcdfe3 !important;
+}
+
+.bg-ui-background-gray {
+  background-color: #f2f2f2 !important;
+}
+
+.bg-ui-white {
+  background-color: #fff !important;
+}
+
+.bg-functional-blue {
+  background-color: #0057b8 !important;
+}
+
+.bg-functional-dk-green {
+  background-color: #2d7e24 !important;
+}
+
+.bg-functional-lt-green {
+  background-color: #3da930 !important;
+}
+
+.bg-functional-dk-red {
+  background-color: #c70032 !important;
+}
+
+.bg-functional-lt-red {
+  background-color: #ff4349 !important;
+}
+
+.bg-functional-dk-orange {
+  background-color: #ea712f !important;
+}
+
+.bg-functional-lt-orange {
+  background-color: #ff8500 !important;
+}
+
+.bg-transparent {
+  background-color: transparent !important;
+}
+
+[class*='grad-att-blue-'] {
+  background-color: #009fdb !important;
+}
+
+.grad-att-blue-90 {
+  background-image: linear-gradient(90deg, #0079b1, #00c9ff) !important;
+}
+
+[class*='grad-berry-tangerine-'] {
+  background-color: #ffb000 !important;
+}
+
+.grad-berry-tangerine-90 {
+  background-image: linear-gradient(90deg, #ff585d, #ffb000) !important;
+}
+
+[class*='grad-mint-lime-'] {
+  background-color: #49eedc !important;
+}
+
+.grad-lime-mint-90 {
+  background-image: linear-gradient(90deg, #91dc00, #49eedc) !important;
+}
+
+[class*='grad-cobalt-purple-'] {
+  background-color: #af29bb !important;
+}
+
+.grad-cobalt-purple-90 {
+  background-image: linear-gradient(90deg, #0057b8, #af29bb) !important;
+}
+
+// Validation, Configuration Page
+.left-border-radius {
+  border-top-left-radius: 0.5rem !important;
+  border-bottom-left-radius: 0.5rem !important;
+}
+
+.right-border-radius {
+  border-top-right-radius: 0.5rem !important;
+  border-bottom-right-radius: 0.5rem !important;
+}
+
+.right-float {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+// Compare DIFF Text Styles - STARTS HERE
+
+.compare-container {
+  font-family: monospace;
+  font-size: 1rem;
+  max-height: calc(100vh - 35.5rem);
+  overflow-y: scroll;
+  border-radius: 0.25rem;
+}
+
+.compare-container-inline {
+  font-family: monospace;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+}
+
+.td-wrapper {
+  background-color: var(--surface-50) !important;
+  color: var(--text-color) !important;
+}
+
+.td-table {
+  border: none !important;
+  background-color: var(--bg-diff-table-body);
+}
+
+.line-number-col-left {
+  color: var(--text-color) !important;
+  background-color: var(--surface-100) !important;
+}
+
+.line-number-col {
+  border-right: 1px solid var(--surface-200) !important;
+  color: var(--text-color) !important;
+  background-color: var(--surface-200) !important;
+}
+
+.delete-row {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.insert-row {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.checkmark {
+  position: absolute;
+  top: 4px !important;
+  left: 0 !important;
+  background-color: #eee;
+  border-radius: 2px !important;
+}
+
+.td-checkbox-container {
+  padding-left: 1.75rem !important;
+  font-family: font-regular, sans-serif;
+  font-size: 14px !important;
+  line-height: 26px !important;
+}
+.td-checkbox-container input:checked ~ .checkmark {
+  background-color: var(--primary-color) !important;
+}
+
+.td-checkbox-container .checkmark::after {
+  left: 5px !important;
+  top: 1px !important;
+  width: 4px !important;
+  height: 10px !important;
+  border-width: 0 2px 2px 0 !important;
+}
+
+.td-btn-group button {
+  font-size: 12px !important;
+  padding: 0.1rem 0.85rem;
+  margin-top: 0.2rem;
+  background-color: var(--surface-50) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+.td-btn-group button.active {
+  font-weight: bold;
+  background-color: var(--primary-color) !important;
+  color: var(--primary-color-text) !important;
+}
+
+// Compare DIFF Text Styles - ENDS HERE
+
+// Custom Confirmation Dialog Style Starts
+.p-confirm-custom > .p-dialog,
+.p-confirm-custom > .p-dialog-content {
+  border-radius: 0 !important;
+  padding-left: 1.75rem !important;
+  padding-right: 1.75rem !important;
+}
+.p-confirm-custom > .p-dialog,
+.p-confirm-custom > .p-dialog-header {
+  border-top-right-radius: 0.5rem !important;
+  border-top-left-radius: 0.5rem !important;
+}
+
+.p-confirm-custom > .p-dialog,
+.p-confirm-custom > .p-dialog-footer {
+  border-bottom-right-radius: 0.5rem !important;
+  border-bottom-left-radius: 0.5rem !important;
+}
+
+.p-confirm-custom > .p-dialog.p-confirm-dialog,
+.p-confirm-dialog-message {
+  white-space: pre-line;
+}
+
+.p-confirm-custom > .p-dialog.p-confirm-dialog,
+.p-confirm-dialog-icon {
+  //color: var(--bg-danger);
+}
+// Custom Confirmation Dialog Style Ends
+
+.ui-state-complete .ui-steps-number {
+  background-color: green !important;
+}
+
+.tab-header-danger {
+  .p-tabview-title {
+    color: var(--bg-danger) !important;
+  }
+  .p-tabview-left-icon {
+    color: var(--bg-danger) !important;
+  }
+}
+
+.white-space-pre {
+  white-space: pre !important;
+}
+
+// Nuance Chat
+#tc-chat-bubble .text-format {
+  font-family: inherit !important;
+}
+
+.read-only-gray {
+  background: var(--surface-d);
+}
+
+.p-dialog .p-dialog-header {
+  border-top-right-radius: 0.75rem !important;
+  border-top-left-radius: 0.75rem !important;
+}

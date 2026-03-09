@@ -1,0 +1,10 @@
+<div class="step-controller" *ngIf="items.length">
+  <p-steps
+    [model]="items"
+    [readonly]="true"
+    [activeIndex]="activeIndex"
+  ></p-steps>
+</div>
+<div class="step-router-outlet">
+  <router-outlet></router-outlet>
+</div>

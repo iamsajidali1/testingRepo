@@ -1,0 +1,82 @@
+.config-diff-wrapper {
+  position: relative;
+  width: 100%;
+  background-color: var(--surface-50);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.configuration-wrapper {
+  position: relative;
+  width: 100%;
+  background-color: var(--surface-50);
+}
+
+.configuration-wrapper pre {
+  min-height: 25vh;
+  max-height: calc(100vh - 38.25rem);
+  overflow-y: scroll;
+  white-space: pre-wrap; /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+  padding: 0.25rem 1.5rem;
+}
+
+.configuration-wrapper h3 {
+  font-size: 1rem;
+  font-family: monospace;
+  font-weight: bold;
+  margin-left: 1.5rem;
+  padding-top: 0.5rem;
+}
+
+.copy-button {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+}
+
+.timer-wrapper {
+  position: relative;
+  padding-left: 1.5rem;
+  display: inline-flex;
+  p {
+    margin: 0;
+    padding-left: 3rem;
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Timer CSS Starts Here
+// Variables
+
+svg {
+  position: absolute;
+  display: inline-flex;
+  vertical-align: bottom;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+circle {
+  stroke: var(--spinner-bg-color);
+  stroke-width: 0.5rem;
+  stroke-dasharray: 0;
+  fill: none;
+}
+
+.meter {
+  stroke-width: 0.5rem;
+  stroke: var(--spinner-stroke-color);
+  fill: none;
+  transition: stroke-dashoffset 1s cubic-bezier(0.43, 0.41, 0.22, 0.91);
+  transform-origin: center center;
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+text {
+  fill: var(--spinner-stroke-color);
+  font-weight: bold;
+}

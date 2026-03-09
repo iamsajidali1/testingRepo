@@ -1,0 +1,81 @@
+<section class="reports-container" *ngIf="customer?.id">
+  <section *ngIf="hasLoadError || (!reportsLoading && reports.length === 0)">
+    <div class="row mb-2">
+      <div class="col-12">
+        <div class="error-wrapper mt-3">
+          <i class="pi pi-exclamation-circle"></i>
+          <h4>No Network Reports/ Insights found!</h4>
+          <p>
+            It's possible that no reports have been created for you, or you may
+            not have access to them. If you believe this is a mistake, you may
+            retry or contact support.
+          </p>
+          <button
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-refresh"
+            [disabled]="isLoading || reportsLoading"
+            (click)="loadReports()"
+            label="Refresh"
+            class="p-button-rounded p-button-secondary mt-4"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section *ngIf="!hasLoadError">
+    <div class="row" *ngIf="reportsLoading">
+      <div class="col-4 mb-2" *ngFor="let dummy of [1, 2, 3]">
+        <p-skeleton height="20rem" borderRadius="1rem"></p-skeleton>
+      </div>
+    </div>
+    <div class="row" *ngIf="!reportsLoading">
+      <div class="col-4 mb-2" *ngFor="let report of reports">
+        <p-card>
+          <div class="report-card">
+            <h3>{{ report.name }}</h3>
+            <div
+              class="chip-wrapper mr-1"
+              [ngStyle]="{ background: report.colors.service }"
+            >
+              {{ report.services }}
+            </div>
+            <div
+              class="chip-wrapper"
+              [ngStyle]="{ background: report.colors.vendor }"
+            >
+              {{ report.vendor | uppercase }}
+            </div>
+            <p-divider></p-divider>
+            <p class="description">{{ report.description }}</p>
+            <button
+              pButton
+              pRipple
+              type="button"
+              size="small"
+              [icon]="
+                isLoading && selectedReportId === report.id
+                  ? 'pi pi-spin pi-spinner'
+                  : report.workflowId === REPORT_WORKFLOW_ID
+                  ? 'pi pi-at'
+                  : 'pi pi-chart-bar'
+              "
+              [disabled]="isLoading"
+              [label]="
+                report.workflowId === REPORT_WORKFLOW_ID
+                  ? 'Generate'
+                  : 'Visualize'
+              "
+              class="p-button-rounded"
+              [ngClass]="{
+                'p-button-success': report.workflowId === METRICS_WORKFLOW_ID || report.workflowId === NETWORK_STATISTICS_ID
+              }"
+              (click)="generateReport(report.id)"
+            ></button>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </section>
+</section>
