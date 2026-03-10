@@ -1,7 +1,0 @@
-Django==5.1.6
-djangorestframework
-drf-yasg
-
-python-dotenv
-requests
-pytz
