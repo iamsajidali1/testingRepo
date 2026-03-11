@@ -1,0 +1,45 @@
+.danger-color {
+  color: #e91224;
+}
+.fieldset-body {
+  max-height: 60vh;
+  overflow: auto;
+  padding: 1rem;
+}
+.reorder-icon{
+  display: flex;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: move;
+}
+.action-icon {
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.columns-wrapper {
+  padding: 3px 3px 0 3px;
+  min-height: 3rem;
+  border: 1px solid #d2d2d2;
+  background: #e6e6e6;
+}
+
+.column-type-row {
+  padding: 1rem 1rem 0 1rem;
+  display: inline-flex;
+  width: 100%;
+}
+.column-type-row p {
+  font-weight: bold;
+  flex: 1;
+}
+.column-type-row i {
+  align-items: center;
+  display: flex;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+:host ::ng-deep .ui-fieldset-legend-text {
+  font-size: 1.25rem;
+}

@@ -1,0 +1,127 @@
+<div class="row">
+  <div class="col-sm-3">
+
+    <div class="ngx-dnd-container" ngxDroppable [model]="sourceItems" [copy]="true">
+      <div class="draggable_card" ngxDraggable="['oneway-target']" [model]="item" *ngFor="let item of sourceItems">
+        <i *ngIf="item == 'list'" class="fa fa-list"></i>
+        <i *ngIf="item == 'input'" class="fa fa-edit"></i>
+        <i *ngIf="item == 'dropdown'" class="fa fa-caret-square-down"></i>
+        <i *ngIf="item == 'message'" class="fa fa-comment"></i>
+        <p class="p_ngx_container_dnd">{{item}}</p>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <button pButton type="button" icon="pi pi-cog"
+              class="mt-3 full-width ui-button-success"
+              (click)="onConfigModel()"
+              label="Form Configuration JSON">
+      </button>
+    </div>
+
+    <!--  START CONFIG JSON DIALOG PANEL  -->
+    <p-dialog header="Form Configuration JSON" [(visible)]="displayConfigDialog" [style]="{width: '50vw'}">
+      <p>Please make sure to use valid JSON model for the Forms.</p>
+      <div ace-editor
+           class="mt-3 ace-editor"
+           [(text)]="text"
+           [mode]="'json'"
+           [theme]="'xcode'"
+           [options]="options"
+           [readOnly]="isCodeReadOnly"
+           [autoUpdateContent]="true"
+           [durationBeforeCallback]="500"
+           (textChanged)="onCodeChanged($event)">
+      </div>
+      <div class="mt-2">
+        <p-message
+          *ngIf="!isEditorCodeValid"
+          severity='warn'
+          text='The above JSON is not Valid! Please check for the issues in the editor.'>
+        </p-message>
+      </div>
+
+
+      <p-footer class="mt-3">
+        <button type="button" pButton icon="pi pi-download" (click)="onExportConfig()" [disabled]="!isEditorCodeValid" label="Export Config" class="absolute left-0 ml-3 ui-button-success"></button>
+        <button type="button" pButton icon="pi pi-refresh" (click)="onCodeReset()" label="Reset" class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-check" (click)="displayConfigDialog=false" [disabled]="!isEditorCodeValid || !inAnyChangeInCode" label="Continue"></button>
+      </p-footer>
+    </p-dialog>
+    <!--  END CONFIG JSON DIALOG PANEL  -->
+
+
+  </div>
+
+  <div class="col-sm-9">
+    <div>
+      <form (ngSubmit)="onSubmit()" [formGroup]="form">
+        <div [formGroup]="form">
+
+          <div class="ngx-dnd-container" ngxDroppable dropZone="oneway-target" (drop)="itemDropped($event)" id="container_right">
+            <div class="draggable_card" *ngFor="let question of questions">
+              <label [attr.for]="question.key" id="{{question.order}}" class="label_ngx_item">{{question.label}}</label>
+              <div class="navbar-template-changes">
+                <div class="navbar-edit-delete">
+                  <button pButton href="#" type="button" icon="fa fa-trash-alt" (click)="delete(question)" class="ui-button-raised ui-button-secondary navbar-edit-delete-button" id="button_delete_red"></button>
+                  <button pButton href="#" type="button" icon="fa fa-pen" (click)="edit(question)" class="ui-button-raised ui-button-secondary navbar-edit-delete-button" id="button_edit_blue"></button>
+                  <button pButton href="#" type="button" icon="fa fa-arrow-down" *ngIf="question.order != questions.length" (click)="moveDown(question)" class="ui-button-raised ui-button-secondary navbar-edit-delete-button" id="button_edit_blue"></button>
+                  <button pButton href="#" type="button" icon="fa fa-arrow-up" *ngIf="question.order != 1" (click)="moveUp(question)"class="ui-button-raised ui-button-secondary navbar-edit-delete-button" id="button_edit_blue"></button>
+                </div>
+              </div>
+
+              <div class="ui-g" [ngSwitch]="question.controlType">
+
+              <div class="p-col-12 ui-md-6 ui-lg-4" *ngSwitchCase="'textbox'">
+                <input id="{{question.key}}" type="{{question.controlType}}" [formControl]="form.controls[question.key]" value="{{question.value}}" placeholder="{{question.placeholder}}" lable="{{question.label}}" pInputText required>
+              </div>
+
+              <div class="p-col-12 ui-md-6 ui-lg-4" *ngSwitchCase="'message'">
+                {{question.value}}"
+              </div>
+
+              <div class="p-col-12 ui-md-6 ui-lg-4" *ngSwitchCase="'dropdown'">
+                <p-dropdown *ngIf="question.optionsSource == 'Manual'" [options]="question.options" optionLabel="value" [formControl]="form.controls[question.key]" id="{{question.key}}" placeholder="{{question.placeholder}}" value="--None--"></p-dropdown>
+                <p-dropdown *ngIf="question.optionsSource != 'Manual' && question.optionsSource != 'Auto'" [options]="[]" optionLabel="value" [formControl]="form.controls[question.key]" id="{{question.key}}" placeholder="{{question.placeholder}}" value="--None--"></p-dropdown>
+                <div *ngIf="question.optionsSource == 'Auto'" class="ui-g">
+
+                </div>
+              </div>
+
+                <div *ngSwitchCase="'list'">
+                  <div class="row">
+                    <div *ngFor="let column of question.columnsType; let i=index" [ngClass]="(question.listStyle == 'table') ? 'col-sm-' + roundDown(12 / question.columnsType.length) + ' ml-0.5' : 'col-sm-12'">
+                      <div formArrayName={{question.key}}>
+                        <div [formGroupName]="i">
+                          <div [ngSwitch]="column.controlType">
+                            <div *ngSwitchCase="'textbox'">
+                              <label class="list_label" [attr.for]="column.label">{{column.label}}</label>
+                              <input id="{{column.key}}" type="text" [formControl]="form.controls[question.key].controls[i].controls[column.key]" value="{{column.value}}" placeholder="{{column.placeholder}}" pInputText required>
+                            </div>
+                            <div *ngSwitchCase="'dropdown'">
+                              <label class="list_label" [attr.for]="column.label">{{column.label}}</label>
+                              <p-dropdown [options]="column.options" [formControl]="form.controls[question.key].controls[i].controls[column.key]" id="{{column.key}}" placeholder="{{column.placeholder}}" value="--None--"></p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div *ngIf="payLoad" class="form-row">
+        <strong>Saved the following values</strong>
+        <br>{{payLoad}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<template ngbModalContainer></template>

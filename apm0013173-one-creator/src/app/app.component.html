@@ -1,0 +1,71 @@
+<!--Main Navigation-->
+<header>
+  <nav id="le_navbar" class="navbar navbar-expand-lg navbar-dark default-color">
+    <div id="container_nav">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <div id="header_logo"></div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">
+              <div class="customer_dropdown_nav">
+                <p-dropdown *ngIf="authorized" [disabled]="!customers.length > 0" placeholder="Select Customer"
+                            [options]="customers" [(ngModel)]="selectedCustomer" [filter]="true"
+                            [style]="{'width': '100%'}"
+                            (onChange)="selectCustomer($event)" optionLabel="name" [tooltip]="selectedCustomer.name"></p-dropdown>
+              </div>
+            </a>
+          </li>
+        </ul>
+        <ul *ngIf="authorized" class="navbar-nav mr-auto" id="nav_container_center">
+          <li class="nav-item" [routerLinkActive]="['active']">
+            <a class="nav-link" [routerLink]="['actions']" [queryParams]='queryParams'>Actions</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['active']">
+            <a class="nav-link" [routerLink]="['config-templates']" [queryParams]='queryParams'>Configuration Templates</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['active']">
+            <a class="nav-link" [routerLink]="['adminUI']" [queryParams]='queryParams'>Administration UI</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['active']">
+            <a class="nav-link" [routerLink]="['monitor']" [queryParams]='queryParams'>Monitor</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link">Configuration Audit</a>
+          </li>
+          <li class="nav-item" [routerLinkActive]="['active']">
+            <a class="nav-link" [routerLink]="['rbac']">Access Control</a>
+          </li>
+        </ul>
+      </div>
+      <div class="form-inline" id="right_navbar">
+        <ul id="user_name" class="navbar-nav mr-auto">
+          <li *ngIf="user" style="text-align: right; color: aliceblue" class="nav-item" [routerLinkActive]="['active']">
+            {{user.name}}
+            <img src="https://tspace.web.att.com/profiles/photo.do?uid={{user.attid}}"
+                 alt="" class="avatar rounded-circle z-depth-1-half"  id="navbar_avatar">
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container" *ngIf="authorized">
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
+  <router-outlet></router-outlet>
+</div>
+
+<div class="access-denied" *ngIf="!authorized && message">
+  <h1>{{message.h1}}</h1>
+  <h3>{{message.h3}}</h3>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer font-small">
+  <div *ngIf="year" class="footer-copyright text-center">
+    ©{{year}} AT&T Intellectual Property. All rights reserved.
+  </div>
+</footer>
+<!-- Footer -->

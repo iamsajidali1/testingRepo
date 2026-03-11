@@ -1,0 +1,29 @@
+export interface TransactionLogModel {
+  id: string;
+  transaction_id: number;
+  session_id: string;
+  customer_id: string;
+  customer_name: string;
+  bc_customer_id: string;
+  service_id: string;
+  service_name: string;
+  servicetocustomer_id: number;
+  action_id: number;
+  action_name: string;
+  hostname: string;
+  dms_server: string;
+  vendor_type_id: number;
+  vendor_type: string;
+  change_type_id: number;
+  change_type: string;
+  mcap_credential_id: string;
+  step: string;
+  status: string;
+  config_mcap_id: string;
+  config_template_uuid: string;
+  config_template_id: number;
+  config_template_name: string;
+  requester: string;
+  create_date: string;
+  update_date: string;
+}

@@ -1,0 +1,88 @@
+<!-- START Confirmation Modal -->
+<p-confirmDialog maskStyleClass="ui-widget-overlay ui-dialog-mask ui-dialog-visible ui-dialog-mask-scrollblocker"></p-confirmDialog>
+<!-- END Confirmation Modal -->
+
+<!--START Jinja2 TRANSLATOR DIALOG-->
+<p-dialog header="Convert cArche to Jinja2" [(visible)]="showTranslateDialog" [style]="{width: '50vw'}" [maximizable]="true">
+  <p>The respective cArche template has converted successfully to Jinja2 template.<br>
+    <strong>Please validate the Jinja2 template before saving it.</strong>
+  </p>
+  <!--  A form containing two fields, one is the name of the template and other the the textarea for the template content-->
+  <form [formGroup]="jinjaConvertedForm">
+    <div class="p-grid mt-3 mb-2 full-width">
+      <div class="p-col-12 mb-2">
+        <label for="jinjaTemplateName" class="p-col-fixed">Jinja2 Template Name <span class="marker_required">*</span></label>
+        <div class="p-col">
+          <span class="ui-float-label">
+            <input id="jinjaTemplateName" type="text" pInputText formControlName="jinjaTemplateName" required="true" maxlength="120"
+                   placeholder="Jinja2 template name" class="full-width">
+          </span>
+        </div>
+      </div>
+      <div class="p-col-12 mb-2">
+        <label for="jinjaTemplateContent" class="p-col-fixed">Jinja2 Template Content  <span class="marker_required">*</span></label>
+        <div class="p-col">
+          <textarea id="jinjaTemplateContent" pInputTextarea formControlName="jinjaTemplateContent" style="font-family: monospace !important"
+                    placeholder="Jinja2 template content" rows="10" class="full-width"></textarea>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveConvertedJinjaTemplate()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="showTranslateDialog=false" label="Close" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+<!--END Jinja2 TRANSLATOR DIALOG-->
+
+<div [ngClass]="{disabled: isDisabled}">
+  <form [formGroup]="form">
+    <div id="tab_header_carche">
+      <div id="left_button_header_carche">
+        <p-dropdown *ngIf="contentTypes" [options]="contentTypes" [disabled]="!isEditMode" filter="true" placeholder="Content type" optionLabel="contentType"
+                    formControlName="selectedType">
+        </p-dropdown>
+        <p-dropdown *ngIf="vendorTypes" [options]="vendorTypes" [disabled]="!isEditMode" filter="true" placeholder="Vendor" optionLabel="vendorType"
+                    formControlName="selectedVendor">
+        </p-dropdown>
+        <p-dropdown *ngIf="templateTypes" [options]="templateTypes" [disabled]="!isEditMode" filter="true" placeholder="Template type" optionLabel="templateType"
+                    formControlName="selectedTemplateType">
+        </p-dropdown>
+      </div>
+
+      <div id="right_button_header_carche">
+        <button pButton iconPos="left" icon="fa fa-language" type="button" class="mr-5 ui-button-success" *ngIf="shouldShowJinjaConvert" (click)="convertTemplateToJinja()" label="Convert to Jinja"></button>
+        <button pButton iconPos="left" icon="fa fa-edit" type="button" *ngIf="!isEditMode" (click)="isEditMode = true; carcheTextArea.focus()" label="Edit"></button>
+        <button pButton iconPos="left" icon="fa fa-save" type="button" *ngIf="isEditMode" label="Save"
+                [disabled]="!form.controls['htmlTemplate'].valid&&form.controls['htmlTemplate'].dirty"
+                (click)="onSaveTemplate()"></button>
+        <button pButton style="margin-left: 3px;" iconPos="left" icon="far fa-copy" type="button"
+                label="Copy" (click)="showCopyTemplateDialog()"></button>
+        <button pButton style="margin-left: 3px;" iconPos="left" icon="far fa-trash-alt" type="button" *ngIf="!isEditMode"
+                label="Delete" (click)="deleteTemplateConfirmModal()"></button>
+        <button pButton iconPos="left" icon="fa fa-times" class="ml-1" type="button" *ngIf="isEditMode" (click)="isEditMode = false" label="Cancel"></button>
+
+      </div>
+    </div>
+    <textarea #carcheTextArea [readOnly]="!isEditMode" style="font-family: monospace !important" id="textarea_carche" pInputTextarea
+              formControlName="htmlTemplate"></textarea>
+    <br>
+    <p-message severity="error" text="This field is required!"
+               *ngIf="!form.controls['htmlTemplate'].valid&&form.controls['htmlTemplate'].dirty"></p-message>
+  </form>
+</div>
+
+<p-dialog [visible]="copyTemplateDialogVisible" closable="true" (onHide)="closeDialog()">
+  <p-header>Type name of copied template</p-header>
+  <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+                                padding-left: 0.429em !important;width:172px !important;" class="p-col-fixed">cArche template name
+  </label>
+  <div class="p-col">
+          <span class="ui-float-label">
+            <input pattern="^\s*\S+\s*$" [(ngModel)]="copiedTemplateName" id="float-input" type="text" pInputText required="true"
+                   maxlength="120" placeholder="cArche template name">
+          </span>
+  </div>
+  <p-footer> <button style="margin-left: 3px" pButton type="button" iconPos="left" icon="fa fa-copy"
+                     class="ui-button-info" (click)="copyOfTemplate()" label="Copy"></button></p-footer>
+</p-dialog>

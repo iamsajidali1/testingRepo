@@ -1,0 +1,121 @@
+<!-- START Modal -->
+<p-confirmDialog maskStyleClass="ui-widget-overlay ui-dialog-mask ui-dialog-visible ui-dialog-mask-scrollblocker"></p-confirmDialog>
+<!-- END Modal -->
+
+<div class="application_loading" *ngIf="showSpinner">
+  <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+
+<div class="ui-g">
+  <div *ngIf="index == 0" class="ui-g-2">
+    <div id="left_side_panel">
+      <p-autoComplete styleClass="admin-ui-search" placeholder="Search:" [(ngModel)]="selectedCustomer" (onSelect)="change($event)" [suggestions]="filteredCustomers" field="name" (completeMethod)="search($event)"></p-autoComplete>
+      <br>
+      <div style="border-bottom: solid 1px #c8c8c8;margin-top: 12px;"></div>
+      <br>
+      <p-listbox [options]="customers" [(ngModel)]="selectedCustomer" [listStyle]="{'max-height':'600px'}">
+        <ng-template let-customer>
+          <div class="ui-helper-clearfix">
+            <span style="float:left;margin:10px 10px 0 0">{{customer.name}}</span>
+          </div>
+        </ng-template>
+      </p-listbox>
+      <br>
+      <button pButton type="button" style="width: 100% !important;" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="createCustomer()" label="New customer" ></button>
+    </div>
+  </div>
+  <div *ngIf="index == 1" class="ui-g-2">
+    <div id="left_side_panel">
+      <p-autoComplete styleClass="admin-ui-search" placeholder="Search:" [(ngModel)]="selectedService" (onSelect)="selectService($event)" [suggestions]="filteredServices" field="serviceName" (completeMethod)="searchService($event)"></p-autoComplete>
+      <br>
+      <div style="border-bottom: solid 1px #c8c8c8;margin-top: 12px;"></div>
+      <br>
+      <p-listbox [options]="services" optionLabel="serviceName" (onChange)="selectService($event)"[(ngModel)]="selectedService" [listStyle]="{'max-height':'600px'}">
+      </p-listbox>
+      <br>
+      <button pButton type="button" style="width: 100% !important;" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="createService()" label="New service" ></button>
+    </div>
+  </div>
+  <div [ngClass]="{'fullScreenView' : (index == 2)}" class="ui-g-10">
+    <div id="right_side_panel">
+      <p-tabView (onChange)="handleChange($event)">
+        <p-tabPanel header="Customer manager">
+          <app-customer-admin (eventEmitter)="loadCustomers()"  [selectedCustomer]=(selectedCustomer)></app-customer-admin>
+        </p-tabPanel>
+        <p-tabPanel header="Services manager">
+          <app-service-administration (eventEmitter)="loadServices()" [selectedService]=(selectedService)></app-service-administration>
+        </p-tabPanel>
+        <p-tabPanel header="Settings manager">
+          <app-settings-gui></app-settings-gui>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+
+    <div *ngIf="index == 0 && customer" class="fullScreenView device-container mt-3">
+      <app-device-mgmt [selectedCustomer]=(customer)></app-device-mgmt>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- START Modal for create customer -->
+<p-dialog *ngIf="customerForm"
+          header="Create customer"
+          [(visible)]="modalVisible"
+          [modal]="true"
+          [style]="{width: '50vw'}"
+          [baseZIndex]="10000"
+          [blockScroll]="true"
+          [resizable]="false">
+  <form [formGroup]="customerForm">
+    <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0">
+      <div class="ui-grid-col-3">
+        Customer Name<span id="marker_required">*</span>:
+      </div>
+      <div class="ui-grid-col-6">
+        <input pInputText type="text" formControlName="name" placeholder="Required" />
+      </div>
+      <div class="ui-grid-col-3">
+        <p-message severity="warn" text="This field is required!" *ngIf="!customerForm.controls['name'].valid&&customerForm.controls['name'].dirty"></p-message>
+      </div>
+    </div>
+  </form>
+
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="save()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="closeDialog()" label="Cancel" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+<!-- END Modal for create customer -->
+
+<!-- START Modal for create Service -->
+<p-dialog *ngIf="serviceForm"
+          header="Create Service"
+          [(visible)]="modalServiceVisible"
+          [modal]="true"
+          [style]="{width: '50vw'}"
+          [baseZIndex]="10000"
+          [blockScroll]="true"
+          [resizable]="false">
+  <form [formGroup]="serviceForm">
+    <div>
+      <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+        <div class="ui-grid-col-3">
+          Service Name<span id="marker_required">*</span>:
+        </div>
+        <div class="ui-grid-col-6">
+          <input pInputText type="text" formControlName="serviceName" placeholder="Required" />
+        </div>
+        <div class="ui-grid-col-3">
+          <p-message severity="warn" text="This field is required!" *ngIf="!serviceForm.controls['serviceName'].valid&&serviceForm.controls['serviceName'].dirty"></p-message>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="saveService()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="closeDialogService()" label="Cancel" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+<!-- END Modal for create Service -->

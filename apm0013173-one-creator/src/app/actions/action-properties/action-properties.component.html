@@ -1,0 +1,339 @@
+<section class="bg-white pb-3 pl-3 pr-3">
+  <form [formGroup]="actionPropFormGroup" class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+    <p-fieldset legend="Action Properties">
+      <div class="text-center pb-5" *ngIf="!isPropsLoaded">
+        <p-progressSpinner></p-progressSpinner>
+        <p>Loading Action Properties</p>
+      </div>
+      <ng-container *ngIf="isPropsLoaded">
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-12 mb-5 ml-3 mr-3">
+
+            <!-- ACTION NAME-->
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Action Name<span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <input pInputText type="text" formControlName="name" placeholder="Type Action Name" />
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('name').touched || actionPropFormGroup.get('name').dirty)
+                    && actionPropFormGroup.get('name').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Action Name is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- ACTION CUSTOMER-->
+            <div class="ui-grid-row mb-1" *ngIf="actionService.customer">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Customer Name :</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <input pInputText type="text" disabled [value]="actionService.customer?.name" readonly placeholder="Customer Name" />
+              </div>
+              <div class="ui-grid-col-4">
+              </div>
+            </div>
+
+            <!-- ACTION SERVICE-->
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Services<span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-autoComplete class="p-auto-chip"
+                                [suggestions]="filteredServices"
+                                (completeMethod)="filterAutoComplete('services', $event)"
+                                [minLength]="1"
+                                placeholder="Choose the Services"
+                                formControlName="services"
+                                [required]="true"
+                                [forceSelection]="true"
+                                [dropdown]="true"
+                                [multiple]="true"
+                                (selectionchange)="filterConfigTemplates('')"
+                                field="serviceName"
+                                dropdownIcon="pi pi-chevron-down">
+                </p-autoComplete>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('services').touched || actionPropFormGroup.get('services').dirty)
+                    && actionPropFormGroup.get('services').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Services is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- ACTION TYPE-->
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Action Type <span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-autoComplete class="p-auto-chip"
+                                [suggestions]="filteredActionTypes"
+                                (completeMethod)="filterAutoComplete('actionType', $event)"
+                                [minLength]="1"
+                                placeholder="Pick the Workflow"
+                                formControlName="actionType"
+                                [required]="true"
+                                [forceSelection]="true"
+                                [dropdown]="true"
+                                [multiple]="false"
+                                (selectionchange)="filterConfigTemplates('')"
+                                field="NAME"
+                                dropdownIcon="pi pi-chevron-down">
+                </p-autoComplete>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('actionType').touched || actionPropFormGroup.get('actionType').dirty)
+                    && actionPropFormGroup.get('actionType').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Action Type is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- Static Hostname-->
+            <div class="ui-grid-row mb-1" *ngIf="shouldRenderStaticHostname">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Static Host <span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6 checkbox-line-height">
+                <p-checkbox formControlName="staticHostnameCheckBox" binary="true"></p-checkbox>
+              </div>
+              <div class="ui-grid-col-4">
+              </div>
+            </div>
+
+            <!-- Hostname-->
+            <div class="ui-grid-row mb-1" *ngIf="shouldRenderStaticHostname && shouldRenderHostname">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Hostname <span class="marker_required">* </span>:</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-autoComplete class="p-auto-chip"
+                                [suggestions]="filteredHostnames"
+                                (completeMethod)="filterAutoComplete('hostname', $event)"
+                                [minLength]="1"
+                                placeholder="Type/Pick the Hostname"
+                                formControlName="hostname"
+                                [required]="true"
+                                [dropdown]="true"
+                                [multiple]="false"
+                                field="HOSTNAME"
+                                dropdownIcon="pi pi-chevron-down">
+                </p-autoComplete>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('hostname').touched || actionPropFormGroup.get('hostname').dirty)
+                    && actionPropFormGroup.get('hostname').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Hostname is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- ACTION DESCRIPTION-->
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Description<span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <textarea pInputText
+                          type="text"
+                          formControlName="description"
+                          placeholder="Action Description"
+                          pInputTextarea>
+                </textarea>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('description').touched || actionPropFormGroup.get('description').dirty)
+                    && actionPropFormGroup.get('description').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Action Description is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- ENABLED-->
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Enabled<span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6 pt-1">
+                <p-inputSwitch formControlName="enabled"></p-inputSwitch>
+              </div>
+              <div class="ui-grid-col-4">
+              </div>
+            </div>
+
+            <!-- ACTION VENDOR-->
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Vendor<span class="marker_required">*</span> :</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-autoComplete class="p-auto-chip"
+                                [suggestions]="filteredVendors"
+                                (completeMethod)="filterAutoComplete('vendor', $event)"
+                                [minLength]="1"
+                                placeholder="Pick the Vendor"
+                                formControlName="vendor"
+                                [required]="true"
+                                [forceSelection]="true"
+                                [dropdown]="true"
+                                [multiple]="false"
+                                (selectionchange)="filterConfigTemplates('')"
+                                field="vendorType"
+                                dropdownIcon="pi pi-chevron-down">
+                </p-autoComplete>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('vendor').touched || actionPropFormGroup.get('vendor').dirty)
+                    && actionPropFormGroup.get('vendor').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Vendor is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- ACTION REPORT PATH-->
+            <div class="ui-grid-row mb-1" *ngIf="shouldRenderReportPath">
+              <div class="ui-grid-col-3">
+                <p class="p-label">
+                  Report Path <span *ngIf="shouldReportPathBeRequired" class="marker_required">* </span>:
+                </p>
+              </div>
+              <div class="ui-grid-col-6">
+                <input pInputText
+                       type="text"
+                       formControlName="reportPath"
+                       [required]="shouldReportPathBeRequired"
+                       placeholder="Report API Endpoint" />
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('reportPath').touched || actionPropFormGroup.get('reportPath').dirty)
+                    && actionPropFormGroup.get('reportPath').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Report Path is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!-- ACTION CONFIG TEMPLATE-->
+            <div class="ui-grid-row mb-1" *ngIf="shouldRenderConfigTemplate">
+              <div class="ui-grid-col-3">
+                <p class="p-label">Configuration Template <span *ngIf="shouldConfigTemplateBeRequired" class="marker_required">* </span>:</p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-autoComplete class="p-auto-chip"
+                                [suggestions]="filteredConfigTemplates"
+                                (completeMethod)="filterAutoComplete('configTemplate', $event)"
+                                [minLength]="1"
+                                placeholder="Pick the Configuration Template"
+                                formControlName="configTemplate"
+                                [forceSelection]="true"
+                                [dropdown]="true"
+                                [multiple]="false"
+                                [required]="shouldConfigTemplateBeRequired"
+                                field="name"
+                                dropdownIcon="pi pi-chevron-down">
+                </p-autoComplete>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('configTemplate').touched || actionPropFormGroup.get('configTemplate').dirty)
+                    && actionPropFormGroup.get('configTemplate').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Configuration Template is a required field!
+                </p>
+              </div>
+            </div>
+
+            <!--  ROLLBACK TIMER MIN  -->
+            <div class="ui-grid-row mb-1" *ngIf="shouldRenderRollbackTimer">
+              <div class="ui-grid-col-3">
+                <p class="p-label">
+                  Min Rollback Timer <span *ngIf="shouldRollbackTimerBeRequired" class="marker_required">* </span>:
+                </p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-inputNumber
+                  formControlName="minRollbackTimer"
+                  mode="decimal"
+                  [showButtons]="true"
+                  suffix=" minutes"
+                  [step]="10"
+                  [min]="10"
+                  [max]="120"></p-inputNumber>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('minRollbackTimer').touched || actionPropFormGroup.get('minRollbackTimer').dirty)
+                    && actionPropFormGroup.get('minRollbackTimer').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Min Rollback Timer is a required field!
+                </p>
+              </div>
+            </div>
+            <!--  ROLLBACK TIMER MAX  -->
+            <div class="ui-grid-row mb-1" *ngIf="shouldRenderRollbackTimer">
+              <div class="ui-grid-col-3">
+                <p class="p-label">
+                  Max Rollback Timer <span *ngIf="shouldRollbackTimerBeRequired" class="marker_required">* </span>:
+                </p>
+              </div>
+              <div class="ui-grid-col-6">
+                <p-inputNumber
+                  formControlName="maxRollbackTimer"
+                  mode="decimal"
+                  [showButtons]="true"
+                  suffix=" minutes"
+                  [step]="10"
+                  [min]="10"
+                  [max]="120"></p-inputNumber>
+              </div>
+              <div class="ui-grid-col-4">
+                <p
+                  class="ml-3 danger-color p-label"
+                  *ngIf="(actionPropFormGroup.get('maxRollbackTimer').touched || actionPropFormGroup.get('maxRollbackTimer').dirty)
+                    && actionPropFormGroup.get('maxRollbackTimer').errors?.required">
+                  <i class="fas fa-exclamation-triangle"></i> Max Rollback Timer is a required field!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--  BUTTONS -->
+        <div class="footer-button-panel">
+          <button pButton
+                  type="button"
+                  icon="pi pi-undo"
+                  (click)="onReset()"
+                  [disabled]="isSaving"
+                  label="Reset Original"
+                  class="ui-button-secondary mr-2"></button>
+          <button pButton
+                  type="button"
+                  (click)="onSave()"
+                  [disabled]="!actionPropFormGroup.dirty || !actionPropFormGroup.valid || !hasUnsavedChanges || isSaving"
+                  [icon]="isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-save'"
+                  [label]="isSaving ? 'Saving Changes' : 'Save Changes'">
+          </button>
+        </div>
+      </ng-container>
+    </p-fieldset>
+  </form>
+</section>

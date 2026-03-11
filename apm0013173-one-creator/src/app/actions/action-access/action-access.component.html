@@ -1,0 +1,204 @@
+<section class="bg-white pb-3 pl-3 pr-3">
+  <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+    <p-fieldset legend="Access Management">
+      <!-- ACCESS -->
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-12 mb-5 ml-3 mr-3">
+          <!--  Group Access  -->
+          <div class="ui-grid-row mt-2">
+            <div class="ui-grid-col-3">
+              <p class="p-label">Group <span class="marker_required">*</span> :</p>
+            </div>
+            <div class="ui-grid-col-6">
+              <div class="full-width inline-flex">
+                <p-dropdown [options]="filteredGroupAccess"
+                            class="mr-1"
+                            optionLabel="IDENTIFICATOR"
+                            [(ngModel)]="selectedGroup"
+                            (onClick)="filterGroups()"
+                            placeholder="Choose group access">
+                </p-dropdown>
+                <button pButton class="ui-button"
+                        pTooltip="Assign action access to the selected group"
+                        (click)="onAssignGroupAccess()"
+                        [disabled]="loaders?.group || loaders['group-assign'] || !selectedGroup"
+                        [icon]="loaders['group-assign'] ? 'pi pi-spin pi-spinner' : 'fa fa-plus'">
+                </button>
+              </div>
+              <div class="ui-grid-row mt-2">
+                <div class="chips-wrapper">
+                  <ng-container *ngIf="loaders['group-load'] || errors['group-load']">
+                    <p class="p-2 mt-2" *ngIf="loaders['group-load']"><i class="fa fa-spin fa-spinner mr-2"></i> loading assigned group accesses</p>
+                    <p class="error-message p-2 mt-2" *ngIf="errors['group-load']">
+                      <i class="fas fa-exclamation-triangle mr-2"></i>
+                      {{errors['group-load'].message}}. Please
+                      <a class="font-bold cursor-pointer" (click)="loadGroupAccesses()">Retry!</a>
+                    </p>
+                  </ng-container>
+                  <ng-container *ngIf="!loaders['group-load']">
+                    <div *ngFor="let access of assignedGroupAccess" class="ui-chips-input-token chips-custom" [ngClass]="{'success-chip': access?.inherited}">
+                      {{access?.IDENTIFICATOR}}
+                      <span *ngIf="!access?.inherited">
+                      <i  *ngIf="!loaders['group-revoke-' + access?.ID]"
+                          class="ml-2 cursor-pointer fa fa-times"
+                          pTooltip="Revoke access for this group!"
+                          (click)="onRemoveGroupAccess(access?.ID)">
+                      </i>
+                      <i  *ngIf="loaders['group-revoke-' + access?.ID]"
+                          class="ml-2 fa fa-spin fa-spinner"
+                          pTooltip="Revoking access for this group!">
+                      </i>
+                    </span>
+                      <span *ngIf="access?.inherited">
+                      <i class="ml-2 far fa-question-circle"
+                         pTooltip="This access is inherited from it's parent, can't be modified here!">
+                      </i>
+                    </span>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div class="ui-grid-col-4">
+              <p class="p-2 ml-2" *ngIf="loaders['group']">
+                <i class="fa fa-spin fa-spinner"></i> loading available groups
+              </p>
+              <p class="p-2 ml-2" *ngIf="loaders['group-assign']">
+                <i class="fa fa-spin fa-spinner"></i> saving the group assignment
+              </p>
+            </div>
+          </div>
+          <!--  Individual Access  -->
+          <div class="ui-grid-row mt-2">
+            <div class="ui-grid-col-3">
+              <p class="p-label">Individual <span class="marker_required">*</span> :</p>
+            </div>
+            <div class="ui-grid-col-6">
+              <div class="full-width inline-flex">
+                <p-dropdown [options]="filteredIndividualAccess"
+                            class="mr-1"
+                            optionLabel="NAME"
+                            [(ngModel)]="selectedIndividual"
+                            (onClick)="filterIndividuals()"
+                            placeholder="Choose individual access">
+                </p-dropdown>
+                <button pButton class="ui-button"
+                        pTooltip="Assign action access to the selected individual"
+                        (click)="onAssignIndividualAccess()"
+                        [disabled]="loaders?.individual || loaders['individual-assign'] || !selectedIndividual"
+                        [icon]="loaders['individual-assign'] ? 'pi pi-spin pi-spinner' : 'fa fa-plus'">
+                </button>
+              </div>
+              <div class="ui-grid-row mt-2">
+                <div class="chips-wrapper">
+                  <ng-container *ngIf="loaders['individual-load'] || errors['individual-load']">
+                    <p class="p-2 mt-2" *ngIf="loaders['individual-load']"><i class="fa fa-spin fa-spinner mr-2"></i> loading assigned individual accesses</p>
+                    <p class="error-message p-2 mt-2" *ngIf="errors['individual-load']">
+                      <i class="fas fa-exclamation-triangle mr-2"></i>
+                      {{errors['individual-load'].message}}. Please
+                      <a class="font-bold cursor-pointer" (click)="loadIndividualAccesses()">Retry!</a>
+                    </p>
+                  </ng-container>
+                  <ng-container *ngIf="!loaders['individual-load']">
+                    <div *ngFor="let access of assignedIndividualAccess" class="ui-chips-input-token chips-custom" [ngClass]="{'success-chip': access?.inherited}">
+                      {{access?.NAME}}
+                      <span *ngIf="!access?.inherited">
+                      <i  *ngIf="!loaders['individual-revoke-' + access?.ID]"
+                          class="ml-2 cursor-pointer fa fa-times"
+                          pTooltip="Revoke access for this individual!"
+                          (click)="onRemoveIndividualAccess(access?.ID)">
+                      </i>
+                      <i  *ngIf="loaders['individual-revoke-' + access?.ID]"
+                          class="ml-2 fa fa-spin fa-spinner"
+                          pTooltip="Revoking access for this individual!">
+                      </i>
+                    </span>
+                      <span *ngIf="access?.inherited">
+                      <i class="ml-2 far fa-question-circle"
+                         pTooltip="This access is inherited from it's parent, can't be modified here!">
+                      </i>
+                    </span>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div class="ui-grid-col-4">
+              <p class="p-2 ml-2" *ngIf="loaders['individual']">
+                <i class="fa fa-spin fa-spinner"></i> loading available individuals
+              </p>
+              <p class="p-2 ml-2" *ngIf="loaders['individual-assign']">
+                <i class="fa fa-spin fa-spinner"></i> saving the individual assignment
+              </p>
+            </div>
+          </div>
+          <!--  BC User Access  -->
+          <div class="ui-grid-row mt-2">
+            <div class="ui-grid-col-3">
+              <p class="p-label">Business Center <span class="marker_required">*</span> :</p>
+            </div>
+            <div class="ui-grid-col-6">
+              <div class="full-width inline-flex">
+                <p-dropdown [options]="filteredBcUserAccess"
+                            class="mr-1"
+                            optionLabel="NAME"
+                            [(ngModel)]="selectedBcUser"
+                            (onClick)="filterBcCustomers()"
+                            placeholder="Choose bc user access">
+                </p-dropdown>
+                <button pButton class="ui-button"
+                        pTooltip="Assign action access to the selected bc user"
+                        (click)="onAssignBcUserAccess()"
+                        [disabled]="loaders['bc-user'] || loaders['bc-user-assign'] || !selectedBcUser"
+                        [icon]="loaders['bc-user-assign'] ? 'pi pi-spin pi-spinner' : 'fa fa-plus'">
+                </button>
+              </div>
+              <div class="ui-grid-row mt-2">
+                <div class="chips-wrapper">
+                  <ng-container *ngIf="loaders['bc-user-load'] || errors['bc-user-load']">
+                    <p class="p-2 mt-2" *ngIf="loaders['bc-user-load']"><i class="fa fa-spin fa-spinner mr-2"></i> loading assigned bc user accesses</p>
+                    <p class="error-message p-2 mt-2" *ngIf="errors['bc-user-load']">
+                      <i class="fas fa-exclamation-triangle mr-2"></i>
+                      {{errors['bc-user-load'].message}}. Please
+                      <a class="font-bold cursor-pointer" (click)="loadBcUserAccesses()">Retry!</a>
+                    </p>
+                  </ng-container>
+                  <ng-container *ngIf="!loaders['bc-user-load']">
+                    <div *ngFor="let access of assignedBcUserAccess" class="ui-chips-input-token chips-custom" [ngClass]="{'success-chip': access?.inherited}">
+                      {{access?.NAME}}
+                      <span *ngIf="!access?.inherited">
+                      <i  *ngIf="!loaders['bc-user-revoke-' + access?.ID]"
+                          class="ml-2 cursor-pointer fa fa-times"
+                          pTooltip="Revoke access for this bc user!"
+                          (click)="onRemoveBcUserAccess(access?.ID)">
+                      </i>
+                      <i  *ngIf="loaders['bc-user-revoke-' + access?.ID]"
+                          class="ml-2 fa fa-spin fa-spinner"
+                          pTooltip="Revoking access for this bc user!">
+                      </i>
+                    </span>
+                      <span *ngIf="access?.inherited">
+                      <i class="ml-2 far fa-question-circle"
+                         pTooltip="This access is inherited from it's parent, can't be modified here!">
+                      </i>
+                    </span>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div class="ui-grid-col-4">
+              <p class="p-2 ml-2" *ngIf="loaders['bc-user']">
+                <i class="fa fa-spin fa-spinner"></i> loading available bc users
+              </p>
+              <p class="p-2 ml-2" *ngIf="loaders['bc-user-assign']">
+                <i class="fa fa-spin fa-spinner"></i> saving the bc user assignment
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-fieldset>
+  </div>
+</section>
+

@@ -1,0 +1,207 @@
+<div class="application_loading" *ngIf="showSpinner">
+    <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+
+<form *ngIf="form" [formGroup]="form">
+    <div>
+        <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Action name <span id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <input pInputText type="text" formControlName="name" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!"
+                        *ngIf="!form.controls['name'].valid && form.controls['name'].dirty"></p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Services <span id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <p-multiSelect *ngIf="!loadingServices" class="ui-dropdown-label" [options]="services" filter="true"
+                        optionLabel="serviceName" placeholder="Service" formControlName="services" [showClear]="true"
+                        required="true" (onPanelHide)="onService($event)" (onChange)="filterDevices()"
+                        (onPanelShow)="loadServices()"></p-multiSelect>
+                    <i *ngIf="loadingServices" class="pi pi-spin pi-spinner"
+                        style="font-size: 2em; display: inline-block"></i>
+                    <p *ngIf="loadingServices" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!"
+                        *ngIf="!form.controls['services'].valid&&form.controls['services'].dirty"></p-message>
+                </div>
+            </div>
+            <div *ngIf="!(this.template['customer']['name'] == 'Services')" class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Customer :
+                </div>
+                <div class="ui-grid-col-6">
+                    {{this.template['customer']['name']}}
+                    <!--<p-dropdown (onChange)="onCustomer($event)" placeholder="Select a Customer" [options]="customers" formControlName="customer" optionLabel="name" [autoWidth]="false"></p-dropdown>-->
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field required!"
+                        *ngIf="!form.controls['customer'].valid&&form.controls['customer'].dirty"></p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Action type <span id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <p-dropdown *ngIf="!this.workflowSpinner" placeholder="Select workflow" [options]="workflows"
+                        formControlName="service_workflow" (onChange)="checkWorfklow()"
+                        (onClick)="filterWorflowBasedOnService()" optionLabel="NAME" required></p-dropdown>
+                    <i *ngIf="this.workflowSpinner" class="pi pi-spin pi-spinner"
+                        style="font-size: 2em; display: inline-block"></i>
+                    <p *ngIf="this.workflowSpinner" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+                </div>
+
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!"
+                        *ngIf="!form.controls['service_workflow'].valid&&form.controls['service_workflow'].dirty">
+                    </p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row"
+                *ngIf="!(this.template['customer']['name'] == 'Services') && workflowAttributes['hostname'].value">
+                <div *ngIf="workflowAttributes['hostname'].required" class="ui-grid-col-3">
+                    Hostname <span id="marker_required">*</span>:
+                </div>
+                <div *ngIf="!workflowAttributes['hostname'].required" class="ui-grid-col-3">
+                    Hostname:
+                </div>
+                <div class="ui-grid-col-1">
+                    <p-checkbox formControlName="staticHostnameCheckBox" binary="true"
+                        (onChange)="valueChange(); loadAllHostnames();" [filter]="true"></p-checkbox>
+                </div>
+                <div *ngIf="form.controls['staticHostnameCheckBox'].value" class="ui-grid-col-5">
+                    <p-autoComplete *ngIf="!loadingHostnames" inputStyleClass="myAutocomplete"
+                        [suggestions]="filteredDevices" formControlName="staticHostname"
+                        (completeMethod)="filterDeviceSingle($event)" field="HOSTNAME" [size]="30"
+                        placeholder="type hostname here" [minLength]="1"></p-autoComplete>
+                    <i id="dropdownChange" *ngIf="loadingHostnames" class="pi pi-spin pi-spinner"
+                        style="font-size: 2em"></i>
+                    <p *ngIf="loadingHostnames" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['staticHostname'].valid && form.controls['staticHostname'].dirty
+                        && workflowAttributes['hostname'].required">
+                    </p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Description <span id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <textarea formControlName="description" placeholder="Required" pInputTextarea></textarea>
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!"
+                        *ngIf="!form.controls['description'].valid&&form.controls['description'].dirty"></p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Vendor <span id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <p-dropdown *ngIf="!this.vendorSpinner" placeholder="Select vendor type" [options]="vendorTypes"
+                        formControlName="vendorType" optionLabel="vendorType" (onChange)="filterDevices()"
+                        (onClick)="loadVendorTypes()" required>
+                    </p-dropdown>
+                    <i *ngIf="this.vendorSpinner" class="pi pi-spin pi-spinner"
+                        style="font-size: 2em; display: inline-block"></i>
+                    <p *ngIf="this.vendorSpinner" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!"
+                        *ngIf="!form.controls['vendorType'].valid&&form.controls['vendorType'].dirty">
+                    </p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row" *ngIf="workflowAttributes['configurationTemplate'].value">
+                <div class="ui-grid-col-3">
+                    Configuration template <span *ngIf="workflowAttributes['configurationTemplate'].required"
+                        id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <!-- condition for p-dropdwon (*ngIf="configurationTemplates.length > 0 || !template['id']") -->
+                    <p-dropdown *ngIf="!loadingConfigTemp && !confTempEmptyData" class="ui-dropdown-label"
+                        [options]="configurationTemplates" filter="true" optionLabel=""
+                        placeholder="Configuration template" formControlName="confTemplate" [showClear]="true"
+                        [group]="true" (onChange)="confTemplateOnChange($event)"
+                        (onClick)="carcheTemplateRefiltering()">
+                        <ng-template let-item pTemplate="item">
+                            <div style="margin-left: 15px;">
+                                <span>{{item.label}}</span>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                    <p-message *ngIf="confTempEmptyData" severity="info" text="Config templates are not available!">
+                    </p-message>
+                    <i *ngIf="loadingConfigTemp && !confTempEmptyData" class="pi pi-spin pi-spinner"
+                        style="font-size: 2em; display: inline-block"></i>
+                    <p *ngIf="loadingConfigTemp && !confTempEmptyData" style="display: inline-block; margin-left: 1rem">
+                        Loading data </p>
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['confTemplate'].valid&&form.controls['confTemplate'].dirty
+                        && workflowAttributes['configurationTemplate'].required">
+                    </p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row" *ngIf="workflowAttributes['apiEndpoint'].value">
+                <div class="ui-grid-col-3">
+                    Report API Endpoint <span *ngIf="workflowAttributes['apiEndpoint'].required"
+                        id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-6">
+                    <input pInputText type="text" formControlName="apiEndpoint" placeholder="Required" />
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['apiEndpoint'].valid&&form.controls['apiEndpoint'].dirty
+                        && workflowAttributes['apiEndpoint'].required">
+                    </p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Enabled:
+                </div>
+                <div class="ui-grid-col-1">
+                    <p-checkbox formControlName="enabled" binary="true"></p-checkbox>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Minimum rollback timer :
+                </div>
+                <div class="ui-grid-col-3">
+                    <input pInputText type="text" formControlName="minRollbackTimer" placeholder="Required" />
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Maximum rollback timer :
+                </div>
+                <div class="ui-grid-col-3">
+                    <input pInputText type="text" formControlName="maxRollbackTimer" placeholder="Required" />
+                </div>
+            </div>
+
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-12">
+                    <app-permission-manager (eventEmitter)="spinnerChange($event)"
+                        [dataFromActionTemplate]=(dataForPermissionManager) [template]=(template)>
+                    </app-permission-manager>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

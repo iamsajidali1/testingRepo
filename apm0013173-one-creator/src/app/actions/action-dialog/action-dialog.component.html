@@ -1,0 +1,304 @@
+<form [formGroup]="formGroup" class="pl-3 pr-3 pb-3">
+  <p-fieldset [legend]="'New Action' + (formGroup.get('name')?.value ? ' - ' + formGroup.get('name').value : '')">
+    <div class="fieldset-body ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+      <div class="ui-grid-row">
+        <p class="p-label ui-grid-col-2">Name <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <input class="full-width"
+                 type="text"
+                 required
+                 pInputText
+                 placeholder="Enter the Action Name"
+                 formControlName="name">
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('name').touched || formGroup.get('name').dirty)
+              && formGroup.get('name').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Action Name is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <p class="p-label ui-grid-col-2">Customer</p>
+        <div class="ui-grid-col-10">
+          <p-dropdown *ngIf="!loaders['customers'] && !errors?.customers"
+                      class="full-width"
+                      [options]="customers"
+                      optionLabel="name"
+                      placeholder="Pick the customer"
+                      formControlName="customer"
+                      appendTo="body"
+                      (onChange)="filterCarcheTemplates(); loadServices()"
+                      [filter]="true"
+                      [showClear]="true">
+          </p-dropdown>
+          <p *ngIf="loaders['customers']" class="pt-1 pb-2">
+            <i class="pi pi-spin pi-spinner mr-1"></i>loading customers...
+          </p>
+          <p *ngIf="!loaders['customers'] && errors?.customers" class="pt-1 pb-2 danger-color">
+            <i class="fas fa-exclamation-triangle"></i> {{errors?.customers?.message}}
+            Please <a class="font-bold cursor-pointer" (click)="loadCustomers()">Retry!</a>
+          </p>
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <p class="p-label ui-grid-col-2">Service(s) <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <p-multiSelect
+            *ngIf="!loaders['services'] && !errors?.services"
+            class="multiselect-grid"
+            [options]="services"
+            appendTo="body"
+            optionLabel="serviceName"
+            (onChange)="filterActionTypes(); filterCarcheTemplates()"
+            formControlName="services">
+            <ng-template let-value pTemplate="selectedItems">
+              <div *ngFor="let val of value" class="ui-autocomplete-token token-style">
+                <span>{{val?.serviceName}}</span>
+              </div>
+              <span *ngIf="!value || value.length === 0">Choose service(s)</span>
+            </ng-template>
+          </p-multiSelect>
+          <p *ngIf="loaders['services']" class="pt-1 pb-2">
+            <i class="pi pi-spin pi-spinner mr-1"></i>loading services...
+          </p>
+          <p *ngIf="!loaders['services'] && errors?.services" class="pt-1 pb-2 danger-color">
+            <i class="fas fa-exclamation-triangle"></i> {{errors?.services?.message}}
+            Please <a class="font-bold cursor-pointer" (click)="loadServices()">Retry!</a>
+          </p>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('services').touched || formGroup.get('services').dirty)
+              && formGroup.get('services').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Service is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="formGroup.get('services')?.value && formGroup.get('services')?.value.length !== 0">
+        <p class="p-label ui-grid-col-2">Action Type <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <p-dropdown class="full-width"
+                      *ngIf="!loaders['actionTypes'] && !errors?.actionTypes"
+                      [options]="filteredActionTypes"
+                      optionLabel="NAME"
+                      placeholder="Choose the action type"
+                      formControlName="actionType"
+                      appendTo="body"
+                      (onChange)="loadAttributes($event.value)"
+                      [filter]="true"
+                      [showClear]="true">
+          </p-dropdown>
+          <p *ngIf="loaders['actionTypes']" class="pt-1 pb-2">
+            <i class="pi pi-spin pi-spinner mr-1"></i>loading action types...
+          </p>
+          <p *ngIf="!loaders['actionTypes'] && errors?.actionTypes" class="pt-1 pb-2 danger-color">
+            <i class="fas fa-exclamation-triangle"></i> {{errors?.actionTypes?.message}}
+            Please <a class="font-bold cursor-pointer" (click)="loadActionTypes()">Retry!</a>
+          </p>
+          <small *ngIf="loaders['attributes']" class="inline-flex">
+            <i class="pi pi-spin pi-spinner mr-1"></i>loading action attributes...
+          </small>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('actionType').touched || formGroup.get('actionType').dirty)
+              && formGroup.get('actionType').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Action Type is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="shouldRenderHostname">
+        <p class="p-label ui-grid-col-2">Hostname <sup *ngIf="shouldHostnameBeRequired" class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <p-autoComplete [suggestions]="filteredHostnames"
+                          (completeMethod)="filterHostnames($event)"
+                          [minLength]="1"
+                          placeholder="Type/Pick the Hostname"
+                          formControlName="hostname"
+                          [multiple]="false"
+                          field="HOSTNAME"
+                          dropdownIcon="pi pi-chevron-down">
+          </p-autoComplete>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('hostname').touched || formGroup.get('hostname').dirty)
+              && formGroup.get('hostname').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Hostname is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <p class="p-label ui-grid-col-2">Description <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <textarea class="full-width"
+                    type="text"
+                    required
+                    pInputText
+                    placeholder="Enter a brief description for this action"
+                    formControlName="description">
+          </textarea>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('description').touched || formGroup.get('description').dirty)
+              && formGroup.get('description').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Description is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="formGroup.get('actionType')?.value">
+        <p class="p-label ui-grid-col-2">Vendor <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <p-dropdown class="full-width"
+                      *ngIf="!loaders['vendors'] && !errors?.vendors"
+                      [options]="vendors"
+                      optionLabel="vendorType"
+                      placeholder="Choose the vendor"
+                      formControlName="vendor"
+                      appendTo="body"
+                      (onChange)="filterCarcheTemplates()"
+                      [filter]="true"
+                      [showClear]="true">
+          </p-dropdown>
+          <p *ngIf="loaders['vendors']" class="pt-1 pb-2">
+            <i class="pi pi-spin pi-spinner mr-1"></i>loading vendors...
+          </p>
+          <p *ngIf="!loaders['vendors'] && errors?.vendors" class="pt-1 pb-2 danger-color">
+            <i class="fas fa-exclamation-triangle"></i> {{errors?.vendors?.message}}
+            Please <a class="font-bold cursor-pointer" (click)="loadVendors()">Retry!</a>
+          </p>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('vendor').touched || formGroup.get('vendor').dirty)
+              && formGroup.get('vendor').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Vendor is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="shouldRenderConfigTemplate">
+        <p class="p-label ui-grid-col-2">Config Template
+          <sup class="danger-color" *ngIf="shouldConfigTemplateBeRequired">*</sup>
+        </p>
+        <div class="ui-grid-col-10">
+          <p-dropdown class="full-width"
+                      *ngIf="!loaders['carcheTemplates'] && !errors?.carcheTemplates"
+                      [options]="filteredCarcheTemplates"
+                      optionLabel="name"
+                      placeholder="Choose the config template"
+                      [formControl]="carcheTemplateControl"
+                      appendTo="body"
+                      [filter]="true"
+                      [showClear]="true">
+          </p-dropdown>
+          <p *ngIf="loaders['carcheTemplates']" class="pt-1 pb-2">
+            <i class="pi pi-spin pi-spinner mr-1"></i>loading config templates...
+          </p>
+          <p *ngIf="!loaders['carcheTemplates'] && errors?.carcheTemplates" class="pt-1 pb-2 danger-color">
+            <i class="fas fa-exclamation-triangle"></i> {{errors?.carcheTemplates?.message}}
+            Please <a class="font-bold cursor-pointer" (click)="loadCarcheTemplates()">Retry!</a>
+          </p>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('carcheTemplate').touched || formGroup.get('carcheTemplate').dirty)
+              && formGroup.get('carcheTemplate').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Config Template is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="shouldRenderReportPath">
+        <p class="p-label ui-grid-col-2">Report Path
+          <sup class="danger-color" *ngIf="shouldReportPathBeRequired">*</sup>
+        </p>
+        <div class="ui-grid-col-10">
+          <input class="full-width"
+                 pInputText
+                 type="text"
+                 [formControl]="reportPathControl"
+                 [required]="shouldReportPathBeRequired"
+                 placeholder="Report API Endpoint" />
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('reportPath').touched || formGroup.get('reportPath').dirty)
+              && formGroup.get('reportPath').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Report Path is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="shouldRenderRollbackTimer">
+        <p class="p-label ui-grid-col-2">Min Rollback
+          <sup class="danger-color" *ngIf="shouldRollbackTimerBeRequired">*</sup>
+        </p>
+        <div class="ui-grid-col-10">
+          <p-inputNumber
+            formControlName="minRollbackTimer"
+            mode="decimal"
+            [showButtons]="true"
+            suffix=" minutes"
+            [step]="10"
+            [min]="10"
+            [max]="120"></p-inputNumber>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('minRollbackTimer').touched || formGroup.get('minRollbackTimer').dirty)
+              && formGroup.get('minRollbackTimer').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Min Rollback Timer is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row" *ngIf="shouldRenderRollbackTimer">
+        <p class="p-label ui-grid-col-2">Max Rollback
+          <sup class="danger-color" *ngIf="shouldRollbackTimerBeRequired">*</sup>
+        </p>
+        <div class="ui-grid-col-10">
+          <p-inputNumber
+            formControlName="maxRollbackTimer"
+            mode="decimal"
+            [showButtons]="true"
+            suffix=" minutes"
+            [step]="10"
+            [min]="10"
+            [max]="120"></p-inputNumber>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('maxRollbackTimer').touched || formGroup.get('maxRollbackTimer').dirty)
+              && formGroup.get('maxRollbackTimer').errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Max Rollback Timer is a required field!
+          </small>
+        </div>
+      </div>
+      <!--  ACTION ENABLE  -->
+      <div class="inline-flex pt-4 pb-2">
+        <p-checkbox formControlName="enabled" binary="true"></p-checkbox>
+        <p class="p-label font-bold ml-2 align-self-end">Enable this action for use upon creation.</p>
+      </div>
+      <!--  ERROR CONTAINERS  -->
+      <div class="mt-4 error-container" *ngIf="errors?.attributes || errors?.action">
+        <i class="fas fa-exclamation-triangle align-self-center p-3"></i>
+        <p class="p-label align-self-center">
+          <span *ngIf="errors?.action">
+            Something went wrong while saving the action. Please Retry!
+          </span>
+          <span *ngIf="errors?.attributes">
+            Unable to load the attributes for selected action type. Please
+            <a class="font-bold cursor-pointer" (click)="loadAttributes(formGroup.get('actionType')?.value)">Retry!</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </p-fieldset>
+</form>
+
+<div class="pr-3 pb-3 pt-3 float-right" *ngIf="formGroup">
+  <button pButton
+          type="button"
+          icon="fa fa-times"
+          label="Cancel"
+          [disabled]="isSaving"
+          (click)="onClose()"
+          class="ui-button-secondary mr-2"></button>
+  <button pButton
+          type="button"
+          [icon]="isSaving ? 'fa pi-spin fa-spinner': 'fa fa-check'"
+          [disabled]="!formGroup.valid || isSaving"
+          (click)="onSave()"
+          label="Continue">
+  </button>
+</div>

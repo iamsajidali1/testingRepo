@@ -1,0 +1,50 @@
+<div class="application_loading" *ngIf="showSpinner">
+  <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+
+<form [formGroup]="form">
+  <div [ngClass]="{disabled: isDisabled}">
+    <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Service name <span id="marker_required">*</span>:
+        </div>
+        <div class="ui-grid-col-6">
+          <input pInputText type="text" [formControl]="form.controls['serviceName']" placeholder="Required" required="true" />
+        </div>
+        <div class="ui-grid-col-4">
+          <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['serviceName'].valid&&form.controls['serviceName'].dirty"></p-message>
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Attributes :
+        </div>
+        <div class="ui-grid-col-6">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-1">
+                    <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addAttribute()"></button>
+                </div>
+                <div class="ui-grid-col-11">
+                    <p-dropdown class="ui-dropdown-label" optionLabel="name" [options]="attributeList" filter="true"
+                    placeholder="Please select attribute" [formControl]="form.controls['serviceAttribute']"
+                    required="true"></p-dropdown>
+                </div>
+            </div>
+            <div *ngIf="assignedAttributes" class="sections">
+                <div *ngFor="let attribute of assignedAttributes; let i = index" class="section">
+                    <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="removeAttribute(attribute)"></button>
+                    {{attribute.name}}
+                </div>
+            </div>
+        </div>
+        <div class="ui-grid-col-4">
+            <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['serviceAttribute'].valid&&form.controls['serviceAttribute'].dirty"></p-message>
+        </div>
+      </div>
+    </div>
+    <button pButton type="button" style="width: 100px;" iconPos="left" icon="fa fa-save" class="ui-button-info"
+    (click)="updateService()" label="Update"></button>
+    <app-permission-manager (eventEmitter)="spinnerChange($event)" [service]=(selectedService)></app-permission-manager>
+  </div>
+</form>

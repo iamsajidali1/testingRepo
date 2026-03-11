@@ -1,0 +1,140 @@
+<div *ngIf="showSpinner" class="application_loading">
+  <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+
+<div class="modal-header">
+  <h7 class="first">Add new template</h7>
+</div>
+<div>
+  <form *ngIf="form" [formGroup]="form">
+    <div class="modal-body">
+      <div id="modal_carche_edit">
+        <div class="p-field p-grid">
+          <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+            padding-left: 0.429em !important;width:120px !important;" class="p-col-fixed">Name <span
+              id="marker_required">*</span></label>
+          <div class="p-col">
+            <span class="ui-float-label">
+              <input pattern="^\s*\S+\s*$" formControlName="name" id="float-input" type="text" size="128" pInputText
+                required="true">
+            </span>
+            <p-message
+              *ngIf="!form.controls.name.errors?.pattern && !form.controls.name.valid && form.controls.name.touched && !form.controls.name.errors?.minlength"
+              severity="warn" text="This field is required"></p-message>
+            <p-message *ngIf="form.controls.name.errors?.pattern" severity="warn"
+              text="Please type name without whitespaces!"></p-message>
+            <p-message *ngIf="form.controls.name.errors?.minlength" severity="warn"
+              text="Must be longer than 5 characters!"></p-message>
+          </div>
+        </div>
+      </div>
+      <div id="temp_properties" *ngIf="form.controls.name.valid">
+        <div id="modal_carche_edit">
+          <div class="p-field p-grid">
+            <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+            padding-left: 0.429em !important;width:120px !important;" class="p-col-fixed">Customer </label>
+            <div class="p-col">
+              <span class="ui-float-label">
+                <p-dropdown [disabled]="disableCustomer" *ngIf="customers" class="ui-dropdown-label"
+                  [options]="customers" filter="true" (onChange)="onCustomer($event)" optionLabel="name"
+                  placeholder="Customers" formControlName="contractid" [showClear]="true"></p-dropdown>
+              </span>
+              <i *ngIf="!customers" class="pi pi-spin pi-spinner" style="font-size: 2em; display: inline-block"></i>
+              <p *ngIf="!customers" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+              <p-message *ngIf="displayErrorMsg" severity="warn" text="Please provide customer or service!">
+              </p-message>
+            </div>
+          </div>
+        </div>
+        <div id="modal_carche_edit">
+          <div class="p-field p-grid">
+            <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+          padding-left: 0.429em !important;width:120px !important;" class="p-col-fixed">Service </label>
+            <div class="p-col">
+              <span class="ui-float-label">
+                <p-dropdown *ngIf="services" class="ui-dropdown-label" [options]="services" filter="true"
+                  (onChange)="onService($event)" optionLabel="serviceName" placeholder="Services"
+                  formControlName="service" [showClear]="true"></p-dropdown>
+              </span>
+              <i *ngIf="!services" class="pi pi-spin pi-spinner" style="font-size: 2em; display: inline-block"></i>
+              <p *ngIf="!services" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+              <p-message *ngIf="displayErrorMsg" severity="warn" text="Please provide customer or service!"></p-message>
+            </div>
+          </div>
+        </div>
+        <div id="modal_carche_edit">
+          <div class="p-field p-grid">
+            <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+          padding-left: 0.429em !important;width:120px !important;" class="p-col-fixed">Template type<span
+                id="marker_required">*</span></label>
+            <div class="p-col">
+              <span class="ui-float-label">
+                <p-dropdown *ngIf="templateTypes" class="ui-dropdown-label" [options]="templateTypes" filter="true"
+                  optionLabel="templateType" placeholder="Template types" formControlName="templateType" required="true"
+                  [showClear]="true"></p-dropdown>
+              </span>
+              <i *ngIf="!templateTypes" class="pi pi-spin pi-spinner" style="font-size: 2em; display: inline-block"></i>
+              <p *ngIf="!templateTypes" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+              <p-message *ngIf="!form.controls.templateType.valid && form.controls.templateType.touched" severity="warn"
+                text="This field is required"></p-message>
+            </div>
+          </div>
+        </div>
+        <div id="modal_carche_edit">
+          <div class="p-field p-grid">
+            <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+          padding-left: 0.429em !important;width:120px !important;" class="p-col-fixed">Content type <span
+                id="marker_required">*</span></label>
+            <div class="p-col">
+              <span class="ui-float-label">
+                <p-dropdown *ngIf="contentTypes" class="ui-dropdown-label" [options]="contentTypes" filter="true"
+                  optionLabel="contentType" placeholder="Content types" formControlName="deviceModel" required="true"
+                  [showClear]="true"></p-dropdown>
+              </span>
+              <i *ngIf="!contentTypes" class="pi pi-spin pi-spinner" style="font-size: 2em; display: inline-block"></i>
+              <p *ngIf="!contentTypes" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+              <p-message *ngIf="!form.controls.deviceModel.valid && form.controls.deviceModel.touched" severity="warn"
+                text="This field is required"></p-message>
+            </div>
+          </div>
+        </div>
+        <div id="modal_carche_edit">
+          <div class="p-field p-grid">
+            <label for="float-input" style="color: #333333 !important;font-size: 14px !important;
+            padding-left: 0.429em !important;width:120px !important;" class="p-col-fixed">Vendor type <span
+                id="marker_required">*</span></label>
+            <div class="p-col">
+              <span class="ui-float-label">
+                <p-dropdown *ngIf="vendorTypes" class="ui-dropdown-label" [options]="vendorTypes" filter="true"
+                  optionLabel="vendorType" placeholder="Vendor types" formControlName="vendorType" required="true"
+                  [showClear]="true"></p-dropdown>
+              </span>
+              <i *ngIf="!vendorTypes" class="pi pi-spin pi-spinner" style="font-size: 2em; display: inline-block"></i>
+              <p *ngIf="!vendorTypes" style="display: inline-block; margin-left: 1rem"> Loading data </p>
+              <p-message *ngIf="!form.controls.vendorType.valid && form.controls.vendorType.touched" severity="warn"
+                text="This field is required"></p-message>
+            </div>
+          </div>
+        </div>
+        <div id="modal_carche_edit">
+          <div class="p-fluid p-formgrid p-grid">
+            <div class="p-field p-col">
+              <label style="color: #333333 !important;font-size: 14px !important;
+            width:120px !important;" for="float-input">Body <span id="marker_required">*</span></label>
+              <textarea style="font-family: monospace !important" pInputTextarea formControlName="body"
+                class="form-control" rows="20"
+                [class.is-invalid]="form.controls.body.invalid && form.controls.body.touched"></textarea>
+              <p-message *ngIf="!form.controls.body.valid && form.controls.body.touched" severity="warn"
+                text="This field is required"></p-message>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <input id="file-upload" type="file" accept=".txt" (change)="fileUpload($event)">
+      <button pButton type="button" label="Create" [disabled]="!form.valid" (click)="add()"></button>
+      <button pButton type="button" label="Close" (click)="activeModal.dismiss()"></button>
+    </div>
+  </form>
+</div>

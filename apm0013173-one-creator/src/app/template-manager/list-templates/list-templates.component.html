@@ -1,0 +1,15 @@
+<ng-template #alertBox></ng-template>
+<div [ngClass]="alertShow ? 'alertShow' : 'alertHide fade-out'"><strong>{{alertText}}</strong></div>
+
+
+<div style="border-bottom: solid 1px #c8c8c8;margin-top: 12px;">
+  <p style="text-align: center;margin-bottom: 6px !important; min-height: 24px !important">{{selectedTemplateName}}</p>
+</div>
+<div *ngIf="templateTreeNodes" class="mb-2">
+  <p-tree [value]="templateTreeNodes" selectionMode="single" [loading]="treeLoading" [filter]="true" filterMode="lenient"
+          [(selection)]="selectedTemplateTreeNode" (onNodeSelect)="nodeSelect()" scrollHeight="800px"></p-tree>
+</div>
+<p-footer>
+  <button pButton style="margin: 0 auto; display: block;" icon="fa fa-plus" (click)="addTemplate()" type="button"
+    label="Add new template"></button>
+</p-footer>

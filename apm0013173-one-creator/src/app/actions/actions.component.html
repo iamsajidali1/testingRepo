@@ -1,0 +1,44 @@
+<div class="application_loading" *ngIf="loading">
+  <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+<p-confirmDialog maskStyleClass="ui-widget-overlay ui-dialog-mask ui-dialog-visible ui-dialog-mask-scrollblocker"></p-confirmDialog>
+<div class="ui-g" *ngIf="!loading">
+  <div class="ui-g-3">
+    <ng-container *ngIf="treeNodes && !hasActionTreeLoadErrors">
+      <p-tree
+        [value]="treeNodes"
+        selectionMode="single"
+        scrollHeight="calc(100vh - 18.5rem)"
+        [filter]="true"
+        filterPlaceholder="Search Actions"
+        (onNodeSelect)="onSelectTreeNode($event.node.data)"
+        [(selection)]="selectedTreeNode">
+      </p-tree>
+    </ng-container>
+    <div class="error-container-tree" *ngIf="hasActionTreeLoadErrors">
+      <div class="error-wrapper">
+        <i class="fas fa-exclamation-triangle error-icon-tree"></i>
+        <p class="error-p-tree">Unable to load the Actions Tree!</p>
+        <button pButton label="Reload" icon="fa fa-sync" class="ui-button-secondary" (click)="loadNodeTree()"></button>
+      </div>
+    </div>
+    <div class="footer-button">
+      <!-- Button to create a new Action -->
+      <button pButton icon="fa fa-plus" type="button" label="Add Action" class="mr-3" (click)="onAddAction()"></button>
+
+      <button [disabled]="!actionId" pButton icon="fa fa-trash" type="button" pTooltip="Delete Selected Action!" class="ui-button-danger mr-1" (click)="onDeleteAction()"></button>
+      <button [disabled]="true" pButton icon="fa fa-copy" type="button" pTooltip="Copy Selected Action!" class="ui-button-success"></button>
+    </div>
+  </div>
+  <div class="ui-g-9">
+    <p-tabMenu [model]="actionMenu"></p-tabMenu>
+    <router-outlet *ngIf="!hasActionLoadErrors"></router-outlet>
+    <div class="error-container" *ngIf="hasActionLoadErrors">
+      <div class="error-wrapper">
+        <i class="fas fa-exclamation-triangle error-icon"></i>
+        <p class="error-p">Unable to load the selected Action!</p>
+        <button pButton label="Reload" icon="fa fa-sync" class="ui-button-secondary" (click)="loadAction()"></button>
+      </div>
+    </div>
+  </div>
+</div>

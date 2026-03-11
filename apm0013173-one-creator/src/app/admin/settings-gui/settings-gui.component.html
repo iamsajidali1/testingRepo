@@ -1,0 +1,253 @@
+<!-- START Settings manager -->
+<p-fieldset legend="Mcap credentials" [collapsed]="true" [toggleable]="true">
+    <div class="ui-grid-row">
+        <div class="ui-grid-col-2" >
+            <strong>
+                ID
+            </strong>
+        </div>
+        <div class="ui-grid-col-6">
+            <strong>
+                CREDENTIAL
+            </strong>
+        </div>
+    </div>
+    <div class="fieldset_admin_list" *ngIf="credentials" >
+        <div class="ui-grid-row" *ngFor="let credential of credentials">
+            <div class="ui-grid-col-2" >
+                {{credential.id}}
+            </div>
+            <div class="ui-grid-col-3">
+                {{credential.credential}}
+            </div>
+            <div class="ui-grid-col-1">
+                <button id="btn_remove" icon="fa fa-minus" style="margin-left: 2px; height: 21px" pButton type="button" iconPos="left" class="ui-button-info" (click)="deleteCredential(credential)">
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <form *ngIf="form" [formGroup]="form">
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-2" >
+                Credential <span id="marker_required">*</span>:
+            </div>
+            <div class="ui-grid-col-6" >
+                <input pInputText type="text" formControlName="credential" placeholder="Required" required="true"/>
+                <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['credential'].valid&&form.controls['credential'].dirty"></p-message>
+            </div>
+        </div>
+    </form>
+    <div class="ui-grid-row">
+        <div class="ui-grid-col-4" >
+            <button *ngIf="!save" type="button" pButton icon="fa fa-plus" (click)="saveCredential()" label="Create"></button>
+            <button *ngIf="save" type="button" pButton icon="pi pi-spin pi-spinner" label="Saving ..." [disabled]="true"></button>
+        </div>
+    </div>
+</p-fieldset>
+<p-fieldset legend="Roles" [collapsed]="true" [toggleable]="true">
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-2" >
+                <strong>
+                    ID
+                </strong>
+            </div>
+            <div class="ui-grid-col-6">
+                <strong>
+                    ROLE
+                </strong>
+            </div>
+        </div>
+        <div class="fieldset_admin_list" *ngIf="roles" >
+            <div class="ui-grid-row" *ngFor="let role of roles">
+                <div class="ui-grid-col-2" >
+                    {{role.ID}}
+                </div>
+                <div class="ui-grid-col-6">
+                    {{role.IDENTIFICATOR}}
+                </div>
+            </div>
+        </div>
+    <br>
+    <div class="ui-grid-row">
+        <div class="ui-grid-col-12" >
+            <button *ngIf="!syncRoles" type="button" pButton icon="pi pi-download" (click)="syncRolesWithUpm()" label="Sync roles"></button>
+            <button *ngIf="syncRoles" type="button" pButton icon="pi pi-spin pi-spinner" label="Sync roles" [disabled]="true"></button>
+        </div>
+    </div>
+</p-fieldset>
+<p-fieldset legend="Users" [collapsed]="true" [toggleable]="true">
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-2" >
+                <strong>
+                    ID
+                </strong>
+            </div>
+            <div class="ui-grid-col-6">
+                <strong>
+                    NAME
+                </strong>
+            </div>
+            <div class="ui-grid-col-2">
+                <strong>
+                    ATTUID
+                </strong>
+            </div>
+        </div>
+        <div class="fieldset_admin_list" *ngIf="users" >
+            <div class="ui-grid-row" *ngFor="let user of users">
+                <div class="ui-grid-col-2" >
+                    {{user.ID}}
+                </div>
+                <div class="ui-grid-col-6">
+                    {{user.NAME}}
+                </div>
+                <div class="ui-grid-col-2">
+                    {{user.ATTUID}}
+                </div>
+            </div>
+        </div>
+    <br>
+    <div class="ui-grid-row">
+        <div class="ui-grid-col-12" >
+            <button *ngIf="!syncUsers" type="button" pButton icon="pi pi-download" (click)="syncUsersWithUpm()" label="Sync users"></button>
+            <button *ngIf="syncUsers" type="button" pButton icon="pi pi-spin pi-spinner" label="Sync users" [disabled]="true"></button>
+        </div>
+    </div>
+</p-fieldset>
+<p-fieldset legend="Action type attributes" [collapsed]="true" [toggleable]="true">
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-2" >
+                <strong>
+                    ID
+                </strong>
+            </div>
+            <div class="ui-grid-col-6">
+                <strong>
+                    Action type
+                </strong>
+            </div>
+        </div>
+        <div class="fieldset_admin_list" *ngIf="workflows" >
+            <div class="ui-grid-row" *ngFor="let workflow of workflows">
+                <div class="ui-grid-col-2" >
+                    {{workflow.workflow.ID}}
+                </div>
+                <div class="ui-grid-col-3">
+                    {{workflow.workflow.NAME}}
+                </div>
+                <div class="ui-grid-col-1">
+                    <button id="btn_setting" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-cog" class="ui-button-info" (click)="editWorkflowAttributes(workflow)"></button>
+                </div>
+            </div>
+        </div>
+</p-fieldset>
+<p-fieldset legend="Create BC user" [collapsed]="true" [toggleable]="true">
+    <form *ngIf="formUsers" [formGroup]="formUsers">
+        <div [ngClass]="{disabled: isDisabled}" >
+            <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-2">
+                        User Name <span id="marker_required">*</span>:
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <input pInputText style="width: 50%;" type="text" formControlName="userName" placeholder="This is required field" required="true"/>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <p-message severity="warn" text="This field is required!" *ngIf="!formUsers.controls['userName'].valid && formUsers.controls['bcUserId'].touched"></p-message>
+                    </div>
+                </div>
+                <div class="ui-grid-row">
+                <div class="ui-grid-col-2">
+                    Busines Center ID <span id="marker_required">*</span>:
+                </div>
+                <div class="ui-grid-col-4">
+                    <input pInputText type="text" style="width: 50%;" formControlName="bcUserId" placeholder="This is required field" />
+                </div>
+                <div class="ui-grid-col-4">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!formUsers.controls['bcUserId'].valid && formUsers.controls['bcUserId'].touched"></p-message>
+                </div>
+            </div>
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-12">
+                        <button *ngIf="!userSaving" pButton type="button" style="width: 15%;" iconPos="right" icon="fa fa-save" class="ui-button-info" (click)="createUser()" label="Create user" ></button>
+                        <button *ngIf="userSaving" pButton type="button" style="width: 15%;" iconPos="right" icon="pi pi-spin pi-spinner" class="ui-button-info" (click)="createUser()" [disabled]="userSaving" label="Create user" ></button>
+                    </div>
+                </div>
+            </div>
+          </div >
+    </form>
+
+</p-fieldset>
+
+
+<!-- END Settings manager -->
+
+<!-- START Modal for workflow attributes -->
+<p-dialog (onHide)="closeDialog()"
+          header="Edit attributes for {{title}}"
+          [closeOnEscape]="false"
+          styleClass="settings_modal"
+          [(visible)]="modalVisible"
+          [modal]="true"
+          [style]="{width: '50vw'}"
+          [baseZIndex]="10000"
+          [blockScroll]="true"
+          [resizable]="false">
+    <form  *ngIf="workflowAttributeForm" [formGroup]="workflowAttributeForm">
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-6">
+                <div *ngIf="assignedAttributes" class="sections">
+                    <div class="ui-grid-row">
+                        <div class="ui-grid-col-6" >
+                            <strong>
+                                Attribute
+                            </strong>
+                        </div>
+                        <div class="ui-grid-col-4">
+                            <strong>
+                                Status
+                            </strong>
+                        </div>
+                    </div>
+                    <div class="ui-grid-row" *ngFor="let attribute of assignedAttributes; let i = index">
+                        <div class="ui-grid-col-6" >
+                            {{attribute.name}}
+                        </div>
+                        <div class="ui-grid-col-4">
+                            {{attribute.status}}
+                        </div>
+                        <div class="ui-grid-col-2">
+                            <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="deleteAttribute(attribute)"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-grid-row">
+            <div class="ui-grid-col-12">
+                <div class="ui-grid-row">
+                    <div class="ui-grid-col-1">
+                        <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="assigneAttribute()"></button>
+                    </div>
+                    <div class="ui-grid-col-7">
+                        <p-dropdown  id="dropdown_att_left" placeholder="Select attribute" formControlName="attribute" [options]="workflowAttributes" optionLabel="name"></p-dropdown>
+                        <p-dropdown  id="dropdown_att_right" placeholder="Select status" formControlName="status" [options]="statuses" optionLabel="label"></p-dropdown>
+                    </div>
+                    <div class="ui-grid-col-4">
+                        <p-message id="att_message" severity="warn" text="This field is required!" *ngIf="(!workflowAttributeForm.controls['attribute'].valid&&workflowAttributeForm.controls['attribute'].dirty)
+                        || !workflowAttributeForm.controls['status'].valid&&workflowAttributeForm.controls['status'].dirty"></p-message>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button type="button" pButton icon="pi pi-times" (click)="closeDialog()" label="Close" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
+<!-- END Modal for workflow attributes -->
+
+<div class="application_loading" *ngIf="showSpinner">
+    <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
