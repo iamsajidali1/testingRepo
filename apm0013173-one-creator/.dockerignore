@@ -1,6 +1,0 @@
-dist
-node_modules
-chart
-build.env
-.env
-.npmrc
