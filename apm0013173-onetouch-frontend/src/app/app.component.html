@@ -1,0 +1,51 @@
+<body >
+
+<mat-toolbar>
+  <div class="container-lg">
+    <div class="d-flex">
+      <div class="flex-grow-1 flex-shrink-1 flex align-items-center justify-content-start">
+        <img src="assets/icons/att_biz_hz_alt_rgb_pos.png"
+             alt="AT&T Business"
+             width="100px"
+             routerLink="/"
+             class="cursor-pointer"
+        />
+        <span>OneTouch</span>
+      </div>
+
+      <div class="flex-grow-1 flex-shrink-1 flex align-items-center justify-content-end" >
+        <div class="user-details-wrapper" *ngIf="user">
+          <div class="user-name-holder">
+            <h4 class="user-name">{{ user?.firstName}}</h4>
+            <p class="user-job-desc">
+              {{ user?.jtName.split(',')[0] | titlecase }}
+            </p>
+          </div>
+
+          <img *ngIf="user?.profilePhoto"
+               src="{{user?.profilePhoto}}"
+                 class="img-responsive"
+                 alt="{{user?.firstName.slice(0,1) + user?.lastName.slice(0,1)}}">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-toolbar>
+
+
+
+<main>
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+</main>
+<footer class="footer">
+  <div class="middle">
+      <span><a href="mailto:rm-sd_devops@intl.att.com
+        ?subject=Onetouch%20Request">Contact CIST</a></span>
+    <span class="spacer"></span>
+    <span class="version">{{ version }}</span>
+  </div>
+</footer>
+</body>

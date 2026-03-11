@@ -1,0 +1,77 @@
+.code {
+    /* font-family: monospace; */
+    text-align: left;
+    font-size: 80%;
+  }
+.main-app {
+    margin-top: 25px;
+}
+.hilite {
+  background-color: #d8d8d8;
+}
+.jdm-code {
+  font-family: Consolas,monospace;
+  font-size: 80%;
+}
+
+.mat-column-value {
+  width:100%;
+  word-wrap: break-word !important;
+  width: 65% !important;
+}
+.mat-table, .full-width {
+  width: 100%;
+}
+.toright {
+  margin-right: 8px !important;
+}
+button:disabled {
+  cursor: not-allowed !important;
+  pointer-events: all !important;
+}
+.mat-tab-label {
+  min-width: 80px !important;
+}
+.button-text-left {
+  text-align: left !important;
+}
+.spacer {
+  flex: 1 1 auto;
+}
+.btn-clipboard{
+  position: absolute !important;
+  top: 5px;
+  right: 20px;
+  padding: 0.1rem 0.2rem;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  border-radius: 0.25rem;
+  font-size:90%;
+  background-color: white;
+}
+.mat-raised-button {
+  position: absolute; 
+}
+.left-margin {
+  margin-left: 8px;
+}
+.blur{
+  background: rgba(255, 255, 255, 0.2);   
+  filter: blur(8px);
+}
+.mat-tab-header-pagination.mat-tab-header-pagination-disabled {
+  display: none !important;
+}
+.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
+  display: none !important;
+}
+.pre {
+  margin-left: 8px;
+}
+.pre-scrollable {
+  height: 550px;
+  max-height: 550px;
+  /* overflow: visible; */
+  z-index: 999;
+  margin-left: 7px;
+}

@@ -1,0 +1,78 @@
+.tp-section {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  height: 60px;
+}
+.tp-margin {
+  margin: 0 10px;
+}
+.version {
+  font-size: small;
+  text-align: right;
+  color: darkgrey;
+  position: fixed;
+  right: 0;
+  padding-right: 10px;
+}
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  background-color: rgb(235, 235, 235);
+  display: flex;
+  font-size: small;
+  color: darkgray;
+}
+.middle {
+  padding: 12px 0;
+  padding-left: 10px;
+}
+.spacer {
+  flex: 1 1 auto;
+}
+a:link {
+  color: darkgray;
+}
+
+.user-details-wrapper {
+  position: relative;
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.user-details-wrapper h4,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+
+.user-details-wrapper img {
+  width: 34px;
+  height: 34px;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important;
+  border-radius: 50% !important;
+  position: absolute;
+  top: 0.85rem;
+  right: 0;
+}
+
+.user-name-holder {
+  position: absolute;
+  top: 1rem;
+  right: 2.55rem
+}
+
+.user-name {
+  font-size: 13px;
+  font-weight: bolder;
+  line-height: 15px;
+}
+.user-job-desc {
+  font-size: 12px;
+  line-height: 14px;
+}
