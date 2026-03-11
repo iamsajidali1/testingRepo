@@ -1,0 +1,90 @@
+<p-fieldset legend="Access">
+    <form *ngIf="perForm" [formGroup]="perForm">
+        <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Group:
+                </div>
+                <div class="ui-grid-col-6">
+                    <div class="ui-grid-row">
+                        <div class="ui-grid-col-2">
+                            <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addGroup()"></button>
+                        </div>
+                        <div class="ui-grid-col-10">
+                            <p-dropdown class="ui-dropdown-label" optionLabel="IDENTIFICATOR" [options]="groups" filter="true"
+                            placeholder="Please select group" formControlName="group"
+                            required="true"></p-dropdown>
+                        </div>
+                    </div>
+                    <div *ngIf="assignedGroups" class="sections">
+                        <div *ngFor="let group of assignedGroups; let i = index" class="section">
+                            <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" 
+                            class="ui-button-info" (click)="removeGroup(group)" [disabled]="group['inherited']" [tooltipDisabled]="!group['inherited']"
+                            pTooltip="You can't remove this permission because is inherited!" tooltipPosition="left"></button>
+                            {{group.IDENTIFICATOR}}
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-grid-col-3">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!perForm.controls['group'].valid&&perForm.controls['group'].dirty"></p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Individual:
+                </div>
+                <div class="ui-grid-col-6">
+                    <div class="ui-grid-row">
+                        <div class="ui-grid-col-2">
+                            <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addUser()"></button>
+                        </div>
+                        <div class="ui-grid-col-10">
+                            <p-dropdown class="ui-dropdown-label" [options]="usersForDropdown" filter="true"
+                            filterBy="label,value.ATTUID" placeholder="Please select user" formControlName="user"
+                            required="true"></p-dropdown>
+                        </div>
+                    </div>
+                    <div *ngIf="assignedUsers" class="sections">
+                        <div *ngFor="let user of assignedUsers; let i = index" class="section">
+                            <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" 
+                            class="ui-button-info" (click)="removeUser(user)" [disabled]="user['inherited']" [tooltipDisabled]="!user['inherited']"
+                            pTooltip="You can't remove this permission because is inherited!" tooltipPosition="left"></button>
+                            {{user.NAME}} - {{user.ATTUID}}
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-grid-col-3">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!perForm.controls['user'].valid&&perForm.controls['user'].dirty"></p-message>
+                </div>
+            </div>
+            <div class="ui-grid-row">
+                <div class="ui-grid-col-3">
+                    Business center:
+                </div>
+                <div class="ui-grid-col-6">
+                    <div class="ui-grid-row">
+                        <div class="ui-grid-col-2">
+                            <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addCustomer()"></button>
+                        </div>
+                        <div class="ui-grid-col-10">
+                            <p-dropdown class="ui-dropdown-label" optionLabel="NAME" [options]="customers" filter="true"
+                            placeholder="Please select bc user" formControlName="customer"
+                            required="true"></p-dropdown>
+                        </div>
+                    </div>
+                    <div *ngIf="assignedCustomers" class="sections">
+                        <div *ngFor="let customer of assignedCustomers; let i = index" class="section">
+                            <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus"
+                            class="ui-button-info" (click)="removeCustomer(customer)" [disabled]="customer['inherited']" [tooltipDisabled]="!customer['inherited']"
+                            pTooltip="You can't remove this permission because is inherited!" tooltipPosition="left"></button>
+                            {{customer.NAME}} - {{customer.BC_USER_ID}}
+                        </div>
+                    </div>
+                </div>
+                <div class="ui-grid-col-3">
+                    <p-message severity="warn" text="This field is required!" *ngIf="!perForm.controls['customer'].valid&&perForm.controls['customer'].dirty"></p-message>
+                </div>
+            </div>
+        </div>
+    </form>
+</p-fieldset>

@@ -1,0 +1,11 @@
+{
+    "local" : {
+        "cookies" : {
+            "globalLogon": {
+                "attESHr":  "",
+                "attESSec": "",
+                "attESg2": ""
+            }
+        }
+    }
+}

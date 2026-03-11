@@ -1,0 +1,294 @@
+<div class="application_loading" *ngIf="showSpinner">
+  <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+
+<!-- START Admin customer form -->
+<form *ngIf="form" [formGroup]="form">
+  <div [ngClass]="{disabled: isDisabled}" >
+    <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Customer Name <span id="marker_required">*</span>:
+        </div>
+        <div class="ui-grid-col-6">
+          <input pInputText type="text" formControlName="name" placeholder="Required" required="true"/>
+        </div>
+        <div class="ui-grid-col-4">
+          <p-message severity="warn" text="This field is required!" *ngIf="!form.controls['name'].valid&&form.controls['name'].dirty"></p-message>
+        </div>
+      </div>
+
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Busines Center ID:
+        </div>
+        <div class="ui-grid-col-6">
+          <input pInputText type="text" formControlName="bcCompanyId" placeholder="" />
+        </div>
+        <div class="ui-grid-col-4">
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          MSIM Email:
+        </div>
+        <div class="ui-grid-col-6">
+          <input pInputText type="text" formControlName="msimEmail" placeholder="" />
+        </div>
+        <div class="ui-grid-col-4">
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          CRWeb ID:
+        </div>
+        <div class="ui-grid-col-6">
+          <input pInputText type="text" formControlName="crWebId" placeholder="" />
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          GRUA name:
+        </div>
+        <div class="ui-grid-col-6">
+          <div class="ui-grid-row">
+            <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addGrua()"></button>
+            <input pInputText type="text" formControlName="grua" placeholder=""/>
+          </div>
+          <div *ngIf="arrayOfGruaData" class="sections">
+            <div *ngFor="let gruaData of arrayOfGruaData; let i = index" class="section">
+              <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="removeGrua(gruaData)"></button>
+              {{gruaData.grua}}
+            </div>
+          </div>
+        </div>
+        <div class="ui-grid-col-4">
+          <p-message *ngIf="!form.controls['grua'].valid && form.controls['grua'].dirty" severity="warn" text="Error: This is a required field!"></p-message>
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Services:
+        </div>
+        <div class="ui-grid-col-6">
+          <div *ngIf="services" class="ui-grid-row">
+            <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addService()"></button>
+            <p-dropdown  placeholder="Select service" formControlName="service" [options]="services" optionLabel="serviceName" required="true"></p-dropdown>
+          </div>
+          <div *ngIf="customerServices" class="sections">
+            <div *ngFor="let service of customerServices; let i = index" class="section">
+              <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="removeService(service)"></button>
+              <button id="btn_setting" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-cog" class="ui-button-info" (click)="editService(service)"></button>
+              {{service.serviceName}}
+            </div>
+          </div>
+        </div>
+        <div class="ui-grid-col-4">
+          <p-message *ngIf="!form.controls['service'].valid && form.controls['service'].dirty" severity="warn" text="Error: This is a required field!"></p-message>
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-2">
+          Status active:
+        </div>
+        <div class="ui-grid-col-6">
+          <p-inputSwitch formControlName="active"></p-inputSwitch>
+          <p-message *ngIf="!form.controls['active'].valid && form.controls['active'].dirty" severity="warn" text="Error: This is a required field!"></p-message>
+        </div>
+        <div class="ui-grid-col-4">
+        </div>
+      </div>
+      <div class="ui-grid-row">
+        <div class="ui-grid-col-12">
+          <button pButton type="button" style="width: 100px;" iconPos="left" icon="fa fa-save" class="ui-button-info" (click)="updateCustomerData()" [disabled]="updateBtnDisable" label="Update" ></button>
+        </div>
+      </div>
+    </div>
+  </div >
+</form>
+<!-- END Admin customer form -->
+
+<!-- START Modal for service -->
+<p-dialog *ngIf="assignedAttributes && serviceForm && generated"
+          header="{{title}} {{service['serviceName']}} service"
+          styleClass="service_modal"
+          [closeOnEscape]="false"
+          [(visible)]="modalVisible"
+          [modal]="true"
+          [style]="{width: '50vw'}"
+          autoZIndex="true"
+          [blockScroll]="true"
+          [resizable]="false"
+          [closable]="false"
+>
+
+  <form [formGroup]="serviceForm">
+    <div>
+      <div *ngFor="let attribute of assignedAttributes" class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid" style="margin: 10px 0px">
+        <div *ngIf="attribute['id'] == 1" class="ui-grid-row">
+          <div class="ui-grid-col-3">
+            MCAP Credential<span id="marker_required">*</span>:
+          </div>
+          <div class="ui-grid-col-6">
+            <p-dropdown  placeholder="Select credential" formControlName="credential" [options]="credentilas" optionLabel="credential" required="true"></p-dropdown>
+          </div>
+          <div class="ui-grid-col-3">
+            <p-message severity="warn" text="This field is required!" *ngIf="!serviceForm.controls['credential'].valid&&serviceForm.controls['credential'].dirty"></p-message>
+          </div>
+        </div>
+
+        <div *ngIf="attribute['id'] == 4" class="ui-grid-row">
+          <div class="ui-grid-col-3">
+            Auto CR Creation<span id="marker_required">*</span>:
+          </div>
+          <div class="ui-grid-col-6 d-flex-center">
+            <p-inputSwitch formControlName="shouldCreateCr" (onChange)="updateCrConfig()"></p-inputSwitch>
+            <p class="ml-3 d-flex-center">
+              <i class="pi pi-info-circle mr-1"></i> While enabled, automatically creates change requests.
+            </p>
+          </div>
+          <div class="ui-grid-col-3">
+            <p-message severity="warn" text="This field is required!" *ngIf="!serviceForm.controls['credential'].valid&&serviceForm.controls['credential'].dirty"></p-message>
+          </div>
+        </div>
+
+        <div *ngIf="attribute['id'] == 3" class="ui-grid-row">
+          <div class="ui-grid-col-3">
+            GRUA:
+          </div>
+          <div class="ui-grid-col-6">
+            <div class="ui-grid-row">
+              <div class="ui-grid-col-2">
+                <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addActionName()"></button>
+              </div>
+              <div class="ui-grid-col-10">
+                <input pInputText type="text" formControlName="actionName" placeholder="Required" required="true" />
+              </div>
+            </div>
+            <div *ngIf="actionNames" class="sections">
+              <div *ngFor="let action of actionNames; let i = index" class="section">
+                <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="removeActionName(action)"></button>
+                {{action.actionCustomerName}}
+              </div>
+            </div>
+          </div>
+          <div class="ui-grid-col-3">
+            <p-message severity="warn" text="This field is required!" *ngIf="!serviceForm.controls['actionName'].valid&&serviceForm.controls['actionName'].dirty"></p-message>
+          </div>
+        </div>
+        <div *ngIf="attribute['id'] == 2" class="ui-grid-row">
+          <div class="ui-grid-col-3">
+            ORCHESTRATOR list:
+          </div>
+          <div class="ui-grid-col-6">
+            <div class="ui-grid-row">
+              <div class="ui-grid-col-2">
+                <button id="btn_add" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addOrchestratorListRow()"></button>
+              </div>
+              <div class="ui-grid-col-7">
+                <input pInputText type="url" formControlName="url" placeholder="Url" required="true" />
+              </div>
+              <div class="ui-grid-col-3">
+                <input pInputText type="text" formControlName="tenantId" placeholder="Tenand id" required="true" />
+              </div>
+            </div>
+            <div *ngIf="orchestratorList" class="sections">
+              <div *ngFor="let orchestratorRow of orchestratorList; let i = index" class="section">
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-2">
+                    <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="removeOrchestratorListRow(orchestratorRow)"></button>
+                  </div>
+                  <div class="ui-grid-col-2">
+                    <button id="btn_setting" pTooltip="Click to edit tags for orchestrator." tooltipPosition="right" tooltipZIndex="9999999" pButton type="button" iconPos="left" icon="pi pi-pencil" class="ui-button-info" (click)="addOrchestratorTag(orchestratorRow)"></button>
+                  </div>
+                  <div style="text-align: center" class="ui-grid-col-8" (click)="addOrchestratorTag(orchestratorRow)">
+                    <a id="url">{{orchestratorRow.url}}</a>
+                  </div>
+                  <div style="text-align: center" class="ui-grid-col-3">
+                    {{orchestratorRow.tenantId}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="ui-grid-col-3">
+            <p-message severity="warn" text="This field is required!" *ngIf="(!serviceForm.controls['url'].valid&&serviceForm.controls['url'].dirty)||(!serviceForm.controls['tenantId'].valid&&serviceForm.controls['tenantId'].dirty)"></p-message>
+          </div>
+        </div>
+
+        <div *ngIf="attribute['id'] == 5" class="ui-grid-row">
+          <div class="ui-grid-col-3">
+            ORCHESTRATOR yaml:
+          </div>
+          <div class="ui-grid-col-6">
+            <div *ngIf="orchestratorList">
+              <p-dropdown class="full-width" placeholder="Select Orchestrator" [options]="orchestratorList" optionLabel="url" formControlName="orchestrator" (onChange)="onOrchestratorChanged($event.value)"></p-dropdown>
+              <textarea class="full-width"  [rows]="5" pInputTextarea placeholder="Enter the YAML config for the selected Orchestrator" formControlName="configYaml"></textarea>
+              <button [disabled]="!(serviceForm.get('configYaml').dirty || serviceForm.get('configYaml').touched)"
+                      pButton label="Save Config" icon="fa fa-save" class="mt-2 ui-button ui-button-secondary" style="width: 8rem"
+                      (click)="onSaveConfig()"></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </form>
+  <app-permission-manager (eventEmitter)="spinnerChange($event)" [customer]=(selectedCustomer) [service]=(service)></app-permission-manager>
+  <p-footer>
+    <button *ngIf="showButton" type="button" pButton icon="pi pi-check" (click)="save()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="closeDialog()" label="Close" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>
+<!-- END Modal for service -->
+
+<p-dialog (onHide)="closeTagDialog()" [closeOnEscape]="false" [modal]="true" [resizable]="false" [draggable]="false" [(visible)]="tagModal" styleClass="tag_modal" autoZIndex="true" >
+  <form [formGroup]="tagForm">
+    <div class="ui-grid-row">
+      <div class="ui-grid-col-3">
+        ORCHESTRATOR Tag:
+      </div>
+      <div style="margin-left: 40px;" class="ui-grid-col-8">
+        <div class="ui-grid-col-4">
+          <input style="margin-right: 50px" pInputText type="text" formControlName="tag" placeholder="Tag" required="true" />
+        </div>
+        <div style="margin-left: 60px"class="ui-grid-col-4">
+          <button id="btn_add" pButton type="button" iconPos="left" icon="fa fa-plus" class="ui-button-info" (click)="addOrchestratorTagsRow()"></button>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="orchestratorTags" class="sections">
+      <div *ngFor="let orchestratorTagsRow of orchestratorTags; let i = index" class="section">
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-2">
+            <button id="btn_remove" style="margin-left: 2px;" pButton type="button" iconPos="left" icon="fa fa-minus" class="ui-button-info" (click)="removeOrchestratorTags(orchestratorTagsRow)"></button>
+          </div>
+          <div style="text-align: center" class="ui-grid-col-7">
+            {{orchestratorTagsRow}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</p-dialog>
+
+
+<p-dialog [modal]="true" [resizable]="false" [draggable]="false" [(visible)]="validationModal"
+          styleClass="validation_modal" autoZIndex="true">
+  <div>
+    <label>
+      Some required fields are not filled, it can cause issues for executing actions, do you want to continue?
+      <br>
+      Missing fields:
+    </label>
+    <span>
+      <ul>
+        <li *ngFor="let field of missingFields"> {{ field }} </li>
+      </ul>
+    </span>
+  </div>
+  <p-footer>
+    <button type="button" pButton icon="pi pi-check" (click)="continue()" label="Continue"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="closeValidationModal()" label="Close" class="ui-button-secondary"></button>
+  </p-footer>
+</p-dialog>

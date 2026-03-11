@@ -1,0 +1,828 @@
+<ng-container *ngIf="controlType">
+  <form [formGroup]="formGroup" class="pl-3 pr-3 pb-3">
+    <!--  TEMPLATE - CONDITIONAL STARTS -->
+    <ng-template #conditionalRef [formGroupName]="'conditions'">
+      <div class="ui-grid-row mb-2 pt-1">
+        <p class="p-label ui-grid-col-2">Operator <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <p-dropdown [options]="conditionTypes"
+                      placeholder="Choose condition operator"
+                      formControlName="type"
+                      optionLabel="name"
+                      appendTo="body"
+                      required
+                      [showClear]="true">
+          </p-dropdown>
+          <small
+            class="danger-color"
+            *ngIf="(formGroup.get('conditions')?.get('type')?.touched || formGroup.get('conditions')?.get('type')?.dirty)
+              && formGroup.get('conditions')?.get('type')?.errors?.required">
+            <i class="fas fa-exclamation-circle"></i> Operator is a required field!
+          </small>
+        </div>
+      </div>
+      <div class="ui-grid-row mb-2 pt-1">
+        <p class="p-label ui-grid-col-2">Operands <sup class="danger-color">*</sup></p>
+        <div class="ui-grid-col-10">
+          <p-table [columns]="[{label: 'Key', value: 'key'}, {label: 'Value', value: 'value'}]"
+                   [value]="conditionAttributesFormArrayControls"
+                   [formArrayName]="'attributes'"
+                   [reorderableColumns]="true">
+            <ng-template pTemplate="header" let-columns>
+              <tr>
+                <th scope="colgroup" *ngFor="let col of columns">
+                  {{col.label}} <sup class="danger-color">*</sup>
+                </th>
+                <th scope="colgroup" style="width: 5em"></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-columns="columns" let-index="rowIndex">
+              <tr [pReorderableRow]="index">
+                <td *ngFor="let col of columns" [formGroupName]="index">
+                  <input type="text"
+                         class="full-width"
+                         [id]="col.value + '[' + index + ']'"
+                         [formControlName]="col.value"
+                         placeholder="Enter {{col.value}} for the operand"
+                         pInputText>
+                </td>
+                <td class="text-center">
+                  <i class="far fa-minus-square mr-1 action-icon"
+                     pTooltip="Delete this Operand!"
+                     (click)="removeConditionAttribute(index)"></i>
+                  <i class="far fa-plus-square action-icon" pTooltip="Add new Operand!" (click)="addConditionAttribute()"></i>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+    </ng-template>
+    <!--  TEMPLATE - CONDITIONAL ENDS -->
+
+    <!--  MESSAGE - FORM CONTROL ATTRIBUTE STARTS -->
+    <p-fieldset legend="FormControl Attributes - Message" *ngIf="controlType === 'message'">
+      <div class="fieldset-body">
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Label <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <input class="full-width"
+                   type="text"
+                   required
+                   placeholder="Enter the label (i.e., Disclaimer)"
+                   pInputText formControlName="label">
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('label').touched || formGroup.get('label').dirty)
+              && formGroup.get('label').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Label is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Hidden</p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="hidden"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('hidden')?.value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-1">
+          <p class="p-label ui-grid-col-2">Message Text <sup class="danger-color">*</sup>
+          </p>
+          <div class="ui-grid-col-10">
+            <textarea class="full-width"
+                      rows="5"
+                      required
+                      placeholder="Enter the actual message to be displayed"
+                      pInputTextarea
+                      formControlName="value"></textarea>
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('value').touched || formGroup.get('value').dirty)
+              && formGroup.get('value').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Message Text is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Conditional</p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="hasConditions" (onChange)="onConditionToggle($event.checked)"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('hasConditions').value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div *ngIf="formGroup.get('hasConditions')?.value">
+          <ng-template [ngTemplateOutlet]="conditionalRef"></ng-template>
+        </div>
+      </div>
+    </p-fieldset>
+    <!--  MESSAGE - FORM CONTROL ATTRIBUTE ENDS -->
+
+    <!--  TEXT BOX/ CHIPS - FORM CONTROL ATTRIBUTE STARTS -->
+    <p-fieldset legend="FormControl Attributes - {{controlType === 'textbox' ? 'TextBox' : 'Chips'}}" *ngIf="['textbox', 'chips'].includes(controlType)">
+      <div class="fieldset-body">
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Label <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <input class="full-width"
+                   type="text"
+                   required
+                   pInputText
+                   placeholder="Enter the label (i.e., {{controlType === 'textbox' ? 'Hostname' : 'Emails'}})"
+                   formControlName="label">
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('label').touched || formGroup.get('label').dirty)
+              && formGroup.get('label').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Label is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Key <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <ng-container *ngIf="!isCarcheVarsLoading && !apiErrors?.carcheVars">
+              <input *ngIf="!shouldUseCarcheVars"
+                     class="full-width"
+                     type="text"
+                     required
+                     pInputText
+                     placeholder="Enter the unique key"
+                     formControlName="key">
+              <p-dropdown *ngIf="shouldUseCarcheVars"
+                          [options]="carcheVariables"
+                          placeholder="Choose the unique key"
+                          formControlName="key"
+                          optionLabel="name"
+                          appendTo="body"
+                          [filter]="true"
+                          [showClear]="true">
+              </p-dropdown>
+            </ng-container>
+            <p *ngIf="isCarcheVarsLoading" class="pt-1 pb-2">
+              <i class="pi pi-spin pi-spinner mr-1"></i>loading keys...
+            </p>
+            <p *ngIf="!isCarcheVarsLoading && apiErrors?.carcheVars" class="pt-1 pb-2 danger-color">
+              <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.carcheVars?.message}}
+              Please <a class="font-bold cursor-pointer" (click)="onLoadCarcheVars()">Retry!</a>
+            </p>
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('key').touched || formGroup.get('key').dirty)
+              && formGroup.get('key').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Key is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Required <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="required"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('required').value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-1">
+          <p class="p-label ui-grid-col-2">Placeholder</p>
+          <input class="ui-grid-col-10"
+                 type="text"
+                 placeholder="Enter placeholder for the input"
+                 pInputText
+                 formControlName="placeholder">
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Default Value</p>
+          <input class="ui-grid-col-10"
+                 type="text"
+                 placeholder="Enter optional default value"
+                 pInputText
+                 formControlName="value">
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Validators</p>
+          <div class="ui-grid-col-10">
+            <p-dropdown [options]="validators"
+                        [ngClass]="{'ui-grid-col-6 pr-1' : formGroup.get('validator')?.value?.value === 'regex'}"
+                        placeholder="Choose optional input validators"
+                        formControlName="validator"
+                        optionLabel="name"
+                        appendTo="body"
+                        [filter]="true"
+                        [showClear]="true">
+            </p-dropdown>
+            <input *ngIf="formGroup.get('validator')?.value?.value === 'regex'"
+                   class="ui-grid-col-6 pl-1"
+                   type="text"
+                   placeholder="Enter regular expression"
+                   pInputText
+                   formControlName="validatorRegExp">
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Conditional</p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="hasConditions" (onChange)="onConditionToggle($event.checked)"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('hasConditions').value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div *ngIf="formGroup.get('hasConditions')?.value">
+          <ng-template [ngTemplateOutlet]="conditionalRef"></ng-template>
+        </div>
+      </div>
+    </p-fieldset>
+    <!--  TEXT BOX/ CHIPS - FORM CONTROL ATTRIBUTE ENDS -->
+
+    <!--  DROPDOWN/ MULTISELECT - FORM CONTROL ATTRIBUTE STARTS -->
+    <p-fieldset legend="FormControl Attributes - Dropdown" *ngIf="['dropdown', 'multiselect'].includes(controlType)">
+      <div class="fieldset-body">
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Label <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <input class="full-width"
+                   type="text"
+                   required
+                   pInputText
+                   placeholder="Enter the label (i.e., Interfaces)"
+                   formControlName="label">
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('label').touched || formGroup.get('label').dirty)
+            && formGroup.get('label').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Label is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Key <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <ng-container *ngIf="!isCarcheVarsLoading && !apiErrors?.carcheVars">
+              <input *ngIf="!shouldUseCarcheVars"
+                     class="full-width"
+                     type="text"
+                     required
+                     pInputText
+                     placeholder="Enter the unique key"
+                     formControlName="key">
+              <p-dropdown *ngIf="shouldUseCarcheVars"
+                          [options]="carcheVariables"
+                          placeholder="Choose the unique key"
+                          formControlName="key"
+                          optionLabel="name"
+                          appendTo="body"
+                          [filter]="true"
+                          [showClear]="true">
+              </p-dropdown>
+            </ng-container>
+            <p *ngIf="isCarcheVarsLoading" class="pt-1 pb-2">
+              <i class="pi pi-spin pi-spinner mr-1"></i>loading keys...
+            </p>
+            <p *ngIf="!isCarcheVarsLoading && apiErrors?.carcheVars" class="pt-1 pb-2 danger-color">
+              <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.carcheVars?.message}}
+              Please <a class="font-bold cursor-pointer" (click)="onLoadCarcheVars()">Retry!</a>
+            </p>
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('key').touched || formGroup.get('key').dirty)
+            && formGroup.get('key').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Key is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">MultiSelect <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="multiselect"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('multiselect').value ? 'Yes' : 'No'}}</p>
+            <small class="ml-4 pt-1">
+              <i class="fa fa-question-circle mr-1"></i>
+              Enabling multiselect allows user to choose more than one option from the dropdown!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Required <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="required"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('required').value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-1">
+          <p class="p-label ui-grid-col-2">Placeholder</p>
+          <input class="ui-grid-col-10"
+                 type="text"
+                 placeholder="Enter placeholder for the input"
+                 pInputText
+                 formControlName="placeholder">
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Option Source <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <div [ngClass]="{'ui-grid-col-6 pr-1' : ['API', 'Script'].includes(formGroup.get('optionSourceType')?.value?.value)}">
+              <p-dropdown [options]="optionSourceTypes"
+                          (onChange)="onOptionSrcTypeChange($event.value)"
+                          placeholder="Choose option source type"
+                          formControlName="optionSourceType"
+                          optionLabel="name"
+                          appendTo="body"
+                          [showClear]="true">
+              </p-dropdown>
+              <small
+                class="danger-color"
+                *ngIf="(formGroup.get('optionSourceType').touched || formGroup.get('optionSourceType').dirty)
+              && formGroup.get('optionSourceType').errors?.required">
+                <i class="fas fa-exclamation-circle"></i> Option Source Type is required!
+              </small>
+            </div>
+            <div *ngIf="['API', 'Script'].includes(formGroup.get('optionSourceType')?.value?.value)"
+                 class="ui-grid-col-6 pl-1">
+              <p-dropdown *ngIf="!isScriptsLoading && !apiErrors?.scripts"
+                          [options]="optionsSource"
+                          placeholder="Choose option source"
+                          formControlName="optionsSource"
+                          optionLabel="label"
+                          appendTo="body"
+                          [showClear]="true">
+              </p-dropdown>
+              <p *ngIf="isScriptsLoading" class="ml-2 mt-2">
+                <i class="pi pi-spin pi-spinner mr-1"></i>loading scripts...
+              </p>
+              <p *ngIf="!isScriptsLoading && apiErrors?.scripts" class="ml-2 mt-2 danger-color">
+                <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.scripts?.message}}
+                Please <a class="font-bold cursor-pointer" (click)="onLoadScripts()">Retry!</a>
+              </p>
+              <small
+                class="danger-color"
+                *ngIf="(formGroup.get('optionsSource').touched || formGroup.get('optionsSource').dirty)
+              && formGroup.get('optionsSource').errors?.required">
+                <i class="fas fa-exclamation-circle"></i> Option Source is required!
+              </small>
+            </div>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-1" *ngIf="formGroup.get('optionsSource')?.value === 'Manual'">
+          <p class="p-label ui-grid-col-2">Options</p>
+          <div class="ui-grid-col-10">
+            <p-table [columns]="[{label: 'Key', value: 'key'}, {label: 'Value', value: 'value'}]"
+                     [value]="optionsFormArrayControls"
+                     [formArrayName]="'options'"
+                     [reorderableColumns]="true">
+              <ng-template pTemplate="header" let-columns>
+                <tr>
+                  <th scope="colgroup" style="width: 2.5em"></th>
+                  <th scope="colgroup" *ngFor="let col of columns" pReorderableColumn>
+                    {{col.label}} <sup class="danger-color">*</sup>
+                  </th>
+                  <th scope="colgroup" style="width: 5em"></th>
+                </tr>
+              </ng-template>
+              <ng-template pTemplate="body" let-columns="columns" let-index="rowIndex">
+                <tr [pReorderableRow]="index">
+                  <td>
+                    <i class="fa fa-bars reorder-icon" pReorderableRowHandle=""></i>
+                  </td>
+                  <td *ngFor="let col of columns" [formGroupName]="index">
+                    <input type="text"
+                           class="full-width"
+                           [id]="col.value + '[' + index + ']'"
+                           [formControlName]="col.value"
+                           placeholder="Enter {{col.value}} for the option"
+                           pInputText>
+                  </td>
+                  <td class="text-center">
+                    <i class="far fa-minus-square mr-1 action-icon" pTooltip="Delete this Option!" (click)="removeOption(index)"></i>
+                    <i class="far fa-plus-square action-icon" pTooltip="Add new Option!" (click)="addOption()"></i>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Conditional</p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="hasConditions" (onChange)="onConditionToggle($event.checked)"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('hasConditions').value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div *ngIf="formGroup.get('hasConditions')?.value">
+          <ng-template [ngTemplateOutlet]="conditionalRef"></ng-template>
+        </div>
+      </div>
+    </p-fieldset>
+    <!--  DROPDOWN/ MULTISELECT - FORM CONTROL ATTRIBUTE ENDS -->
+
+    <!--  LIST - FORM CONTROL ATTRIBUTE STARTS -->
+    <p-fieldset legend="FormControl Attributes - List" *ngIf="controlType === 'list'">
+      <div class="fieldset-body">
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Label <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <input class="full-width"
+                   type="text"
+                   required
+                   pInputText
+                   placeholder="Enter the label (i.e., {{controlType === 'textbox' ? 'Hostname' : 'Emails'}})"
+                   formControlName="label">
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('label').touched || formGroup.get('label').dirty)
+              && formGroup.get('label').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Label is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Key <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <ng-container *ngIf="!isCarcheVarsLoading && !apiErrors?.carcheVars">
+              <input *ngIf="!shouldUseCarcheVars"
+                     class="full-width"
+                     type="text"
+                     required
+                     pInputText
+                     placeholder="Enter the unique key"
+                     formControlName="key">
+              <p-dropdown *ngIf="shouldUseCarcheVars"
+                          [options]="carcheVariables"
+                          placeholder="Choose the unique key"
+                          formControlName="key"
+                          optionLabel="name"
+                          appendTo="body"
+                          [filter]="true"
+                          [showClear]="true">
+              </p-dropdown>
+            </ng-container>
+            <p *ngIf="isCarcheVarsLoading" class="pt-1 pb-2">
+              <i class="pi pi-spin pi-spinner mr-1"></i>loading keys...
+            </p>
+            <p *ngIf="!isCarcheVarsLoading && apiErrors?.carcheVars" class="pt-1 pb-2 danger-color">
+              <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.carcheVars?.message}}
+              Please <a class="font-bold cursor-pointer" (click)="onLoadCarcheVars()">Retry!</a>
+            </p>
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('key').touched || formGroup.get('key').dirty)
+              && formGroup.get('key').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Key is a required field!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Display As <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <p-dropdown [options]="listDisplayTypes"
+                        placeholder="Choose list display type"
+                        formControlName="listType"
+                        optionLabel="name"
+                        appendTo="body"
+                        [showClear]="true">
+            </p-dropdown>
+            <small
+              class="danger-color"
+              *ngIf="(formGroup.get('listType').touched || formGroup.get('listType').dirty)
+            && formGroup.get('listType').errors?.required">
+              <i class="fas fa-exclamation-circle"></i> Display As is required!
+            </small>
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2">
+          <p class="p-label ui-grid-col-2">Columns <sup class="danger-color">*</sup></p>
+          <div class="ui-grid-col-10">
+            <div class="ui-grid-row mb-2">
+              <div class="ui-grid-col-6"></div>
+              <div class="ui-grid-col-6">
+                <button pButton
+                        type="button"
+                        icon="fa fa-edit"
+                        label="TextBox"
+                        pTooltip="Add a TextBox"
+                        (click)="addColumnsType('textbox')"
+                        class="ui-button-secondary mr-2">
+                </button>
+                <button pButton
+                        type="button"
+                        icon="fa fa-caret-square-down"
+                        label="Dropdown"
+                        pTooltip="Add a Dropdown"
+                        (click)="addColumnsType('dropdown')"
+                        class="ui-button-secondary mr-2">
+                </button>
+              </div>
+            </div>
+
+            <div class="ui-grid-row columns-wrapper" formArrayName="columnsType">
+              <p class="pt-3 pb-3 pl-1 pr-1" *ngIf="!columnsTypeFromArrayControls.length">
+                Please use the above buttons to create desired form control.
+              </p>
+              <div class="ui-grid-row bg-white mb-1"
+                   *ngFor="let column of columnsTypeFromArrayControls; let index = index"
+                   [formGroupName]="index">
+                <div class="ui-grid-row column-type-row">
+                  <p>Column [{{index}}] - {{column.value?.controlType | titlecase}}</p>
+                  <i class="fa fa-times color-danger"
+                     pTooltip="Delete this control!"
+                     (click)="removeColumnsType(index)"></i>
+                </div>
+                <hr/>
+                <ng-container [ngSwitch]="column.value?.controlType">
+                  <!--  TEXT BOX STARTS  -->
+                  <div class="ui-grid-row p-3" *ngSwitchCase="'textbox'">
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Label <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9">
+                        <input class="full-width"
+                               type="text"
+                               required
+                               pInputText
+                               placeholder="Enter the label"
+                               formControlName="label">
+                        <small
+                          class="danger-color"
+                          *ngIf="(column.get('label').touched || column.get('label')?.dirty) && column.get('label').errors?.required">
+                          <i class="fas fa-exclamation-circle"></i> Label is a required field!
+                        </small>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Key <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9">
+                        <ng-container *ngIf="!isCarcheVarsLoading && !apiErrors?.carcheVars">
+                          <input *ngIf="!shouldUseCarcheVars"
+                                 class="full-width"
+                                 type="text"
+                                 required
+                                 pInputText
+                                 placeholder="Enter the unique key"
+                                 formControlName="key">
+                          <p-dropdown *ngIf="shouldUseCarcheVars"
+                                      [options]="carcheVariables"
+                                      placeholder="Choose the unique key"
+                                      formControlName="key"
+                                      optionLabel="name"
+                                      appendTo="body"
+                                      [filter]="true"
+                                      [showClear]="true">
+                          </p-dropdown>
+                        </ng-container>
+                        <p *ngIf="isCarcheVarsLoading" class="pt-1 pb-2">
+                          <i class="pi pi-spin pi-spinner mr-1"></i>loading keys...
+                        </p>
+                        <p *ngIf="!isCarcheVarsLoading && apiErrors?.carcheVars" class="pt-1 pb-2 danger-color">
+                          <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.carcheVars?.message}}
+                          Please <a class="font-bold cursor-pointer" (click)="onLoadCarcheVars()">Retry!</a>
+                        </p>
+                        <small
+                          class="danger-color"
+                          *ngIf="(column.get('key').touched || column.get('key').dirty) && column.get('key').errors?.required">
+                          <i class="fas fa-exclamation-circle"></i> Key is a required field!
+                        </small>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2 pt-2">
+                      <p class="p-label ui-grid-col-3">Required <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9 inline-flex">
+                        <p-inputSwitch formControlName="required"></p-inputSwitch>
+                        <p class="p-label font-bold ml-2">{{column.get('required').value ? 'Yes' : 'No'}}</p>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2 pt-1">
+                      <p class="p-label ui-grid-col-3">Placeholder</p>
+                      <input class="ui-grid-col-9"
+                             type="text"
+                             placeholder="Enter placeholder for the input"
+                             pInputText
+                             formControlName="placeholder">
+                    </div>
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Default Value</p>
+                      <input class="ui-grid-col-9"
+                             type="text"
+                             placeholder="Enter optional default value"
+                             pInputText
+                             formControlName="value">
+                    </div>
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Validators</p>
+                      <div class="ui-grid-col-9">
+                        <p-dropdown [options]="validators"
+                                    [ngClass]="{'ui-grid-col-6 pr-1' : column.get('validator')?.value?.value === 'regex'}"
+                                    placeholder="Choose optional input validators"
+                                    formControlName="validator"
+                                    optionLabel="name"
+                                    appendTo="body"
+                                    [filter]="true"
+                                    [showClear]="true">
+                        </p-dropdown>
+                        <input *ngIf="column.get('validator')?.value?.value === 'regex'"
+                               class="ui-grid-col-6 pl-1"
+                               type="text"
+                               placeholder="Enter regular expression"
+                               pInputText
+                               formControlName="validatorRegExp">
+                      </div>
+                    </div>
+                  </div>
+                  <!--  TEXT BOX ENDS  -->
+                  <!--  DROPDOWN STARTS -->
+                  <div class="ui-grid-row p-3" *ngSwitchCase="'dropdown'">
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Label <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9">
+                        <input class="full-width"
+                               type="text"
+                               required
+                               pInputText
+                               placeholder="Enter the label (i.e., Interfaces)"
+                               formControlName="label">
+                        <small
+                          class="danger-color"
+                          *ngIf="(column.get('label').touched || column.get('label').dirty)
+                                  && column.get('label').errors?.required">
+                          <i class="fas fa-exclamation-circle"></i> Label is a required field!
+                        </small>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Key <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9">
+                        <ng-container *ngIf="!isCarcheVarsLoading && !apiErrors?.carcheVars">
+                          <input *ngIf="!shouldUseCarcheVars"
+                                 class="full-width"
+                                 type="text"
+                                 required
+                                 pInputText
+                                 placeholder="Enter the unique key"
+                                 formControlName="key">
+                          <p-dropdown *ngIf="shouldUseCarcheVars"
+                                      [options]="carcheVariables"
+                                      placeholder="Choose the unique key"
+                                      formControlName="key"
+                                      optionLabel="name"
+                                      appendTo="body"
+                                      [filter]="true"
+                                      [showClear]="true">
+                          </p-dropdown>
+                        </ng-container>
+                        <p *ngIf="isCarcheVarsLoading" class="pt-1 pb-2">
+                          <i class="pi pi-spin pi-spinner mr-1"></i>loading keys...
+                        </p>
+                        <p *ngIf="!isCarcheVarsLoading && apiErrors?.carcheVars" class="pt-1 pb-2 danger-color">
+                          <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.carcheVars?.message}}
+                          Please <a class="font-bold cursor-pointer" (click)="onLoadCarcheVars()">Retry!</a>
+                        </p>
+                        <small
+                          class="danger-color"
+                          *ngIf="(column.get('key').touched || column.get('key').dirty)
+                                  && column.get('key').errors?.required">
+                          <i class="fas fa-exclamation-circle"></i> Key is a required field!
+                        </small>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2 pt-2">
+                      <p class="p-label ui-grid-col-3">MultiSelect <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9 inline-flex">
+                        <p-inputSwitch formControlName="multiselect"></p-inputSwitch>
+                        <p class="p-label font-bold ml-2">{{column.get('multiselect').value ? 'Yes' : 'No'}}</p>
+                        <small class="ml-4 pt-1">
+                          <i class="fa fa-question-circle mr-1"></i>
+                          Ability to choose more than one option from the dropdown!
+                        </small>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2 pt-2">
+                      <p class="p-label ui-grid-col-3">Required <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9 inline-flex">
+                        <p-inputSwitch formControlName="required"></p-inputSwitch>
+                        <p class="p-label font-bold ml-2">{{column.get('required').value ? 'Yes' : 'No'}}</p>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2 pt-1">
+                      <p class="p-label ui-grid-col-3">Placeholder</p>
+                      <input class="ui-grid-col-9"
+                             type="text"
+                             placeholder="Enter placeholder for the input"
+                             pInputText
+                             formControlName="placeholder">
+                    </div>
+                    <div class="ui-grid-row mb-2">
+                      <p class="p-label ui-grid-col-3">Option Source <sup class="danger-color">*</sup></p>
+                      <div class="ui-grid-col-9">
+                        <div [ngClass]="{'ui-grid-col-6 pr-1' : ['API', 'Script'].includes(column.get('optionSourceType')?.value?.value)}">
+                          <p-dropdown [options]="optionSourceTypes"
+                                      (onChange)="onOptionSrcTypeChange($event.value, index)"
+                                      placeholder="Choose option source type"
+                                      formControlName="optionSourceType"
+                                      optionLabel="name"
+                                      appendTo="body"
+                                      [showClear]="true">
+                          </p-dropdown>
+                          <small
+                            class="danger-color"
+                            *ngIf="(column.get('optionSourceType').touched || column.get('optionSourceType').dirty)
+                                    && column.get('optionSourceType').errors?.required">
+                            <i class="fas fa-exclamation-circle"></i> Option Source Type is required!
+                          </small>
+                        </div>
+                        <div *ngIf="['API', 'Script'].includes(column.get('optionSourceType')?.value?.value)"
+                             class="ui-grid-col-6 pl-1">
+                          <p-dropdown *ngIf="!isScriptsLoading && !apiErrors?.scripts"
+                                      [options]="optionsSource"
+                                      placeholder="Choose option source"
+                                      formControlName="optionsSource"
+                                      optionLabel="label"
+                                      appendTo="body"
+                                      [showClear]="true">
+                          </p-dropdown>
+                          <p *ngIf="isScriptsLoading" class="ml-2 mt-2">
+                            <i class="pi pi-spin pi-spinner mr-1"></i>loading scripts...
+                          </p>
+                          <p *ngIf="!isScriptsLoading && apiErrors?.scripts" class="ml-2 mt-2 danger-color">
+                            <i class="fas fa-exclamation-triangle"></i> {{apiErrors?.scripts?.message}}
+                            Please <a class="font-bold cursor-pointer" (click)="onLoadScripts()">Retry!</a>
+                          </p>
+                          <small
+                            class="danger-color"
+                            *ngIf="(column.get('optionsSource').touched || column.get('optionsSource').dirty)
+                                    && column.get('optionsSource').errors?.required">
+                            <i class="fas fa-exclamation-circle"></i> Option Source is required!
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="ui-grid-row mb-2 pt-1" *ngIf="column.get('optionsSource')?.value === 'Manual'">
+                      <p class="p-label ui-grid-col-3">Options</p>
+                      <div class="ui-grid-col-9">
+                        <p-table [columns]="[{label: 'Key', value: 'key'}, {label: 'Value', value: 'value'}]"
+                                 [value]="optionsFormArrayControlsFor(index)"
+                                 [formArrayName]="'options'"
+                                 [reorderableColumns]="true">
+                          <ng-template pTemplate="header" let-columns>
+                            <tr>
+                              <th scope="colgroup" style="width: 2.5em"></th>
+                              <th scope="colgroup" *ngFor="let col of columns" pReorderableColumn>
+                                {{col.label}} <sup class="danger-color">*</sup>
+                              </th>
+                              <th scope="colgroup" style="width: 5em"></th>
+                            </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-columns="columns" let-rowIndex="rowIndex">
+                            <tr [pReorderableRow]="rowIndex">
+                              <td>
+                                <i class="fa fa-bars reorder-icon" pReorderableRowHandle=""></i>
+                              </td>
+                              <td *ngFor="let col of columns" [formGroupName]="rowIndex">
+                                <input type="text"
+                                       class="full-width"
+                                       [id]="col.value + '[' + rowIndex + ']'"
+                                       [formControlName]="col.value"
+                                       placeholder="Enter {{col.value}} for the option"
+                                       pInputText>
+                              </td>
+                              <td class="text-center">
+                                <i class="far fa-minus-square mr-1 action-icon" pTooltip="Delete this Option!" (click)="removeOption(rowIndex, index)"></i>
+                                <i class="far fa-plus-square action-icon" pTooltip="Add new Option!" (click)="addOption(index)"></i>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </div>
+                  </div>
+                  <!--  DROPDOWN ENDS   -->
+                </ng-container>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="ui-grid-row mb-2 pt-2">
+          <p class="p-label ui-grid-col-2">Conditional</p>
+          <div class="ui-grid-col-10 inline-flex">
+            <p-inputSwitch formControlName="hasConditions" (onChange)="onConditionToggle($event.checked)"></p-inputSwitch>
+            <p class="p-label font-bold ml-2">{{formGroup.get('hasConditions').value ? 'Yes' : 'No'}}</p>
+          </div>
+        </div>
+        <div *ngIf="formGroup.get('hasConditions')?.value">
+          <ng-template [ngTemplateOutlet]="conditionalRef"></ng-template>
+        </div>
+      </div>
+    </p-fieldset>
+    <!--  LIST - FORM CONTROL ATTRIBUTE ENDS -->
+
+  </form>
+</ng-container>
+
+<div class="pr-3 pb-3 pt-3 float-right" *ngIf="formGroup">
+  <button pButton
+          type="button"
+          icon="fa fa-undo"
+          label="Reset"
+          (click)="onReset()"
+          class="ui-button-secondary mr-2"></button>
+  <button pButton
+          type="button"
+          icon="fa fa-check"
+          [disabled]="!formGroup.valid"
+          (click)="onContinue()"
+          label="Continue">
+  </button>
+</div>

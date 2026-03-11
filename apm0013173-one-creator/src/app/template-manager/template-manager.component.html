@@ -1,0 +1,16 @@
+<div *ngIf="showSpinner" class="application_loading">
+  <p-progressSpinner animationDuration=".8s"></p-progressSpinner>
+</div>
+
+<div class="ui-g">
+  <div class="ui-g-3">
+    <div id="left_side_panel">
+      <app-list-templates [refresh]="refresh" (eventSpinner)="spinnerStatus($event)" (eventEmitter)="sendTemplate($event)" [copiedTemplate]="copiedTemplate" [deletedTemplate]="deletedTemplate" [contractid]="contractid"></app-list-templates>
+    </div>
+  </div>
+  <div class="ui-g-9">
+    <div id="right_side_panel">
+      <app-editor (copiedTemplateEmitter)="copyTemplateEvent($event)" (eventEmitter)="deleteTemplateEvent($event)" (eventSpinner)="spinnerStatus($event)" [template]="template"></app-editor>
+    </div>
+  </div>
+</div>

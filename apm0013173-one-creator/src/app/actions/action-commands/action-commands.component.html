@@ -1,0 +1,38 @@
+<section class="bg-white pb-3 pl-3 pr-3">
+  <form [formGroup]="commandsForm" class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+    <p-fieldset legend="Validation Commands">
+      <div class="text-center pb-5" *ngIf="!isCommandsLoaded">
+        <p-progressSpinner></p-progressSpinner>
+        <p>Loading Validation Commands</p>
+      </div>
+      <ng-container *ngIf="isCommandsLoaded">
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-12 mb-5 ml-3 mr-3">
+            <div class="ui-grid-row mb-2">
+              <div class="ui-grid-col-12">
+                <p class="p-label">Please use the below editor to type in the validation commands to be executed.
+                  For multiple commands please use new line (Enter/Return Key)!</p>
+              </div>
+            </div>
+            <div class="ui-grid-row mb-1">
+              <div class="ui-grid-col-12">
+                <textarea class="mt-1" pInputTextarea formControlName="validation" rows="10" id="validation_textarea"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--  BUTTONS -->
+        <div class="footer-button-panel">
+          <button pButton type="button" icon="pi pi-undo" label="Reset Original"  [disabled]="isSaving" (click)="onReset()" class="ui-button-secondary mr-2"></button>
+          <button pButton
+                  type="button"
+                  [icon]="isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-save'"
+                  [disabled]="isFormStateChanged || isSaving"
+                  (click)="onSave()"
+                  [label]="isSaving ? 'Saving Changes' : 'Save Changes'"
+          ></button>
+        </div>
+      </ng-container>
+    </p-fieldset>
+  </form>
+</section>

@@ -1,0 +1,42 @@
+.footer-button {
+  width: 100%;
+  display: block;
+  text-align: center;
+  padding: 1rem 0.25rem;
+  background: white;
+  border-top: 1px solid #eee;
+}
+
+.error-container {
+  background: white;
+  height: 16rem;
+  display: flex
+}
+.error-wrapper {
+  align-self: center;
+  text-align: center;
+  width: 100%;
+}
+.error-icon {
+  font-size: 4rem;
+  color: #CF2A2A;
+  margin-bottom: 1rem;
+}
+.error-p {
+  margin-bottom: 0.5rem!important;
+}
+
+.error-container-tree {
+  background: white;
+  height: 14.3rem;
+  display: flex
+}
+.error-icon-tree {
+  font-size: 3rem;
+  color: #CF2A2A;
+  margin-bottom: 1rem;
+}
+.error-p-tree {
+  font-size: 14px;
+  margin-bottom: 0.5rem!important;
+}

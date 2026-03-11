@@ -1,0 +1,10 @@
+.footer-button-panel {
+  display: flex;
+  width: 22rem;
+  padding: 0 1rem 1rem 1rem
+}
+
+#validation_textarea {
+  font-family: monospace!important;
+  padding: 1rem;
+}

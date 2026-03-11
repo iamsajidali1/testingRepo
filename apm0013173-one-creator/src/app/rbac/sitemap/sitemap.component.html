@@ -1,0 +1,22 @@
+<div class="p-grid">
+  <div class="p-col-12">
+    <p-tree [value]="nodes" [filter]="true" [loading]="isNodesLoading" filterPlaceholder="Search for Component">
+      <ng-template let-node pTemplate="url">
+        <a [routerLink]="['./']"
+           [queryParams]="{componentKey: node.key}"
+           [ngClass]="node.key === componentKey ? 'selected-component' : ''"
+        >{{node.name}}</a>
+      </ng-template>
+      <ng-template let-node pTemplate="folder">
+        <b>{{node.name}}</b>
+      </ng-template>
+    </p-tree>
+  </div>
+  <section [hidden]="!nodes.length">
+    <div class="p-col-12 pl-3 pr-3"><hr></div>
+    <div class="p-col-12 pl-3 pr-3 pb-3">
+      <button pButton type="button" label="Expand all" icon="pi pi-plus-circle" (click)="expandAll()" class="mr-1"></button>
+      <button pButton type="button" label="Collapse all" icon="pi pi-minus-circle" (click)="collapseAll()"></button>
+    </div>
+  </section>
+</div>

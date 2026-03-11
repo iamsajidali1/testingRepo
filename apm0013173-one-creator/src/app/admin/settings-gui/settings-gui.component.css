@@ -1,0 +1,59 @@
+.fieldset_admin_list {
+    max-height: 210px;
+    scroll-behavior: auto;
+    overflow: scroll;
+}
+
+body .ui-fieldset .ui-fieldset-legend a {
+    border: 0px solid transparent;
+    background-color: transparent;
+}
+
+body .ui-fieldset.ui-fieldset-toggleable .ui-fieldset-legend a:hover {
+    border: 0px solid transparent;
+    background-color: transparent;
+}
+
+body .ui-buttonset.ui-button-info a{
+    border: 0px solid transparent;
+    background-color: transparent;
+}
+
+body .ui-button.ui-state-default.ui-button-info:enabled:hover, body .ui-buttonset.ui-button-info > .ui-button.ui-state-default:enabled:hover {
+    box-shadow: 0 0 0 0 transparent;
+}
+
+body .ui-button.ui-state-default.ui-button-info a:hover{
+    color: #0568ae;
+}
+
+body .ui-fieldset .ui-fieldset-legend a:focus {
+    box-shadow: none;
+}
+
+body .ui-fieldset .ui-fieldset-legend a:hover {
+    text-decoration: none;
+}
+
+body .ui-fieldset .ui-fieldset-legend a .ui-fieldset-toggler {
+    font-size: 20px;
+}
+
+.settings_modal {
+    min-width: 700px !important;
+    height: 500px !important;
+}
+
+#dropdown_att_right {
+    float: right;
+    width: 50%;
+}
+
+#dropdown_att_left {
+    float: left;
+    width: 50%;
+}
+
+#att_message {
+    text-align: right;
+}

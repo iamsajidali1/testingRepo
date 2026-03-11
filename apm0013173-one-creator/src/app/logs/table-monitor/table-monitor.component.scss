@@ -1,0 +1,11 @@
+.row-width {
+  width: 11rem;
+}
+
+:host ::ng-deep .ui-paginator .ui-paginator-current {
+  color: #333333;
+  height: 2.286em;
+  min-width: 2.286em;
+  position: absolute;
+  left: 0;
+}

@@ -1,0 +1,56 @@
+<section class="bg-white pb-3 pl-3 pr-3">
+    <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+        <p-fieldset legend="Form Rules">
+            <div class="ui-grid-row">
+                <div class="ui-grid-col mb-5 ml-3 mr-3">
+                    <div class="ui-grid-row mt-2">
+                        <div class="ui-grid-col">
+                            <button pButton type="button" icon="pi pi-plus" label="Add Form Rule" (click)="addRule()"
+                                class="ui-button-secondary mr-2" [disabled]="loading"></button>
+                        </div>
+                    </div>
+                    <div class="ui-grid-row mt-2">
+                        <p-table [value]="rules" [rowHover]="true" [rows]="10" [responsive]="true" [loading]="loading"
+                            [scrollable]="true" *ngIf="loading || rules.length">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Sequence</th>
+                                    <th>When Conditions</th>
+                                    <th>Then Conditions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-rule>
+                                <tr>
+                                    <td>
+                                        <button pButton type="button" icon="pi pi-arrow-down"
+                                            (click)="incrementSequence(rule.rule.ID, true)"
+                                            class="ui-button-secondary mr-2" style="font-size: .5rem"
+                                            *ngIf="rule.rule.SEQUENCE !== maxSequence" [disabled]="loading"></button>
+                                        <button pButton type="button" icon="pi pi-arrow-up"
+                                            (click)="incrementSequence(rule.rule.ID, false)"
+                                            class="ui-button-secondary mr-2" style="font-size: .5rem"
+                                            *ngIf="rule.rule.SEQUENCE !== minSequence" [disabled]="loading"></button>
+                                        <span class="float-right">
+                                            {{rule.rule.SEQUENCE}}
+                                        </span>
+                                    </td>
+                                    <td>{{rule.parsedWhen}}</td>
+                                    <td>{{rule.parsedThen}}</td>
+                                    <td>
+                                        <button pButton type="button" icon="pi pi-pencil" pTooltip="Edit rule"
+                                            (click)="editRule(rule.rule)" class="ui-button-secondary mr-2"
+                                            style="font-size: .75rem;" [disabled]="loading"></button>
+                                        <button pButton type="button" icon="pi pi-trash" pTooltip="Delete rule"
+                                            (click)="deleteRule(rule.rule.ID)" class="ui-button-secondary mr-2"
+                                            style="font-size: .75rem;" [disabled]="loading"></button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </div>
+            </div>
+        </p-fieldset>
+    </div>
+</section>

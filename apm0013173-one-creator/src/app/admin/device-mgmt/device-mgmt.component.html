@@ -1,0 +1,95 @@
+<div *ngIf="selectedCustomer">
+  <div class="ui-g">
+    <h6 class="ui-g-6">Customer Device Details</h6>
+    <div class="ui-g-6 text-right">
+      <p-checkbox (onChange)="showDevicesWithIssues = $event.checked"
+                  [(ngModel)]="showDevicesWithIssues" [binary]="true"
+                  label="Only Show Devices with Issues ( {{ devicesWithIssues.length}} )">
+      </p-checkbox>
+    </div>
+  </div>
+
+  <div *ngIf="showDevicesWithIssues" class="m-2">
+
+    <ng-container *ngIf="loading">
+      <p class="loader-text">
+        <i class="pi pi-spin pi-spinner mr-2"></i> loading device details for the customer ...
+      </p>
+     </ng-container>
+
+    <ng-container *ngIf="devicesWithIssues.length && !loading">
+      <p>The following is the list of devices with one or more issues which might impact change execution on SSNM Platform.
+        Please identify the issues and fix it on the respective host inventory tool for a smooth experience.</p>
+      <p-table [value]="devicesWithIssues"
+               [rowHover]="true"
+               [loading]="loading"
+               [rows]="10"
+               [showCurrentPageReport]="true"
+               [rowsPerPageOptions]="[10,25,50,100]"
+               [paginator]="true"
+               showLoader="true"
+               [responsive]="true"
+               [scrollable]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Hostname</th>
+            <th>Issues</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-device>
+          <tr>
+            <td>{{device.HOSTNAME}}</td>
+            <td>
+              <ul class="mb-1">
+                <li *ngFor="let issue of device.issues"
+                    [ngClass]="{'warning-issue': issue.severity === 'warning','danger-issue': issue.severity === 'danger'}">
+                  {{issue.message}}
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </ng-container>
+
+    <ng-container *ngIf="!devicesWithIssues.length && !loading">
+      <p>All the devices of "{{selectedCustomer.name}}" has all the required details. To see all devices please uncheck <em>"Only Show Devices with Issues"</em></p>
+    </ng-container>
+
+  </div>
+
+  <div *ngIf="!showDevicesWithIssues" class="m-2">
+    <p-table [value]="devices"
+             [rowHover]="true"
+             [rows]="10"
+             [showCurrentPageReport]="true"
+             [rowsPerPageOptions]="[10,25,50,100]"
+             [paginator]="true"
+             [loading]="loading"
+             dataKey="id"
+             showLoader="true"
+             [responsive]="true"
+             [scrollable]="true"
+             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Hostname</th>
+          <th>Service</th>
+          <th>Part Number</th>
+          <th>Vendor</th>
+          <th>Address</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-device>
+        <tr>
+          <td>{{device.HOSTNAME}}</td>
+          <td>{{device.SERVICE}}</td>
+          <td>{{device.PARTNUM}}</td>
+          <td>{{device.VENDOR}}</td>
+          <td>{{device.ADDRESS}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>

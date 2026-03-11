@@ -1,0 +1,65 @@
+.design-toggle-container {
+  display: block;
+  position: relative;
+  top: 0;
+  right: 0;
+}
+.design-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 3rem;
+  width: 15rem;
+}
+
+.preview-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1.75rem;
+  z-index: 99999;
+  cursor: pointer;
+}
+
+.ace-editor {
+  height: calc(100vh - 30rem);
+  overflow: auto;
+  border: 1px solid #d2d2d2;
+}
+
+.preview-panel {
+  border: 1px solid #d2d2d2;
+  border-left: none!important;
+  height: calc(100vh - 30rem);
+  overflow: auto;
+}
+
+.footer-button-panel {
+  display: flex;
+  width: 22rem;
+  padding: 0 1rem 1rem 1rem
+}
+.other-footer-button-panel {
+  display: flex;
+  width: 11rem;
+  padding: 0 1rem 1rem 0;
+  position: absolute;
+  right: 54px
+}
+
+.draggable-panel li {
+  list-style-type: none;
+  padding: 10px;
+  margin-bottom: 5px;
+  border: 1px solid #c8c8c8;
+  background-color: #ffffff;
+}
+
+[pDraggable] {
+  cursor: move;
+}
+
+.droppable-panel {
+  border: 1px solid #d2d2d2;
+  background: #e6e6e6;
+  height: calc(100vh - 30rem);
+  overflow: auto;
+}

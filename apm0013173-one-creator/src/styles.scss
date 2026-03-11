@@ -1,0 +1,825 @@
+/* You can add global styles to this file, and also import other style files */
+
+@font-face { font-family: "ATT Aleck Sans"; src: url("./assets/fonts/ATTAleckSans_W_Rg.ttf"); }
+
+.ngx-dnd-container {
+  border: none !important;
+}
+
+#container_right {
+  min-height: 550px !important;
+}
+
+#button_delete_red:hover {
+  color: rgb(207,42,42) !important;
+}
+
+#button_delete_red {
+  color: white !important;
+}
+
+#button_edit_blue {
+  color: white !important;
+}
+
+#button_edit_blue:hover {
+  color: white!important;
+}
+
+.navbar-template-changes {
+  width: 200px;
+  height: 37px;
+}
+
+.navbar-edit-delete {
+  display: none !important;
+}
+
+.navbar-template-changes:hover .navbar-edit-delete{
+  display: inline-block !important;
+}
+
+.navbar-edit-delete{
+  float: right !important;
+}
+
+.navbar-template-changes{
+  position: relative;
+  float: right;
+}
+
+.label_ngx_item {
+  font-size: 20px !important;
+  color: #0568ae!important;
+  font-weight: bolder;
+}
+
+.mat-form-field {
+  padding-left: 5px;
+}
+
+.btn_ng_item{
+  display: none !important;
+}
+
+.navbar-edit-delete {
+  min-width: 300px;
+  min-height: 30px;
+}
+
+.ngx-dnd-container:nth-child(2n+1) {
+  background-color: rgb(242, 242, 242) !important;
+}
+
+.p_ngx_container_dnd{
+  font-size: 15px;
+  position: relative;
+  float: right;
+  font-weight: bolder;
+}
+
+.list_label {
+  width: 100%;
+  background: rgb(242,242,242);
+  padding-left: 10px;
+  font-weight: bolder;
+  font-size: 15px;
+}
+/*
+.modal.fade.show.d-block {
+    z-index: 2;
+}*/
+
+.modal-backdrop.fade.show {
+  z-index: 1;
+}
+
+.full-width {
+  width: 100%;
+}
+
+#key_error {
+  color: rgb(207,42,42) !important;
+}
+
+.mat-error {
+  color: rgb(207,42,42) !important;
+}
+
+.mat-form-field-invalid .mat-input-element, .mat-warn .mat-input-element {
+  color: rgb(207,42,42) !important;
+}
+
+a {
+  color: #0568ae!important;
+}
+
+.btn.btn-default-warning.mat-button:hover {
+  background: rgb(234,116,0);
+  color: rgb(255,255,255) !important;
+}
+
+.button.expanded.btn.btn-primary.mat-button:hover {
+  background: rgb(5,104,174);
+  color: rgb(255,255,255) !important;
+}
+
+.close:hover{
+  color: rgb(207,42,42) !important;
+}
+
+.mat-list-item-content {
+  color: #0568ae!important;
+}
+
+.mat-list {
+  margin-bottom: 10px;
+}
+
+#list_add_a{
+  padding: 5px;
+}
+
+.list_element_item.mat-list-item {
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+.list_items_div.ng-star-inserted {
+  background-color: rgb(242, 242, 242) !important;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  margin-top: 10px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: bold !important;
+}
+
+.close {
+  margin-right: 5px;
+}
+
+.navbar {
+  background: rgb(0,0,0) !important;
+}
+
+footer.page-footer {
+  background: #5A5A5A !important;
+}
+
+#navbar_logo {
+  height: 40px;
+}
+
+#footer_logo {
+  height: 40px;
+}
+
+.footer-copyright.text-center.py-3 {
+  color: #d2d2d2;
+}
+
+.page-footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.container{
+  margin-top: 20px;
+  margin-bottom: 60px;
+}
+
+.container {
+  max-width: 100% !important;
+}
+
+.form-row {
+  float: right;
+}
+
+.modal-open .modal {
+  overflow-x: auto !important;
+  overflow-y: auto;
+}
+
+#listClose{
+  height: 40px;
+  width: 40px;
+  z-index: 1000;
+}
+
+.breadcrumb {
+  background-color: #f2f2f2 !important;
+}
+
+#le_navbar {
+  background-color: black !important;
+}
+
+.nav-link{
+  color: white !important;
+}
+
+.right_side_content {
+  width: 75% !important;
+  position: fixed;
+  margin-left: 25%;
+}
+
+.left_side_navbar {
+  background-color: #f2f2f2 !important;
+  width: 25% !important;
+  position: fixed;
+}
+
+.ngx-toolbar {
+  display: none !important;
+}
+
+.ngx-editor-textarea {
+  height: 560px !important;
+}
+
+.ngx-editor-grippie {
+  display: none !important;
+}
+
+.ngx-editor-textarea {
+  background: #FDF6E3 !important;
+}
+
+.mt-2, .my-2 {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.ta-results.list-group {
+  z-index: 1000;
+}
+
+.avatar.rounded-circle.z-depth-1-half {
+  width: 36px !important;
+  margin-right: 0.5rem !important;
+  margin-left: 0.25rem;
+}
+
+#navbarSupportedContentCustomer {
+  margin-left: 50px;
+}
+
+.navbar {
+  background: white !important;
+}
+
+.ng-tns-c1-1.ui-dropdown.ui-widget.ui-state-default.ui-corner-all.ui-helper-clearfix {
+  width: 100% !important;
+}
+
+#float-input {
+  width: 100% !important;
+}
+
+.ui-message.ui-widget.ui-corner-all.ui-message-error.ng-star-inserted {
+  width: 100% !important;
+}
+
+.form-row {
+  margin: 10px;
+}
+
+.ui-dropdown {
+  width: 100% !important;
+}
+
+#addOptionButton {
+  float: right;
+}
+
+#addListButton {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+.navbar-edit-delete-button {
+  float: right !important;
+  margin-left: 10px !important;
+  margin-top: 4px !important;
+}
+
+.ui-listbox.ui-inputtext.ui-widget.ui-widget-content.ui-corner-all {
+  width: 100% !important;
+}
+
+#cArcheleftsidebar {
+  color: white !important;
+}
+
+#ngxEditor {
+  z-index: 1 !important;
+}
+
+.ngx-editor[_ngcontent-c7] .ngx-wrapper[_ngcontent-c7] .ngx-editor-textarea[_ngcontent-c7] {
+  overflow: hidden !important;
+}
+
+body .ui-tabview.ui-tabview-top .ui-tabview-nav li.ui-state-active, body .ui-tabview.ui-tabview-bottom .ui-tabview-nav li.ui-state-active, body .ui-tabview.ui-tabview-left .ui-tabview-nav li.ui-state-active, body .ui-tabview.ui-tabview-right .ui-tabview-nav li.ui-state-active {
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: 3px solid #0568ae !important;
+}
+
+body .ui-tabview.ui-tabview-top .ui-tabview-nav li, body .ui-tabview.ui-tabview-bottom .ui-tabview-nav li, body .ui-tabview.ui-tabview-left .ui-tabview-nav li, body .ui-tabview.ui-tabview-right .ui-tabview-nav li {
+  border: none !important;
+  background-color: white !important;
+  transition: background-color 0.2s;
+  border-radius: 0px !important;
+}
+
+body .ui-tabview .ui-tabview-panels {
+  border: none !important;
+  border-top: 1px solid #c8c8c8 !important;
+  background-color: white !important;
+}
+
+body .ui-listbox .ui-listbox-list .ui-listbox-item.ui-state-highlight {
+  color: #0568ae !important;
+  background-color: transparent !important;
+  font-weight: bold !important;
+}
+
+.ui-listbox.ui-inputtext.ui-widget.ui-widget-content.ui-corner-all {
+  border-radius: 0px !important;
+}
+
+body .ui-button.ui-state-default.ui-button-info, body .ui-buttonset.ui-button-info > .ui-button.ui-state-default {
+  background-color: #0568ae !important;
+  border: 1px solid #0568ae !important;
+}
+
+.footer-copyright.text-center {
+  color: #d2d2d2 !important;
+  padding: 0.5rem;
+}
+
+.buttonTabDiv {
+  float: right;
+}
+
+.ql-snow .ql-editor pre.ql-syntax {
+  background-color: transparent !important;
+  color: black !important;
+  overflow: visible;
+  margin: 0px !important;
+  padding: 0px !important;
+}
+
+.ui-editor-toolbar.ui-widget-header.ui-corner-top.ql-toolbar.ql-snow.ng-star-inserted {
+  display: none !important;
+}
+
+#header_logo {
+  width: 6.25rem;
+  height: 2.25rem;
+  background-image: url('./assets/images/one.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  margin-top: 0.75rem !important;
+}
+
+.customer_dropdown_nav .ng-tns-c1-0.ui-dropdown-label.ui-inputtext.ui-corner-all.ng-star-inserted {
+  //background: black !important;
+  //color: white !important;
+  max-width: 250px !important;
+  white-space: nowrap;
+}
+
+
+.customer_dropdown_nav .ui-dropdown .ui-dropdown-trigger {
+  // background: black !important;
+  //color: white !important;
+  max-width: 250px;
+  white-space: nowrap;
+}
+
+.customer_dropdown_nav  .ui-dropdown {
+  border: 0px;
+}
+
+.customer_dropdown_nav  .ui-dropdown-label{
+  font-size: 17px !important;
+  font-weight: bold !important;
+}
+.customer_dropdown_nav  .ui-dropdown .ui-dropdown-label{
+  max-width: 250px;
+  white-space: nowrap;
+}
+body .ui-corner-all {
+  border-radius: 0px !important;
+}
+
+body {
+  font-family: ATT Aleck Sans !important;
+}
+
+.navbar-dark .navbar-nav .active > .nav-link, .navbar-dark .navbar-nav .nav-link.active, .navbar-dark .navbar-nav .nav-link.show, .navbar-dark .navbar-nav .show > .nav-link {
+  color: white !important;
+}
+
+.nav-link{
+  color: rgb(129,129,129) !important;
+}
+
+body {
+  background: #e6e6e6!important;
+}
+
+a {
+  color: #0568ae !important;
+}
+
+#left_side_panel {
+  background: white !important;
+  box-shadow: 5px 5px 20px lightgray;
+  padding: 10px;
+}
+
+#right_side_panel {
+  background: white !important;
+  box-shadow: 5px 5px 20px lightgray;
+  padding: 10px;
+}
+
+body .ui-tabview.ui-tabview-top .ui-tabview-nav li a, body .ui-tabview.ui-tabview-bottom .ui-tabview-nav li a, body .ui-tabview.ui-tabview-left .ui-tabview-nav li a, body .ui-tabview.ui-tabview-right .ui-tabview-nav li a {
+  color: #191919 !important;
+}
+
+body .ui-tabview.ui-tabview-top .ui-tabview-nav li.ui-tabview-selected a, body .ui-tabview.ui-tabview-bottom .ui-tabview-nav li.ui-tabview-selected a, body .ui-tabview.ui-tabview-left .ui-tabview-nav li.ui-tabview-selected a, body .ui-tabview.ui-tabview-right .ui-tabview-nav li.ui-tabview-selected a {
+  cursor: pointer;
+  color: #0568ae !important;
+}
+
+#textarea_carche {
+  width: 100% !important;
+  height: 690px;
+}
+
+#right_button_header_carche{
+  display: flex;
+  justify-content: flex-end;
+  float: right;
+}
+
+#left_button_header_carche {
+  display: flex;
+  justify-content: flex-start;
+  float: left;
+}
+
+body .ui-listbox {
+  border: 0px solid transparent !important;
+}
+
+body .ui-button {
+  /*background-color: #0568ae !important;
+  border: 0px solid transparent !important;*/
+  border-radius: 5px !important;
+}
+
+#addOptionButton {
+  background-color: #0568ae !important;
+  border: 0px solid transparent !important;
+  border-radius: 5px !important;
+}
+
+#button_edit_blue{
+  background-color: #0568ae !important;
+  border: 0px solid transparent !important;
+}
+
+#button_delete_red{
+  background-color: #0568ae !important;
+  border: 0px solid transparent !important;
+}
+
+#tab_header_carche {
+  border-bottom: 1px solid #c8c8c8;
+  height: 43px;
+  margin-bottom: 23px;
+}
+
+.ui-tabview.ui-widget.ui-widget-content.ui-corner-all.ui-tabview-top {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
+body .ui-button.ui-state-default.ui-button-info:enabled:hover, body .ui-buttonset.ui-button-info > .ui-button.ui-state-default:enabled:hover {
+  box-shadow: 0 0 0 0.2em #8dcdff;
+}
+
+#btn_remove:enabled:hover {
+  box-shadow: none !important;
+  color: #0568ae !important;
+}
+
+html {
+  font-family: ATT Aleck Sans !important;
+}
+
+:root {
+  --font-family-sans-serif: ATT Aleck Sans;
+  --font-family-monospace: ATT Aleck Sans;
+}
+
+body .ui-widget {
+  font-family: ATT Aleck Sans !important;
+}
+
+#navbarSupportedContent {
+  float: left;
+}
+
+#right_navbar {
+  float: right;
+}
+
+#container_nav {
+  width: 100% !important;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+#nav_container_center {
+  margin-left: 10px;
+}
+
+body .ui-listbox .ui-listbox-footer {
+  border-top: 1px solid #c8c8c8 !important;
+}
+
+.customer_dropdown_nav {
+  width: 250px !important;
+}
+
+.draggable_card.ng-star-inserted {
+  background-color: #ffffff;
+  color: #333333;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 2px 1px -1px rgba(0, 0, 0, 0.12);
+  padding: 10px;
+}
+
+.draggable_card.ng-star-inserted.gu-mirror{
+  display: none !important;
+}
+
+#float-input {
+  width: 100% !important;
+  outline: 0 none !important;
+  box-shadow: none !important;
+}
+
+body .ui-message.ui-message-error {
+  background-color: transparent !important;
+  color: #cf2a2a !important;
+  padding: 0 !important;
+}
+
+body .ui-inputtext.ng-dirty.ng-invalid, body p-dropdown.ng-dirty.ng-invalid > .ui-dropdown, body p-autocomplete.ng-dirty.ng-invalid > .ui-autocomplete > .ui-inputtext, body p-calendar.ng-dirty.ng-invalid > .ui-calendar > .ui-inputtext, body p-chips.ng-dirty.ng-invalid > .ui-inputtext, body p-inputmask.ng-dirty.ng-invalid > .ui-inputtext, body p-checkbox.ng-dirty.ng-invalid .ui-chkbox-box, body p-radiobutton.ng-dirty.ng-invalid .ui-radiobutton-box, body p-inputswitch.ng-dirty.ng-invalid .ui-inputswitch, body p-listbox.ng-dirty.ng-invalid .ui-inputtext, body p-multiselect.ng-dirty.ng-invalid > .ui-multiselect, body p-spinner.ng-dirty.ng-invalid > .ui-inputtext, body p-selectbutton.ng-dirty.ng-invalid .ui-button, body p-togglebutton.ng-dirty.ng-invalid .ui-button {
+  border: 1px solid #cf2a2a !important;
+}
+
+body .ui-listbox .ui-listbox-footer {
+  border-top: none !important;
+}
+
+.ui-message-icon.pi.pi-exclamation-triangle {
+  color: #cf2a2a !important;
+}
+
+body .ui-message.ui-message-warn{
+  color: #cf2a2a !important;
+  background-color: transparent !important;
+}
+
+.ui-button-info.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-icon-left {
+  color: white !important;
+}
+
+.customer_dropdown_nav .ui-dropdown-trigger-icon.ui-clickable.pi.pi-caret-down {
+  display: none !important;
+}
+
+#user_name {
+  margin-top: 0.75rem !important;
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight, body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
+  background-color: #0568ae !important;
+}
+
+.ui-dropdown-filter-icon.pi.pi-search {
+  color: #0568ae !important;
+}
+
+#container_right {
+  border: 1px solid #c8c8c8 !important;
+}
+
+#modal_carche_edit {
+  // should not cotain any margin
+  //margin-top: 3px;
+  //margin-bottom: 3px;
+}
+
+body .ui-toast .ui-toast-message .ui-toast-close-icon {
+  color: white !important;
+  font-size: 14px;
+}
+
+.ui-toast-summary {
+  font-size: 16px;
+}
+
+.ui-toast-detail {
+  font-size: 14px;
+}
+
+body .ui-toast{
+  color: white !important;
+  width: 306px !important;
+}
+
+.ui-toast-message.ui-toast-message-info{
+  background: #0568AE !important;
+  color: white !important;
+}
+
+.ui-toast-message.ui-toast-message-error{
+  background: #CF2A2A !important;
+  color: white !important;
+}
+
+.ui-toast-message-success {
+  background: #188650 !important;
+  color: white !important;
+}
+
+.ui-toast-icon {
+  font-size: 20px !important;
+  left: 20px !important;
+  top: 20px !important;
+}
+
+.ui-toast .ui-toast-message-text-content {
+  padding: 0 0 0 0 !important;
+  margin-left: 64px !important;
+}
+
+.ui-toast .ui-toast-summary {
+  padding: 0 0 0 0 !important;
+}
+
+body .ui-paginator .ui-dropdown {
+  height: auto !important;
+  max-width: 4em !important;
+}
+
+tr .ng-star-inserted {
+  word-break: break-all;
+}
+
+body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+  background-color: #0568AE !important;
+  color: #ffffff !important;
+}
+
+body .ui-paginator .ui-paginator-first, body .ui-paginator .ui-paginator-prev, body .ui-paginator .ui-paginator-next, body .ui-paginator .ui-paginator-last {
+  opacity: 1 !important;
+}
+
+#marker_required {
+  color: #cf2a2a !important;
+}
+.marker_required {
+  color: #cf2a2a !important;
+}
+.color-danger {
+  color: #e91224!important;
+}
+.color-success {
+  color: #34a835!important;
+}
+
+#navbar_avatar {
+  width: 45px;
+  margin-right: 10px;
+}
+
+.application_loading {
+  z-index: 100000;
+  background-color: rgba(25, 25, 25, 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.application_loading > * {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.ui-progress-spinner-circle{
+  stroke: #0568ae !important;
+}
+
+body .ui-tree .ui-tree-container .ui-treenode .ui-treenode-content:focus {
+  outline: 0 none;
+  outline-offset: 0;
+  box-shadow: 0 0 0 0 transparent !important;
+}
+
+body .ui-tree {
+  margin: auto;
+  border: 0px !important;
+  width: 100% !important;
+}
+
+.ng-tns-c138-1{
+  z-index: 99999 !important;
+}
+
+.myAutoComplete {
+  width: 100% !important;
+}
+.myAutoCompleteInput {
+  width: 100% !important;
+}
+
+.disabledAction{
+  color:#BDC2C7;
+  font-weight: bold;
+}
+
+.p-auto-chip .ui-corner-all {
+  border-radius: 0 !important;
+}
+
+.p-auto-chip .ui-button {
+  font-size: 15px;
+  color: #a6a6a6;
+  background-color: #fff;
+  border: 1px solid #a6a6a6;
+}
+
+.p-auto-chip .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container .ui-autocomplete-token {
+  margin: 0.2em!important;
+}
+
+.ui-fluid p-autocomplete, .ui-fluid .ui-autocomplete, .ui-fluid .ui-autocomplete-input {
+  display: flex!important;
+}
+
+.design-toggle .ui-selectbutton .ui-button {
+  border-radius: 0!important;
+}
+.design-toggle .ui-selectbutton .ui-button:first-child {
+  border-top-left-radius: 5px!important;
+  border-bottom-left-radius: 5px!important;
+}
+.design-toggle .ui-selectbutton .ui-button:last-child {
+  border-top-right-radius: 5px!important;
+  border-bottom-right-radius: 5px!important;
+}
+
+.action-menu a:hover{
+  text-decoration: none!important;
+}
+
+.preview-panel .ui-fieldset .ui-fieldset-legend a .ui-fieldset-toggler {
+  font-size: 1rem!important;
+}
+.preview-panel .ui-fieldset .ui-fieldset-legend a {
+  font-size: 1rem!important;
+  color: black!important;
+}
+.preview-panel .ui-fieldset .ui-fieldset-legend a:hover{
+  text-decoration: none!important;
+}
+.ui-slider .ui-slider-handle {
+  border-radius: 2rem!important;
+}
+
+.ui-inputnumber-buttons-stacked .ui-inputnumber-button-group .ui-inputnumber-button {
+  border-radius: 0 !important;
+}

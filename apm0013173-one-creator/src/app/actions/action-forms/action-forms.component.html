@@ -1,0 +1,160 @@
+<section class="bg-white pb-3 pl-3 pr-3">
+  <div class="ui-grid ui-grid-responsive ui-grid-pad ui-fluid">
+    <div class="design-toggle-container">
+      <p-selectButton class="design-toggle"
+                      [options]="designTypes"
+                      [(ngModel)]="selectedDesignType"
+                      (onChange)="onValidateContent()"></p-selectButton>
+    </div>
+    <p-fieldset legend="Action Form Designer">
+      <div class="text-center pb-5" *ngIf="!isFormLoaded">
+        <p-progressSpinner>
+        </p-progressSpinner>
+        <p>Loading Action Form Designer</p>
+      </div>
+      <ng-container *ngIf="isFormLoaded">
+        <section *ngIf="selectedDesignType === 'Advanced'">
+          <div class="ui-grid-row">
+            <div class="ui-grid-col-12 mb-5 ml-3 mr-3">
+              <div class="ui-grid-row mb-2">
+                <div class="ui-grid-col-12">
+                  <p class="p-label">Please make sure to use valid JSON model for the Forms.
+                    A detailed documentation regarding how to design model driven forms using JSON can be found
+                    <a target="_blank" href="{{docsUrl}}">Here</a>.
+                  </p>
+                </div>
+              </div>
+              <div class="ui-grid-row mb-1">
+                <div [ngClass]="shouldPreview ? 'ui-grid-col-6': 'ui-grid-col-7'">
+                  <div class="relative">
+                    <i class="preview-icon"
+                       pTooltip="Preview"
+                       [ngClass]="shouldPreview ? 'pi pi-eye' : 'pi pi-eye-slash'"
+                       (click)="shouldPreview = !shouldPreview">
+                    </i>
+                  </div>
+                  <div ace-editor
+                       class="mt-1 ace-editor"
+                       [(text)]="updatedFormSkeleton"
+                       [mode]="'json'"
+                       [theme]="'xcode'"
+                       [options]="editorOptions"
+                       [readOnly]="isContentReadOnly"
+                       [autoUpdateContent]="true"
+                       [durationBeforeCallback]="500"
+                       (textChanged)="onContentChanged($event)">
+                  </div>
+                </div>
+                <div *ngIf="shouldPreview" class="ui-grid-col-6 mt-1 preview-panel">
+                  <app-forms-previewer [questions]="questions" *ngIf="isFormSkeletonValid"></app-forms-previewer>
+                </div>
+                <div *ngIf="!shouldPreview" class="ui-grid-col-5 mt-1 p-4 preview-panel">
+                  <p-fieldset *ngFor="let validationError of validationErrors; let index = index"
+                              legend="{{'[' + index + ']' + ' ' + questions[index]?.key}}"
+                              class="block mb-2"
+                              [toggleable]="true">
+                    <div *ngIf="!validationError" class="pl-2 pr-2 pt-1 pb-3">
+                      <p class="color-success"><i class="fas fa-check mr-1"></i>all tests passed, valid control</p>
+                    </div>
+                    <div *ngIf="validationError" class="pl-2 pr-2 pt-1 pb-3">
+                      <p *ngFor="let err of validationError" class="color-danger">
+                        <ng-container [ngSwitch]="err.keyword">
+                          <span *ngSwitchCase="'required'">
+                            <i class="fas fa-times mr-1"></i>{{err.message}}{{
+                            err.dataPath.split('.').pop() ? ' for ' + err.dataPath.split('.').pop() : ''
+                            }}
+                          </span>
+                          <span *ngSwitchCase="'type'">
+                            <i class="fas fa-times mr-1"></i>{{err.message}} value for property '{{err.dataPath.split('.').pop()}}'
+                          </span>
+                          <span *ngSwitchCase="'enum'">
+                            <i class="fas fa-times mr-1"></i>{{err.message}} for property '{{err.dataPath.split('.').pop()}}'
+                          </span>
+                          <span *ngSwitchCase="'additionalProperties'">
+                            <i class="fas fa-times mr-1"></i>{{err.message}} for '{{err.dataPath.split('.').pop()}}'
+                          </span>
+                          <span *ngSwitchDefault>
+                            <i class="fas fa-times mr-1"></i>{{err.message}}
+                          </span>
+                        </ng-container>
+                      </p>
+                    </div>
+                  </p-fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section *ngIf="selectedDesignType === 'Basic'">
+          <div class="ui-grid-row">
+            <div class="ui-grid-col-12 mb-5 ml-3 mr-3">
+              <div class="ui-grid-row mb-2">
+                <div class="ui-grid-col-12">
+                  <p class="p-label">Please make use of the Drag 'n Drop feature to create form elements as per the requirements.
+                    Once the element is created, use right mouse click to get context menu.</p>
+                </div>
+              </div>
+              <div class="ui-grid-row mb-1">
+                <div class="ui-grid-col-4 pr-5 mt-1 draggable-panel">
+                  <ul class="p-0">
+                    <li *ngFor="let control of availableControls"
+                        class="ui-helper-clearfix font-bold"
+                        pDraggable="controls"
+                        (onDragStart)="onDragStart(control)"
+                        (onDragEnd)="onDragEnd()"
+                        [pDraggableDisabled]="control.disabled">
+                      <i class="{{control.icon}} mr-2"></i>{{control.label}}
+                    </li>
+                  </ul>
+                </div>
+                <div class="ui-grid-col-8 mt-1 droppable-panel"
+                     pDroppable="controls"
+                     (onDrop)="onDrop()">
+                  <app-forms-previewer [questions]="questions"
+                                       (contentModified)="onContentModified($event)"
+                                       [editable]="selectedDesignType === 'Basic'">
+                  </app-forms-previewer>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!--  BUTTONS -->
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-6">
+            <div class="footer-button-panel">
+              <button pButton
+                      type="button"
+                      icon="pi pi-undo"
+                      label="Reset Original"
+                      [disabled]="isSaving"
+                      (click)="onContentChanged(originalFormSkeleton)"
+                      class="ui-button-secondary mr-2"
+              ></button>
+              <button pButton
+                      type="button"
+                      icon="pi pi-save"
+                      [icon]="isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-save'"
+                      [disabled]="(originalFormSkeleton === updatedFormSkeleton) || !isFormSkeletonValid || isSaving"
+                      (click)="onSave()"
+                      [label]="isSaving ? 'Saving Changes' : 'Save Changes'"
+              ></button>
+            </div>
+          </div>
+          <div class="ui-grid-col-6">
+            <div class="other-footer-button-panel">
+              <button pButton
+                      type="button"
+                      icon="pi pi-download"
+                      label="Export JSON"
+                      [disabled]="!isFormSkeletonValid"
+                      (click)="onExport()"
+                      class="ui-button-success"></button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </p-fieldset>
+  </div>
+</section>
