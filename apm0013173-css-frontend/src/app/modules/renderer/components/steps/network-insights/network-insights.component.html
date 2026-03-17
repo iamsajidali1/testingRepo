@@ -1,0 +1,214 @@
+<p-card styleClass="p-3 p-card-shadow step-router-outlet-card">
+  <div id="networkInsight">
+    <div class="step-header mt-0 mb-4 underline">{{ title }}</div>
+
+    <div class="filter-container mb-4">
+      <div class="row">
+        <div class="col p-4">
+          <p-dropdown
+            [options]="devices"
+            optionLabel="name"
+            optionValue="value"
+            [(ngModel)]="selectedDevice"
+            [filter]="true"
+            styleClass="w-full p-inputtext-lg"
+            class="ml-2"
+            (onChange)="loadDashboard()"
+          ></p-dropdown>
+        </div>
+        <div class="col p-4 text-center title">
+          <p class="filter-title">
+            Network Utilization Reports for the selected Edge, containing CPU &
+            Memory Utilisation, Tunnel Count and Byte Sent/Received
+          </p>
+        </div>
+        <div class="col p-4 mr-2">
+          <p-dropdown
+            [options]="timeSpans"
+            optionLabel="name"
+            optionValue="value"
+            styleClass="w-full p-inputtext-sm"
+            [(ngModel)]="selectedTimespanInMinutes"
+            class="mr-2"
+            (onChange)="loadDashboard()"
+          ></p-dropdown>
+          <p class="filter-timespan" *ngIf="selectedTimeSpan">
+            <span>Timespan: </span>
+            <strong>
+              {{ selectedTimeSpan.startTime | date: 'medium' }} -
+              {{ selectedTimeSpan.endTime | date: 'medium' }}
+            </strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="summary-container mb-3"
+      *ngIf="isSummarySelected; else chartComponent"
+    >
+      <div class="summary-map-container mb-3" *ngIf="!isExporting">
+        <app-bingmap [pushPins]="pushpins"></app-bingmap>
+      </div>
+
+      <div class="summary-table-container" id="summaryTable">
+        <p-table
+          [value]="summaryTableData ? summaryTableData : Array(5)"
+          [rowHover]="true"
+          [filterDelay]="0"
+          [globalFilterFields]="[]"
+          selectionMode="single"
+          dataKey="hostname"
+          (onRowSelect)="onHostSelectionChange($event.data)"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th rowspan="2" scope="col" pSortableColumn="hostname">
+                <div class="flex justify-content-between align-items-center">
+                  Hostname
+                  <p-sortIcon field="hostname"></p-sortIcon>
+                  <p-columnFilter
+                    type="text"
+                    field="hostname"
+                    display="menu"
+                    class="ml-auto"
+                  ></p-columnFilter>
+                </div>
+              </th>
+              <th scope="col" colspan="3">Aggregate Throughput</th>
+              <th *ngFor="let colGrp of colGroups" scope="col" colspan="3">
+                <div class="flex justify-content-between align-items-center">
+                  {{ colGrp.name }}
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <ng-container>
+                <th colspan="1">Min</th>
+                <th colspan="1">Max</th>
+                <th colspan="1">Avg</th>
+              </ng-container>
+              <ng-container *ngFor="let colGrp of colGroups">
+                <th colspan="1">Min</th>
+                <th colspan="1">Max</th>
+                <th colspan="1">Avg</th>
+              </ng-container>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-site>
+            <tr class="p-selectable-row" [pSelectableRow]="site">
+              <td>{{ site.hostname }}</td>
+              <ng-container *ngIf="site['agrThroughput']">
+                <td>
+                  <i class="pi pi-arrow-up color-cobalt table-icon"></i
+                  >{{ site['agrThroughput']['throughputTx']['min']['name'] }}
+                  <br />
+                  <i
+                    class="pi pi-arrow-down color-functional-dk-green table-icon"
+                  ></i
+                  >{{ site['agrThroughput']['throughputRx']['min']['name'] }}
+                </td>
+                <td>
+                  <i class="pi pi-arrow-up color-cobalt table-icon"></i
+                  >{{ site['agrThroughput']['throughputTx']['max']['name'] }}
+                  <br />
+                  <i
+                    class="pi pi-arrow-down color-functional-dk-green table-icon"
+                  ></i
+                  >{{ site['agrThroughput']['throughputRx']['max']['name'] }}
+                </td>
+                <td>
+                  <i class="pi pi-arrow-up color-cobalt table-icon"></i
+                  >{{ site['agrThroughput']['throughputTx']['avg']['name'] }}
+                  <br />
+                  <i
+                    class="pi pi-arrow-down color-functional-dk-green table-icon"
+                  ></i
+                  >{{ site['agrThroughput']['throughputRx']['avg']['name'] }}
+                </td>
+              </ng-container>
+
+              <ng-container *ngFor="let colGrp of colGroups">
+                <td>{{ site[colGrp.id]['min']['name'] }}</td>
+                <td>{{ site[colGrp.id]['max']['name'] }}</td>
+                <td>{{ site[colGrp.id]['avg']['name'] }}</td>
+              </ng-container>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8">No Sites Found.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <ng-template #chartComponent>
+      <div id="chartContainer">
+        <div class="chart-container pt-3 mb-3" *ngFor="let chart of charts">
+          <div class="chart" *ngIf="chart">
+            <ng-container *ngIf="chart.type !== 'multi'; else multiChart">
+              <header class="text-center pt-2">
+                <h5 class="chart-title">{{ chart.title }}</h5>
+                <p class="chart-subtitle">{{ chart.subtitle }}</p>
+              </header>
+              <p-chart
+                height="15rem"
+                [type]="chart.type"
+                [data]="chart.data"
+                [options]="chart.options"
+              ></p-chart>
+            </ng-container>
+            <ng-template #multiChart>
+              <ng-container *ngFor="let subChart of chart.subCharts">
+                <header class="text-center pt-2">
+                  <h5 class="chart-title">{{ subChart.title }}</h5>
+                  <p class="chart-subtitle">{{ subChart.subtitle }}</p>
+                </header>
+                <p-chart
+                  height="15rem"
+                  [type]="subChart.type"
+                  [data]="subChart.data"
+                  [options]="subChart.options"
+                ></p-chart>
+              </ng-container>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+
+  <!--  FOOTER ACTIONS STARTS HERE  -->
+  <ng-template pTemplate="footer">
+    <div class="pb-2 pt-1 d-flex">
+      <button
+        pButton
+        icon="pi pi-chevron-left"
+        label="Back"
+        class="p-button-rounded p-button-outlined mr-2"
+        (click)="onBack()"
+      ></button>
+      <button
+        pButton
+        icon="pi pi-home"
+        label="Home"
+        class="p-button-rounded"
+        routerLink="/"
+      ></button>
+
+      <span class="right-float">
+        <button
+          pButton
+          [icon]="isExporting ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+          label="Export"
+          [disabled]="isExporting"
+          class="p-button-rounded p-button-success mr-2"
+          (click)="downloadPdf()"
+        ></button>
+      </span>
+    </div>
+  </ng-template>
+  <!--  FOOTER ACTIONS ENDS HERE  -->
+</p-card>
