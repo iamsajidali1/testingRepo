@@ -1,0 +1,19 @@
+out
+.eslintcache
+*~
+*#*
+*.#*
+.idea
+.vscode
+.DS_Store
+.nyc_output
+*.pem*
+*.key*
+*.cert*
+# ignore all *.pem key and cert files in all folders, including build root
+**/*.pem*
+**/*.key*
+**/*.cert*
+# ignore submodules
+carche
+chart

@@ -1,0 +1,43 @@
+FROM oneeastus2cr2azn0hvf.azurecr.io/nginx:alpine
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+
+# Set the AT&T Internal Artifact URL
+ENV JFROG_HOST="artifact.it.att.com"
+# Set the AT&T Alpine Repository URL Path
+ENV ALPINE_REPO_PATH="/artifactory/dl-cdn-alpinelinux-org"
+
+# Set proxy environment variables
+ENV HTTP_PROXY=${HTTP_PROXY}
+ENV HTTPS_PROXY=${HTTPS_PROXY}
+ENV NO_PROXY=${NO_PROXY}
+
+
+
+RUN --mount=type=secret,id=build_secrets \
+    source /run/secrets/build_secrets && \
+    sed -i "s|dl-cdn.alpinelinux.org/alpine|${JFROG_USERNAME}:${ALPINE_AUTH_TOKEN}@${JFROG_HOST}${ALPINE_REPO_PATH}|g" /etc/apk/repositories && \
+    sed -i "s|@att.com|%40att.com|g; s|@intl.att.com|%40intl.att.com|g" /etc/apk/repositories
+
+RUN apk update --no-cache --allow-untrusted && apk upgrade --no-cache --allow-untrusted 
+# Lean the image by cutting unnecessary vulnerable packages
+RUN apk del -r tiff curl
+
+ENV USERNAME proxy
+ENV GROUP proxy
+# Set non-root user permissions for application and accessory files
+RUN addgroup -S "$USERNAME" \
+    && adduser -S "$USERNAME" -G "$GROUP" -u 1001 \
+    && chown -R "$USERNAME":"$GROUP" \
+        /var/cache/nginx \
+        /var/log/nginx \
+        /usr/share/nginx/html/ \
+        /etc/nginx
+
+# Create new PID file with non-root user read/write access
+RUN touch /var/run/nginx.pid && \
+    chown -R "$USERNAME":"$GROUP" /var/run/nginx.pid
+
+USER "$USERNAME"

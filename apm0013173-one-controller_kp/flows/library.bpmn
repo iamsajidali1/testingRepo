@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1sazokj" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <bpmn:process id="Process_1dywr8u" isExecutable="true">
+    <bpmn:serviceTask id="Activity_0b1oied" name="Print" camunda:type="external" camunda:topic="X-Print">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="input">${input}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1qovccr" name="Generate MDS from VCO" camunda:type="external" camunda:topic="X-GenerateMdsVelocloud">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="vcoProtocol">${vcoProtocol}</camunda:inputParameter>
+          <camunda:inputParameter name="vcoHostname">${vcoHostname}</camunda:inputParameter>
+          <camunda:inputParameter name="vcoUsername">${vcoUsername}</camunda:inputParameter>
+          <camunda:inputParameter name="vcoPassword">${vcoPassword}</camunda:inputParameter>
+          <camunda:outputParameter name="xlsx">${xlsx}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_15jexvh" name="Send E-mail via Paperplane" camunda:type="external" camunda:topic="X-PaperplaneSendEmailXlsx">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="xlsx">${xlsx}</camunda:inputParameter>
+          <camunda:inputParameter name="emails">${emails}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_171n7tq" name="HTTP call" camunda:type="external" camunda:topic="X-HttpRequest">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">${method}</camunda:inputParameter>
+          <camunda:inputParameter name="url">${url}</camunda:inputParameter>
+          <camunda:inputParameter name="body">${body}</camunda:inputParameter>
+          <camunda:inputParameter name="ignoreCertificate">${ignoreCertificate}</camunda:inputParameter>
+          <camunda:inputParameter name="headers">${headers}</camunda:inputParameter>
+          <camunda:inputParameter name="useProxy">${useProxy}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">${proxyProtocol}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">${proxyHost}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${proxyPort}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+          <camunda:outputParameter name="bytes">${bytes}</camunda:outputParameter>
+          <camunda:outputParameter name="headers">${headers}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_1iaz8t0" name="AAF Authorized HTTP call" camunda:type="external" camunda:topic="X-HttpRequest-Aaf">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">${method}</camunda:inputParameter>
+          <camunda:inputParameter name="url">${url}</camunda:inputParameter>
+          <camunda:inputParameter name="body">${body}</camunda:inputParameter>
+          <camunda:inputParameter name="ignoreCertificate">${ignoreCertificate}</camunda:inputParameter>
+          <camunda:inputParameter name="headers">${headers}</camunda:inputParameter>
+          <camunda:inputParameter name="useProxy">${useProxy}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">${proxyProtocol}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">${proxyHost}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${proxyPort}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+          <camunda:outputParameter name="bytes">${bytes}</camunda:outputParameter>
+          <camunda:outputParameter name="headers">${headers}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+    </bpmn:serviceTask>
+    <bpmn:task id="Activity_07addmu" name="Get env variable">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="input">
+            <camunda:script scriptFormat="JavaScript">(java.lang.System).getenv('ENV_VARIABLE')</camunda:script>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="output">${input}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+    </bpmn:task>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1dywr8u">
+      <bpmndi:BPMNShape id="Activity_0b1oied_di" bpmnElement="Activity_0b1oied">
+        <dc:Bounds x="490" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qovccr_di" bpmnElement="Activity_1qovccr">
+        <dc:Bounds x="160" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15jexvh_di" bpmnElement="Activity_15jexvh">
+        <dc:Bounds x="270" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_171n7tq_di" bpmnElement="Activity_171n7tq">
+        <dc:Bounds x="380" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1iaz8t0_di" bpmnElement="Activity_1iaz8t0">
+        <dc:Bounds x="600" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_07addmu_di" bpmnElement="Activity_07addmu">
+        <dc:Bounds x="160" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

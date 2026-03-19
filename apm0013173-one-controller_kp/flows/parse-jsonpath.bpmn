@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0q8hi1t" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0">
+  <bpmn:process id="ParseJsonPath" name="ParseJsonPath" isExecutable="true" camunda:versionTag="0.1" camunda:historyTimeToLive="90">
+    <bpmn:startEvent id="StartEvent_1" name="Start process">
+      <bpmn:outgoing>Flow_0favobl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task-Parse-JsonPath" name="Parse Jsonpath" camunda:type="external" camunda:topic="X-Parse-JsonPath">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="jsonpath">${jsonpath}</camunda:inputParameter>
+          <camunda:outputParameter name="result">${result}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0favobl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fo5cdg</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0fo5cdg" sourceRef="Task-Parse-JsonPath" targetRef="Event_0muqo7i" />
+    <bpmn:endEvent id="Event_0muqo7i" name="End process">
+      <bpmn:incoming>Flow_0fo5cdg</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0favobl" sourceRef="StartEvent_1" targetRef="Task-Parse-JsonPath" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ParseJsonPath">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="145" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yuod6y_di" bpmnElement="Task-Parse-JsonPath">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0muqo7i_di" bpmnElement="Event_0muqo7i">
+        <dc:Bounds x="402" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="389" y="145" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0fo5cdg_di" bpmnElement="Flow_0fo5cdg">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="402" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0favobl_di" bpmnElement="Flow_0favobl">
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

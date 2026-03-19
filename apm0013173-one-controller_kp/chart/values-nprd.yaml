@@ -1,0 +1,1115 @@
+# Development Environment values for one-controller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+namespace: com-att-one
+keyVaultName: eastus2-one-nprdkv
+
+serviceAccount: default
+restartPolicy: Always
+
+# Global Ingress Setup
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    linkerd.io/inject: enabled
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+
+modules:
+  camunda:
+    install: true
+    serviceLabels:
+      module: "main"
+    replicaCount: 1
+    podAnnotations:
+      linkerd.io/inject: enabled
+      config.linkerd.io/proxy-cpu-limit: 2000m
+      config.linkerd.io/proxy-memory-limit: 2Gi
+      config.linkerd.io/proxy-cpu-request: 1000m
+      config.linkerd.io/proxy-memory-request: 1Gi
+      config.linkerd.io/skip-outbound-ports: "443,3128,3306"
+    image:
+      repository: camunda/camunda-bpm-platform
+      pullPolicy: IfNotPresent
+      tag: "7.21.0-SNAPSHOT"
+      containerPort: 8080
+    env:
+      - name: AAF_USERNAME
+        value: "one-aaf-username@azurekeyvault"
+      - name: AAF_PASSWORD
+        value: "one-aaf-password@azurekeyvault"
+      - name: DB_DRIVER
+        value: "com.mysql.cj.jdbc.Driver"
+      - name: DB_USERNAME
+        value: "one-camunda-db-user@azurekeyvault"
+      - name: DB_PASSWORD
+        value: "one-camunda-db-password@azurekeyvault"
+      - name: DB_URL
+        value: "one-camunda-db-url@azurekeyvault"
+      - name: CRYPT_API_TOKEN
+        value: "one-camunda-crypt-token@azurekeyvault"
+      - name: CAMUNDA_RA_PASS
+        value: "camunda-ra-pass@azurekeyvault"
+      - name: DB_VALIDATE_ON_BORROW
+        value: 'true'
+      - name: https_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: http_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: no_proxy
+        value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+      - name: CRYPT_URL
+        value: "http://crypt-nprd.com-att-one.svc.cluster.local:8000"
+      - name: RA_VELOCLOUD_URL
+        value: "http://css-ra-velocloud-nprd.com-att-one.svc.cluster.local:8000/api"
+      - name: RA_VMANAGE_URL
+        value: "http://css-ra-vmanage-nprd.com-att-one.svc.cluster.local:8000/api"
+      - name: RA_UTILITIES_URL
+        value: "http://css-ra-utilities-nprd.com-att-one.svc.cluster.local:8000/api"
+    service:
+      name: camunda-http
+      type: ClusterIP
+      protocol: TCP
+      port: 8000
+    probes:
+      livenessProbe:
+        initialDelaySeconds: 180
+        timeoutSeconds: 30
+        httpGet:
+          path: /camunda/app/cockpit/favicon.ico
+          port: camunda-http
+      readinessProbe:
+        initialDelaySeconds: 180
+        timeoutSeconds: 30
+        httpGet:
+          path: /camunda/app/cockpit/favicon.ico
+          port: camunda-http
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 750Mi
+    securityContext:
+      readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 1000
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    volumeMounts:
+      # disable demo application
+      - mountPath: /camunda/webapps/camunda-invoice
+        name: empty-volume
+      # enable Basic Auth in Camunda
+      - mountPath: /camunda/webapps/engine-rest/WEB-INF/web.xml
+        name: engine-rest-conf
+        subPath: web.xml
+        readOnly: false
+    volumes:
+      - name: empty-volume
+        emptyDir: {}
+      - name: engine-rest-conf
+        configMap:
+          name: engine-rest-conf
+          items:
+            - key: web.xml
+              path: web.xml
+    engineRestConf: |-
+
+      <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/javaee    http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+        <!--
+        Fetch And Lock Handler (long polling): Unique Worker Request
+        (default value: false)
+        -->
+        <!--
+        <context-param>
+          <param-name>fetch-and-lock-unique-worker-request</param-name>
+          <param-value>true</param-value>
+        </context-param>
+        -->
+
+        <!-- rest bootstrap listener -->
+        <listener>
+          <listener-class>org.camunda.bpm.engine.rest.impl.web.bootstrap.RestContainerBootstrap</listener-class>
+        </listener>
+
+        <listener>
+          <listener-class>org.camunda.bpm.engine.rest.impl.FetchAndLockContextListener</listener-class>
+        </listener>
+
+        <filter>
+          <filter-name>EmptyBodyFilter</filter-name>
+          <filter-class>org.camunda.bpm.engine.rest.filter.EmptyBodyFilter</filter-class>
+          <async-supported>true</async-supported>
+        </filter>
+        <filter-mapping>
+          <filter-name>EmptyBodyFilter</filter-name>
+          <url-pattern>/*</url-pattern>
+        </filter-mapping>
+
+        <filter>
+          <filter-name>CacheControlFilter</filter-name>
+          <filter-class>org.camunda.bpm.engine.rest.filter.CacheControlFilter</filter-class>
+          <async-supported>true</async-supported>
+        </filter>
+        <filter-mapping>
+          <filter-name>CacheControlFilter</filter-name>
+          <url-pattern>/*</url-pattern>
+        </filter-mapping>
+
+        <!-- Http Basic Authentication Filter -->
+        <filter>
+          <filter-name>camunda-auth</filter-name>
+          <filter-class>
+            org.camunda.bpm.engine.rest.security.auth.ProcessEngineAuthenticationFilter
+          </filter-class>
+        <async-supported>true</async-supported>
+          <init-param>
+            <param-name>authentication-provider</param-name>
+            <param-value>org.camunda.bpm.engine.rest.security.auth.impl.HttpBasicAuthenticationProvider</param-value>
+          </init-param>
+          <init-param>
+            <param-name>rest-url-pattern-prefix</param-name>
+            <param-value></param-value>
+          </init-param>
+        </filter>
+
+        <filter-mapping>
+          <filter-name>camunda-auth</filter-name>
+          <url-pattern>/*</url-pattern>
+        </filter-mapping>
+        <!-- End Http Basic Authentication Filter -->
+
+        <servlet>
+          <servlet-name>Resteasy</servlet-name>
+          <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServlet30Dispatcher</servlet-class>
+          <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>org.camunda.bpm.engine.rest.impl.application.DefaultApplication</param-value>
+          </init-param>
+          <async-supported>true</async-supported>
+        </servlet>
+
+        <servlet-mapping>
+          <servlet-name>Resteasy</servlet-name>
+          <url-pattern>/*</url-pattern>
+        </servlet-mapping>
+
+      </web-app>
+
+  docs:
+    install: true
+    serviceLabels:
+      module: "docs"
+    replicaCount: 1
+    podAnnotations:
+      linkerd.io/inject: enabled
+      config.linkerd.io/proxy-cpu-limit: 250m
+      config.linkerd.io/proxy-memory-limit: 256Mi
+      config.linkerd.io/proxy-cpu-request: 100m
+      config.linkerd.io/proxy-memory-request: 128Mi
+    image:
+      repository: oneeastus2cr2azn0hvf.azurecr.io/one-controller-docs
+      pullPolicy: Always
+      tag: "latest"
+      containerPort: 8000
+    service:
+      name: docs-http
+      type: ClusterIP
+      protocol: TCP
+      port: 8000
+    probes:
+      livenessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+      readinessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    volumeMounts:
+      - mountPath: /etc/nginx/nginx.conf
+        name: docs-nginx-conf
+        subPath: nginx.conf
+        readOnly: false
+      - mountPath: /var/cache/nginx/
+        name: docs-volume
+      - mountPath: /var/run/
+        name: docs-volume
+    volumes:
+      - name: docs-nginx-conf
+        configMap:
+          name: docs-nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      - name: docs-volume
+        emptyDir: {}
+    nginxConf: |-
+      user root;
+      worker_processes 1;
+      error_log /var/log/nginx/error.log warn;
+      pid       /var/run/nginx.pid;
+      events {
+          worker_connections  1024;
+      }
+      http {
+          include       /etc/nginx/mime.types;
+          default_type  application/octet-stream;
+          log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                            '$status $body_bytes_sent "$http_referer" '
+                            '"$http_user_agent" "$http_x_forwarded_for"';
+          access_log  /var/log/nginx/access.log  main;
+          sendfile on;
+          keepalive_timeout 65;
+          gzip on;
+          server {
+              listen       8000;
+              server_name  localhost;
+              location / {
+                  root   /usr/share/nginx/html;
+                  index  index.html index.htm;
+              }
+              error_page   500 502 503 504  /50x.html;
+              location = /50x.html {
+                  root   /usr/share/nginx/html;
+              }
+          }
+      }
+
+  express:
+    install: true
+    serviceLabels:
+      module: "express"
+    replicaCount: 1
+    podAnnotations:
+      linkerd.io/inject: enabled
+      config.linkerd.io/proxy-cpu-limit: 500m
+      config.linkerd.io/proxy-memory-limit: 512Mi
+      config.linkerd.io/proxy-cpu-request: 250m
+      config.linkerd.io/proxy-memory-request: 256Mi
+      config.linkerd.io/skip-outbound-ports: "443,2398,2399,3128,3306,7000,8000,8100,58072"
+    image:
+      repository: oneeastus2cr2azn0hvf.azurecr.io/one-controller
+      pullPolicy: Always
+      tag: "latest"
+      containerPort: 8000
+    env:
+      - name: https_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: http_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: no_proxy
+        value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+
+      - name: CSS_HOST
+        value: "selfservice.dev.att.com"
+
+      - name: AAF_USERNAME
+        value: "one-aaf-username@azurekeyvault"
+      - name: AAF_PASSWORD
+        value: "one-aaf-password@azurekeyvault"
+      - name: ACTION_GPSID
+        value: "one-action-gpsid@azurekeyvault"
+      - name: ACTION_PASSWORD
+        value: "one-action-password@azurekeyvault"
+      - name: ACTION_URL
+        value: "one-action-url@azurekeyvault"
+      - name: ACTION_USERNAME
+        value: "one-action-user@azurekeyvault"
+      - name: ACTION_DB_HOST
+        value: "one-action-mysql-host@azurekeyvault"
+      - name: ACTION_DB_PORT
+        value: "one-action-mysql-port@azurekeyvault"
+      - name: CARCHE_AUTHORIZATION
+        value: "one-carche-auth@azurekeyvault"
+      - name: CARCHE_CONTENT_TYPE
+        value: "one-carche-content@azurekeyvault"
+      - name: GDUI_AAF_USERNAME
+        value: "gdui-aaf-username@azurekeyvault"
+      - name: GDUI_AAF_PASSWORD
+        value: "gdui-aaf-password@azurekeyvault"
+      - name: UPM
+        value: "one-upm-url@azurekeyvault"
+      - name: CRON_TOKEN
+        value: "one-cronjob-token@azurekeyvault"
+      - name: MDS_URL
+        value: "one-mds-url@azurekeyvault"
+      - name: MDS_TOKEN
+        value: "one-mds-token@azurekeyvault"
+      - name: OCS_URL
+        value: "one-ocs-url@azurekeyvault"
+      - name: PAPERPLANE_URL
+        value: "one-paperplane-url@azurekeyvault"
+      - name: PAPERPLANE_TOKEN
+        value: "one-paperplane-token@azurekeyvault"
+      - name: SESSION_SECRET
+        value: "one-session-secret@azurekeyvault"
+      - name: VCO_URL
+        value: "one-vco-url@azurekeyvault"
+      - name: VCO_AUTH
+        value: "one-vco-auth@azurekeyvault"
+      - name: VCO_VELOWRAPTOR
+        value: "one-vco-velowraptor@azurekeyvault"
+      - name: VCO_VERSION
+        value: "one-vco-version@azurekeyvault"
+      - name: VCO_USERS
+        value: "one-vco-users@azurekeyvault"
+      - name: VCO_EDGES
+        value: "one-vco-edges@azurekeyvault"
+      - name: LMAC_MYSQL_HOST
+        value: "lmac-mysql-host@azurekeyvault"
+      - name: LMAC_MYSQL_NAME
+        value: "lmac-mysql-database@azurekeyvault"
+      - name: LMAC_MYSQL_PASSWORD
+        value: "lmac-mysql-password@azurekeyvault"
+      - name: LMAC_MYSQL_PORT
+        value: "lmac-mysql-port@azurekeyvault"
+      - name: LMAC_MYSQL_USERNAME
+        value: "lmac-mysql-user@azurekeyvault"
+      - name: MCAP_SERVER_1
+        value: "one-mcap-server-one@azurekeyvault"
+      - name: MCAP_SERVER_2
+        value: "one-mcap-server-two@azurekeyvault"
+      - name: MCAP_SERVER_3
+        value: "one-mcap-server-three@azurekeyvault"
+      - name: MCAP_SERVER_4
+        value: "one-mcap-server-four@azurekeyvault"
+      - name: MCAP_KEY_CERT
+        value: "one-mcap-key-cert@azurekeyvault"
+      - name: MCAP_CLIENT_CERT
+        value: "one-mcap-client-cert@azurekeyvault"
+      - name: MCAP_PASSWORD
+        value: "one-mcap-password@azurekeyvault"
+      - name: NGNSD_LEAD_ATT_UID
+        value: "ngnsd-lead-attuid@azurekeyvault"
+      - name: GPS_ORACLE_HOST
+        value: "one-gps-host@azurekeyvault"
+      - name: GPS_ORACLE_PORT
+        value: "one-gps-port@azurekeyvault"
+      - name: GPS_ORACLE_SID
+        value: "one-gps-sid@azurekeyvault"
+      - name: GPS_ORACLE_USERNAME
+        value: "one-gps-user@azurekeyvault"
+      - name: GPS_ORACLE_PASSWORD
+        value: "one-gps-password@azurekeyvault"
+      - name: EDF_ORACLE_HOST
+        value: "one-edf-host@azurekeyvault"
+      - name: EDF_ORACLE_PORT
+        value: "one-edf-port@azurekeyvault"
+      - name: EDF_ORACLE_SID
+        value: "one-edf-sid@azurekeyvault"
+      - name: EDF_ORACLE_USERNAME
+        value: "one-edf-user@azurekeyvault"
+      - name: EDF_ORACLE_PASSWORD
+        value: "one-edf-password@azurekeyvault"
+      - name: ONE_MYSQL_HOST
+        value: "one-mysql-host@azurekeyvault"
+      - name: ONE_MYSQL_NAME
+        value: "one-mysql-database@azurekeyvault"
+      - name: ONE_MYSQL_PASSWORD
+        value: "one-mysql-password@azurekeyvault"
+      - name: ONE_MYSQL_PORT
+        value: "one-mysql-port@azurekeyvault"
+      - name: ONE_MYSQL_USERNAME
+        value: "one-mysql-user@azurekeyvault"
+      - name: CRYPT_PASSWORD
+        value: "one-crypt-password@azurekeyvault"
+      - name: CRYPT_TOKEN
+        value: "one-camunda-crypt-token@azurekeyvault"
+      - name: CSS_RA_VELOCLOUD_TOKEN
+        value: "one-css-ra-velocloud-token@azurekeyvault"
+      - name: CSS_CAMUNDA_GR_URL
+        value: "one-css-camunda-gr-url@azurekeyvault"
+      - name: CAMUNDA_CSS_BACKEND_BASIC
+        value: "one-camunda-basicauth@azurekeyvault"
+      - name: ONE_OIDC_CLIENT_ID
+        value: "one-oidc-client-id@azurekeyvault"
+      - name: ONE_OIDC_CLIENT_SECRET
+        value: "one-oidc-client-secret@azurekeyvault"
+      - name: ONE_OIDC_USER_INFO
+        value: "one-oidc-user-info@azurekeyvault"
+      - name: ONE_OIDC_TOKEN
+        value: "one-oidc-token@azurekeyvault"
+      - name: ONE_OIDC_REDIRECT_URI
+        value: "one-oidc-redirect-uri@azurekeyvault"
+      - name: ONE_OIDC_REDIRECT_OIDC
+        value: "one-oidc-redirect-oidc@azurekeyvault"
+      - name: MS_AAD_OAUTH_TENANT_ID
+        value: "ms-aad-oauth-tenant-id@azurekeyvault"
+      - name: MS_AAD_OAUTH_CLIENT_ID
+        value: "ms-aad-oauth-client-id@azurekeyvault"
+      - name: SNOW_OAUTH_INSTANCE
+        value: "snow-oauth-instance@azurekeyvault"
+      - name: SNOW_OAUTH_CLIENT_ID
+        value: "snow-oauth-client-id@azurekeyvault"
+      - name: SNOW_OAUTH_CLIENT_SECRET
+        value: "snow-oauth-client-secret@azurekeyvault"
+      - name: SNOW_OAUTH_USERNAME
+        value: "snow-oauth-username@azurekeyvault"
+      - name: SNOW_OAUTH_PASSWORD
+        value: "snow-oauth-password@azurekeyvault"
+      - name: SNOW_OAUTH_SCOPE
+        value: "snow-oauth-scope@azurekeyvault"
+      - name: GDUI_AAF_USERNAME
+        value: "gdui-aaf-username@azurekeyvault"
+      - name: GDUI_AAF_PASSWORD
+        value: "gdui-aaf-password@azurekeyvault"
+      - name: MCAP_USERNAME
+        value: "one-mcap-username@azurekeyvault"
+      - name: MCAP_USERPWD
+        value: "one-mcap-userpwd@azurekeyvault"
+
+      - name: CAMUNDA_ENGINE_URL
+        value: "http://one-controller-nprd-camunda.com-att-one.svc.cluster.local:8000/engine-rest/"
+      - name: ORM_URL
+        value: "http://one-controller-nprd-orm.com-att-one.svc.cluster.local:7000"
+      - name: CSS_RA_VELOCLOUD_URL
+        value: "http://css-ra-velocloud-nprd.com-att-one.svc.cluster.local:8000/api"
+      - name: CARCHE_URL
+        value: "http://carche-nprd.com-att-one.svc.cluster.local:8000/api"
+      - name: CRYPT_URL
+        value: "http://crypt-nprd.com-att-one.svc.cluster.local:8000/api"
+      - name: CSS_RA_UTILITIES_URL
+        value: "http://css-ra-utilities-nprd.com-att-one.svc.cluster.local:8000/api"
+      - name: EOC_USERNAME
+        value: "eoc-username@azurekeyvault"
+      - name: EOC_PASSWORD
+        value: "eoc-password@azurekeyvault"
+      - name: EOC_HOST
+        value: "eoc-url@azurekeyvault"
+
+    service:
+      name: express-http
+      type: ClusterIP
+      protocol: TCP
+      port: 8000
+    probes:
+      livenessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+          port: express-http
+      readinessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+          port: express-http
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    volumeMounts:
+      - mountPath: /home/controller/
+        name: express-volume
+      - mountPath: /app/api/config/sequelize/
+        name: express-volume
+      - mountPath: /app/api/controllers/certs/
+        name: express-volume
+    volumes:
+      - name: express-volume
+        emptyDir: {}
+
+  orm:
+    install: true
+    serviceLabels:
+      module: "orm"
+    replicaCount: 1
+    podAnnotations:
+      linkerd.io/inject: enabled
+      config.linkerd.io/proxy-cpu-limit: 500m
+      config.linkerd.io/proxy-memory-limit: 512Mi
+      config.linkerd.io/proxy-cpu-request: 250m
+      config.linkerd.io/proxy-memory-request: 256Mi
+      config.linkerd.io/skip-outbound-ports: "443,3128,3306"
+    image:
+      repository: oneeastus2cr2azn0hvf.azurecr.io/one-controller-orm
+      pullPolicy: Always
+      tag: "latest"
+      containerPort: 7000
+    env:
+      - name: ONE_MYSQL_NAME
+        value: "one-mysql-database@azurekeyvault"
+      - name: ONE_MYSQL_USERNAME
+        value: "one-mysql-user@azurekeyvault"
+      - name: ONE_MYSQL_PASSWORD
+        value: "one-mysql-password@azurekeyvault"
+      - name: ONE_MYSQL_HOST
+        value: "one-mysql-host@azurekeyvault"
+      - name: ONE_MYSQL_PORT
+        value: "one-mysql-port@azurekeyvault"
+      - name: DJANGO_SECRET_KEY
+        value: "one-django-secret-key@azurekeyvault"
+        
+      - name: https_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: http_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: no_proxy
+        value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+    service:
+      name: orm-http
+      type: ClusterIP
+      protocol: TCP
+      port: 7000
+    probes:
+      livenessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+          port: orm-http
+      readinessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+          port: orm-http
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+  proxy:
+    install: true
+    serviceLabels:
+      module: "proxy"
+    replicaCount: 1
+    podAnnotations:
+      linkerd.io/inject: ingress
+      config.linkerd.io/proxy-cpu-limit: 500m
+      config.linkerd.io/proxy-memory-limit: 512Mi
+      config.linkerd.io/proxy-cpu-request: 250m
+      config.linkerd.io/proxy-memory-request: 256Mi
+    image:
+      repository: oneeastus2cr2azn0hvf.azurecr.io/one-controller-proxy
+      pullPolicy: Always
+      tag: "latest"
+      containerPort: 9999
+    service:
+      name: proxy-http
+      type: ClusterIP
+      protocol: TCP
+      port: 9999
+    ingress:
+      enabled: true
+      hosts:
+        - host: selfservice.dev.att.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: selfservice-dev-tls-certificate
+          hosts:
+            - selfservice.dev.att.com
+    probes:
+      livenessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+          port: proxy-http
+      readinessProbe:
+        initialDelaySeconds: 30
+        timeoutSeconds: 10
+        httpGet:
+          path: /
+          port: proxy-http
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 250m
+        memory: 256Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+    volumeMounts:
+      - mountPath: /etc/nginx/nginx.conf
+        name: nginx-conf
+        subPath: nginx.conf
+        readOnly: false
+      - mountPath: /var/cache/nginx/
+        name: proxy-volume
+      - mountPath: /var/run/
+        name: proxy-volume
+    volumes:
+      - name: nginx-conf
+        configMap:
+          name: nginx-conf
+          items:
+            - key: nginx.conf
+              path: nginx.conf
+      - name: proxy-volume
+        emptyDir: {}
+    nginxConf: |-
+      user root;
+      worker_processes 1;
+      events {
+          worker_connections 10240;
+      }
+
+      http {
+          log_format upstream_time  '$remote_addr - $remote_user [$time_local] '
+                                    '"$request" $status $body_bytes_sent '
+                                    '"$http_referer" "$http_host" "$http_user_agent" '
+                                    'rt=$request_time uct="$upstream_connect_time" uht="$upstream_header_time" urt="$upstream_response_time"';
+
+          upstream carche {
+              server carche-nprd.com-att-one.svc.cluster.local:8000;
+          }
+          upstream docs {
+              server one-controller-nprd-docs.com-att-one.svc.cluster.local:8000;
+          }
+          upstream crypt {
+              server crypt-nprd.com-att-one.svc.cluster.local:8000;
+          }
+          upstream paperplane {
+              server paperplane-nprd.com-att-one.svc.cluster.local:8000;
+          }
+
+          server {
+              access_log /var/log/nginx/access.log upstream_time;
+              listen 9999;
+              # catch all hosts for now
+              server_name
+                  localhost local.att.com
+                  selfservice.dev.att.com
+                  selfservice.test.att.com
+                  selfservice.web.att.com
+                  fbcaz.web.att.com
+                  expressportal.att.com;
+
+              location /svc/crypt {
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+                  rewrite ^([^.]*[^/])$ $scheme://$http_host$1/ permanent;
+              }
+              location ~ ^/svc/crypt/(.*) {
+                  proxy_pass http://crypt/$1;
+                  # manually override header to match ALLOWED_HOSTS
+                  proxy_set_header Host crypt.web.att.com;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+              }
+
+              location /svc/carche {
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+                  rewrite ^([^.]*[^/])$ $scheme://$http_host$1/ permanent;
+              }
+              location ~ ^/svc/carche/(.*) {
+                  proxy_pass http://carche/$1;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+              }
+
+              location /docs {
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+                  rewrite ^([^.]*[^/])$ $scheme://$http_host$1/ permanent;
+              }
+              location ~ /docs/(.*) {
+                  proxy_pass http://docs/$1;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+              }
+
+              location /svc/paperplane {
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+                  rewrite ^([^.]*[^/])$ $scheme://$http_host$1/ permanent;
+              }
+              location ~ ^/svc/paperplane/(.*) {
+                  proxy_pass http://paperplane/$1;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+              }
+
+              location /api {
+                  proxy_pass http://one-controller-nprd-express.com-att-one.svc.cluster.local:8000;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              }
+
+              location /camunda {
+                  proxy_pass http://one-controller-nprd-camunda.com-att-one.svc.cluster.local:8000;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+              }
+
+              location /engine-rest {
+                  proxy_pass http://one-controller-nprd-camunda.com-att-one.svc.cluster.local:8000;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+              }
+
+              location ~ ^/onetouch/(.*) {
+                  proxy_pass http://onetouch-frontend-nprd.com-att-one.svc.cluster.local:8000/$1;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+
+                  set $should_check_gl "1";
+                  if ($cookie_access_token) {
+                      set $should_check_gl "";
+                  }
+
+              }
+
+              location /onetouch {
+                  proxy_pass http://onetouch-frontend-nprd.com-att-one.svc.cluster.local:8000;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+
+                  set $should_check_gl "1";
+                  if ($cookie_access_token) {
+                      set $should_check_gl "";
+                  }
+              }
+
+              location ~ ^/one/(.*) {
+                  proxy_pass http://one-creator-nprd.com-att-one.svc.cluster.local:8000/$1;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+
+                  set $should_check_gl "1";
+                  if ($cookie_access_token) {
+                      set $should_check_gl "";
+                  }
+
+              }
+              
+              location /one {
+                  proxy_pass http://one-creator-nprd.com-att-one.svc.cluster.local:8000;
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+                  if ($host = "expressportal.att.com") {
+                      return 406;
+                  }
+
+                  set $should_check_gl "1";
+                  if ($cookie_access_token) {
+                      set $should_check_gl "";
+                  }
+
+              }
+
+              location / {
+                  # original tunnel to FE
+                  proxy_pass http://css-frontend-nprd.com-att-one.svc.cluster.local:8000;
+
+                  set $should_check_bc "";
+                  set $should_check_gl "1";
+
+                  # override FE tunnel if sessionID is specified from BC
+                  # - GD&A sessionID first pass to BE
+                  # - then without ?sessionID= and with Set-Cookie to FE
+                  # - GD&A sets X-Gda-To-Css-Session header
+                  if ($http_x_gda_to_css_session) {
+                      set $should_check_bc "1";
+                      set $should_check_gl "";
+                  }
+
+                  # cookie from Express.js
+                  if ($cookie_bcSession) {
+                      set $should_check_bc "";
+                      # X-Gda-To-Css-Session is set only
+                      # when the cookie is missing
+                      set $should_check_gl "";
+                  }
+
+                  # cookie from Global Logon
+                  if ($cookie_access_token) {
+                      set $should_check_gl "";
+                  }
+
+                  if ($should_check_bc) {
+                      proxy_pass http://one-controller-nprd-express.com-att-one.svc.cluster.local:8000;
+                  }
+
+                  proxy_set_header Host $http_host;
+                  proxy_set_header X-Forwarded-Host $http_host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Gda-To-Css-Session $http_x_gda_to_css_session;
+              }
+          }
+      }
+
+  workerJs:
+    install: true
+    replicaCount: 1
+    podAnnotations:
+      linkerd.io/inject: enabled
+      config.linkerd.io/proxy-cpu-limit: 250m
+      config.linkerd.io/proxy-memory-limit: 256Mi
+      config.linkerd.io/proxy-cpu-request: 100m
+      config.linkerd.io/proxy-memory-request: 128Mi
+      config.linkerd.io/skip-outbound-ports: "443,3128,7000,8000"
+    image:
+      repository: oneeastus2cr2azn0hvf.azurecr.io/one-controller
+      pullPolicy: Always
+      tag: "latest"
+      containerPort: 8000
+      command:
+        - node
+      args:
+        - main.js
+    env:
+      - name: AAF_USERNAME
+        value: "one-aaf-username@azurekeyvault"
+      - name: AAF_PASSWORD
+        value: "one-aaf-password@azurekeyvault"
+      - name: CAMUNDA_CSS_BACKEND_BASIC
+        value: "one-camunda-basicauth@azurekeyvault"
+      - name: PAPERPLANE_URL
+        value: "one-paperplane-url@azurekeyvault"
+      - name: PAPERPLANE_TOKEN
+        value: "one-paperplane-token@azurekeyvault"
+      - name: MDS_URL
+        value: "one-mds-url@azurekeyvault"
+      - name: MDS_TOKEN
+        value: "one-mds-token@azurekeyvault"
+      - name: VCO_URL
+        value: "one-vco-url@azurekeyvault"
+      - name: VCO_VELOWRAPTOR
+        value: "one-vco-velowraptor@azurekeyvault"
+      - name: VCO_VERSION
+        value: "one-vco-version@azurekeyvault"
+      - name: VCO_USERS
+        value: "one-vco-users@azurekeyvault"
+      - name: VCO_EDGES
+        value: "one-vco-edges@azurekeyvault"
+
+      - name: https_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: http_proxy
+        value: "http://proxy.conexus.svc.local:3128"
+      - name: no_proxy
+        value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+
+      - name: CAMUNDA_ENGINE_URL
+        value: "http://one-controller-nprd-camunda.com-att-one.svc.cluster.local:8000/engine-rest/"
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+cronjobs:
+  enabled: true
+  resources:
+    limits:
+      cpu: 20m
+      memory: 50Mi
+    requests:
+      cpu: 10m
+      memory: 25Mi
+  podAnnotations:
+    linkerd.io/inject: enabled
+    config.linkerd.io/proxy-cpu-limit: 20m
+    config.linkerd.io/proxy-memory-limit: 50Mi
+    config.linkerd.io/proxy-cpu-request: 10m
+    config.linkerd.io/proxy-memory-request: 25Mi
+    config.linkerd.io/skip-outbound-ports: "443,8000,9999"
+  sendSrReports:
+    enabled: false
+    schedule: "0 0 * * *"
+    image: curlimages/curl
+    host: one-controller-nprd-express
+    port: 8000
+    env:
+      - name: AAF_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-username
+            key: username
+      - name: AAF_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-password
+            key: password
+  syncDeviceInventory:
+    enabled: true
+    schedule: "0 0 * * 0"
+    image: curlimages/curl
+    host: one-controller-nprd-express
+    port: 8000
+    env:
+      - name: AAF_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-username
+            key: username
+      - name: AAF_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-password
+            key: password
+  sendNetworkInsights:
+    enabled: false
+    schedule: "*/5 * * * *"
+    image: curlimages/curl
+    host: one-controller-nprd-express
+    port: 8000
+    env:
+      - name: AAF_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-username
+            key: username
+      - name: AAF_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-password
+            key: password
+  syncVeloLicenseInventory:
+    enabled: false
+    schedule: "*/5 * * * *"
+    image: curlimages/curl
+    host: one-controller-nprd-express
+    port: 8000
+    env:
+      - name: AAF_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-username
+            key: username
+      - name: AAF_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-password
+            key: password
+  syncSiteDetails:
+    enabled: false
+    schedule: "0 0 * * *"
+    image: curlimages/curl
+    host: one-controller-nprd-express
+    port: 8000
+    env:
+      - name: AAF_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-username
+            key: username
+      - name: AAF_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: one-aaf-password
+            key: password

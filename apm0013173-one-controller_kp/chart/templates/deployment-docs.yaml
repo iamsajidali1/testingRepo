@@ -1,0 +1,70 @@
+{{- if .Values.modules.docs.install -}}
+{{ $module := .Values.modules.docs }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "one-controller.fullname" . }}-docs
+  labels:
+    {{- include "one-controller.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  {{- if not $module.autoscaling.enabled }}
+  replicas: {{ $module.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "one-controller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $module.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "one-controller.selectorLabels" . | nindent 8 }}
+        {{- toYaml $module.serviceLabels | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.serviceAccount }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ $module.image.repository }}:{{ $module.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $module.image.pullPolicy }}
+          command:
+            {{- toYaml $module.image.command | nindent 12 }}
+          args:
+            {{- toYaml $module.image.args | nindent 12 }}
+          {{- with $module.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: {{ $module.service.name }}
+              containerPort: {{ $module.image.containerPort }}
+              protocol: {{ $module.service.protocol }}
+          resources:
+            {{- toYaml $module.resources | nindent 12 }}
+          volumeMounts:
+            {{- toYaml $module.volumeMounts | nindent 12 }}
+      volumes:
+        {{- toYaml $module.volumes | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

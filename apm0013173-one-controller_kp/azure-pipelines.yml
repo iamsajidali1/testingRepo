@@ -1,0 +1,274 @@
+variables:
+  imageName: one-controller
+  serviceName: one-controller
+  namespace: com-att-one
+  vmssPool: 29786-ONE-DevOps-eastus2-AgentPool
+
+  # service connection names
+  imageRegistry: ONEAzureACR-NPRD
+  nprdServiceConnection: 29786-ONE-NPRD-ServiceConnection-WIF
+  prodServiceConnection: 29786-ONE-PROD-ServiceConnection-WIF
+
+  devAzEnv: nprd
+  prodAzEnv: prod
+
+  devResourceGroup: one-eastus2-nprd-infr-rg
+  prodResourceGroup: one-eastus2-prod-infr-rg
+
+  devCluster: eastus2-one-nprd-aks
+  prodCluster: eastus2-one-prod-aks
+
+  devopsKeyvault: dev-29786-eastus2-kv0
+
+trigger:
+  - azure/dev
+  - azure/prod
+
+# no PR triggers
+pr: none
+
+jobs:
+  - job: prereq
+    pool:
+      name: ${{ variables.vmssPool }}
+
+    steps:
+      - bash: |
+          set -xe
+          sudo apt-get update && sudo apt-get install --only-upgrade -y azure-cli
+        displayName: Update packages
+      - task: DockerInstaller@0
+        displayName: Docker installer
+        inputs:
+          dockerVersion: 20.10.17
+          releaseType: stable
+      - bash: |
+          set -xe
+          for item in $(sudo lsof /var/lib/dpkg/lock|awk '{print $2}'|sed -e 1d)
+          do
+              sudo kill -9 $item
+          done
+          sudo rm /var/lib/dpkg/lock ||true
+          sudo rm /var/lib/dpkg/lock-frontend ||true
+          sudo dpkg --configure -a
+          sudo apt-get install -y unzip
+        displayName: Install unzip for Helm installer
+
+  - job: build
+    dependsOn: prereq
+    pool:
+      name: ${{ variables.vmssPool }}
+
+    steps:
+      # dead on a fresh instance ?
+      - bash: |
+          set -xe
+          which docker
+          sudo service docker status
+          sudo service docker restart
+          sudo service docker status
+        displayName: Restart docker daemon
+
+      - bash: |
+          echo "##vso[task.setvariable variable=GitHash;isoutput=true]$(git rev-parse --short HEAD)"
+        name: BuildVars
+        displayName: Setting build variables
+
+      - task: Docker@2
+        displayName: Login to ACR
+        inputs:
+          command: login
+          containerRegistry: ${{ variables.imageRegistry }}
+
+      - task: AzureKeyVault@2
+        displayName: Get build secrets from KeyVault
+        inputs:
+          azureSubscription: ${{ variables.nprdServiceConnection }}
+          KeyVaultName: ${{ variables.devopsKeyvault }}
+          SecretsFilter: 'jfrog-username,jfrog-alpine-auth-token,jfrog-npm-token,jfrog-pypi-auth-token'
+
+      - bash: |
+          echo "JFROG_USERNAME=$(echo $(jfrog-username))" >> build.env
+          echo "ALPINE_AUTH_TOKEN=$(echo $(jfrog-alpine-auth-token))" >> build.env
+          echo "NPM_AUTH_TOKEN=$(echo $(jfrog-npm-token))" >> build.env
+          echo "PYPI_AUTH_TOKEN=$(echo $(jfrog-pypi-auth-token))" >> build.env
+        displayName: Create build.env with KeyVault secrets
+
+      
+      # Start of Build: one-controller
+      - task: Docker@2
+        displayName: Build controller
+        inputs:
+          command: build
+          repository: ${{ variables.imageName }}
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+          arguments:
+            --build-arg CSS_ENV=$(Build.SourceBranchName)
+            --build-arg HTTP_PROXY=$(http_proxy)
+            --build-arg HTTPS_PROXY=$(http_proxy)
+            --build-arg NO_PROXY=.extensions.svc,.vault.azure.net,10.0.0.0/8,.svc.cluster.local,.azurecr.io,.azure.com
+            --secret id=build_secrets,src=./build.env
+
+      # - bash: "./post-build.sh ${{ variables.imageName }}"
+      #   displayName: Run test suite
+
+      - task: Docker@2
+        displayName: Push controller
+        inputs:
+          command: push
+          repository: ${{ variables.imageName }}
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+      # End of Build: one-controller
+      
+      # Start of Build: one-controller-orm
+      - task: Docker@2
+        displayName: Build controller orm
+        inputs:
+          command: build
+          repository: ${{ variables.imageName }}-orm
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+          arguments:
+            --build-arg CSS_ENV=$(Build.SourceBranchName)
+            --build-arg HTTP_PROXY=$(http_proxy)
+            --build-arg HTTPS_PROXY=$(http_proxy)
+            --build-arg NO_PROXY=.extensions.svc,.vault.azure.net,10.0.0.0/8,.svc.cluster.local,.azurecr.io,.azure.com
+            --secret id=build_secrets,src=./build.env                              
+          Dockerfile: Dockerfile.orm
+
+      - task: Docker@2
+        displayName: Push controller orm
+        inputs:
+          command: push
+          repository: ${{ variables.imageName }}-orm
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+      # End of Build: one-controller-orm
+
+      # Start of Build: one-controller-proxy
+      - task: Docker@2
+        displayName: Build controller proxy
+        inputs:
+          command: build
+          repository: ${{ variables.imageName }}-proxy
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+          arguments:
+            --build-arg HTTP_PROXY=$(http_proxy)
+            --build-arg HTTPS_PROXY=$(http_proxy)
+            --build-arg NO_PROXY=.extensions.svc,.vault.azure.net,10.0.0.0/8,.svc.cluster.local,.azurecr.io,.azure.com
+            --secret id=build_secrets,src=./build.env        
+          Dockerfile: Dockerfile.proxy
+
+      - task: Docker@2
+        displayName: Push controller proxy
+        inputs:
+          command: push
+          repository: ${{ variables.imageName }}-proxy
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+      # End of Build: one-controller-proxy
+
+      # Start of Build: one-controller-docs
+      - task: Docker@2
+        displayName: Build controller docs
+        inputs:
+          command: build
+          repository: ${{ variables.imageName }}-docs
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+          Dockerfile: Dockerfile.docs
+
+      - task: Docker@2
+        displayName: Push controller docs
+        inputs:
+          command: push
+          repository: ${{ variables.imageName }}-docs
+          containerRegistry: ${{ variables.imageRegistry }}
+          tags: $(Build.SourceBranchName)-$(BuildVars.GitHash)
+      # End of Build: one-controller-docs
+
+      - task: Docker@2
+        displayName: Logout of ACR
+        inputs:
+          command: logout
+          containerRegistry: ${{ variables.imageRegistry }}
+
+  - job: deploy
+    dependsOn: build
+    variables:
+      buildHash: $[ dependencies.build.outputs['BuildVars.GitHash'] ]
+    pool:
+      name: ${{ variables.vmssPool }}
+
+    steps:
+      - checkout: self
+        submodules: true
+
+      - task: HelmInstaller@1
+        displayName: Helm installer
+        inputs:
+          helmVersionToInstall: latest
+
+      - task: KubeloginInstaller@0
+        displayName: Kubelogin installer
+        inputs:
+          kubeloginVersion: 'latest'
+
+      - bash: az --version
+        displayName: 'Show Azure CLI version'
+
+      - task: AzureCLI@2
+        displayName: "Upgrade Helm deployment"
+        inputs:
+          ${{ if eq(variables['Build.SourceBranchName'], 'dev') }}:
+            azureSubscription: "${{ variables.nprdServiceConnection }}"
+          ${{ if eq(variables['Build.SourceBranchName'], 'prod') }}:
+            azureSubscription: "${{ variables.prodServiceConnection }}"
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            set -xe
+            branch="${{ variables['Build.SourceBranchName'] }}"
+            build="$(Build.BuildNumber)"
+
+            if [ "$branch" = "prod" ]
+            then
+                azEnv="${{ variables.prodAzenv }}"
+                resourceGroup="${{ variables.prodResourceGroup }}"
+                cluster="${{ variables.prodCluster }}"
+            else
+                azEnv="${{ variables.devAzEnv }}"
+                resourceGroup="${{ variables.devResourceGroup }}"
+                cluster="${{ variables.devCluster }}"
+            fi
+
+            context=${cluster}-admin
+            echo $azEnv, $resourceGroup, $cluster, $context
+
+            export KUBECONFIG=~/.kube/config
+            rm $KUBECONFIG ||true
+
+            az aks get-credentials \
+                --name $cluster \
+                --resource-group $resourceGroup \
+                --overwrite-existing \
+                --file $KUBECONFIG \
+                --context $context
+            
+            # Pass kubeconfig to kubelogin to access k8s API
+            kubelogin convert-kubeconfig -l azurecli
+
+            helm upgrade --install ${{ variables.serviceName }}-$azEnv \
+                ./chart \
+                --values ./chart/values-$azEnv.yaml \
+                --set modules.express.image.tag=${branch}-$(buildHash) \
+                --set modules.orm.image.tag=${branch}-$(buildHash) \
+                --set modules.proxy.image.tag=${branch}-$(buildHash) \
+                --set modules.docs.image.tag=${branch}-$(buildHash) \
+                --set modules.workerJs.image.tag=${branch}-$(buildHash) \
+                --namespace ${{ variables.namespace }} \
+                --wait --debug
+    

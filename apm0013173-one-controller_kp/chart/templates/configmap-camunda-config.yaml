@@ -1,0 +1,13 @@
+{{- if .Values.modules.camunda.install -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: engine-rest-conf
+  namespace: {{ .Values.namespace }}
+  {{- with .Values.configMapAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  web.xml: {{ toYaml .Values.modules.camunda.engineRestConf | indent 2 }}
+{{- end }}

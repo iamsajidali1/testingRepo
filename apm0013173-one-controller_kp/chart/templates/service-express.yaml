@@ -1,0 +1,20 @@
+{{- if .Values.modules.express.install -}}
+{{ $module := .Values.modules.express }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "one-controller.fullname" . }}-express
+  labels:
+    {{- include "one-controller.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: {{ $module.service.type }}
+  ports:
+    - port: {{ $module.service.port }}
+      targetPort: {{ $module.service.name }}
+      protocol: {{ $module.service.protocol }}
+      name: {{ $module.service.name }}
+  selector:
+    {{- include "one-controller.selectorLabels" . | nindent 4 }}
+    {{- toYaml $module.serviceLabels | nindent 4 }}
+{{- end }}

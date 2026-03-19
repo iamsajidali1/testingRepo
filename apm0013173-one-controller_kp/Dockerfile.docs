@@ -1,0 +1,29 @@
+FROM python:alpine AS builder
+WORKDIR /app
+RUN pip install sphinx && apk --no-cache add make
+COPY docs ./
+RUN make html
+
+FROM nginx:alpine
+RUN apk update --no-cache && apk upgrade --no-cache
+# Lean the image by cutting unnecessary vulnerable packages
+RUN apk del -r tiff curl
+
+COPY --from=builder /app/build/html /usr/share/nginx/html
+
+ENV USERNAME docs
+ENV GROUP docs
+# Set non-root user permissions for application and accessory files
+RUN addgroup -S "$USERNAME" \
+    && adduser -S "$USERNAME" -G "$GROUP" -u 1001 \
+    && chown -R "$USERNAME":"$GROUP" \
+        /var/cache/nginx \
+        /var/log/nginx \
+        /usr/share/nginx/html/ \
+        /etc/nginx
+
+# Create new PID file with non-root user read/write access
+RUN touch /var/run/nginx.pid && \
+    chown -R "$USERNAME":"$GROUP" /var/run/nginx.pid
+
+USER "$USERNAME"

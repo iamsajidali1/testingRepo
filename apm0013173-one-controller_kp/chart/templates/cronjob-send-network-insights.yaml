@@ -1,0 +1,48 @@
+{{- if .Values.cronjobs }}
+{{- if .Values.cronjobs.enabled }}
+{{- if .Values.cronjobs.sendNetworkInsights.enabled }}
+{{ $module := .Values.cronjobs.sendNetworkInsights }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "one-controller.fullname" . }}-send-network-insights-aa
+  labels:
+    {{- include "one-controller.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: "{{ $module.schedule }}"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      completions: 1
+      activeDeadlineSeconds: 30
+      template:
+        metadata:
+          {{- with .Values.cronjobs.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        spec:
+          restartPolicy: Never
+          containers:
+          - image: {{ $module.image }}
+            name: {{ include "one-controller.fullname" . }}-send-network-insights-aa
+            resources:
+              {{- toYaml $module.resources | nindent 14 }}
+            {{- with $module.env }}
+            env:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            args:
+            - curl
+            - -fsSL
+            - --user
+            - "$(AAF_USERNAME):$(AAF_PASSWORD)"
+            - http://{{ $module.host }}:{{ $module.port }}/api/jobs/network-insights?reportId=1
+            - --verbose
+          restartPolicy: OnFailure
+{{- end }}
+{{- end }}
+{{- end }}

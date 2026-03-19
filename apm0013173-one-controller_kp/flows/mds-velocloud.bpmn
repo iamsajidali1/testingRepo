@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0q8hi1t" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <bpmn:process id="MdsVelocloud" name="MdsVelocloud" isExecutable="true" camunda:versionTag="0.3">
+    <bpmn:startEvent id="StartEvent_1" name="Start process">
+      <bpmn:outgoing>Flow_0favobl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task-GenerateMdsVelocloud" name="Generate MDS from VCO" camunda:type="external" camunda:topic="X-GenerateMdsVelocloud">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="vcoProtocol">${vcoProtocol}</camunda:inputParameter>
+          <camunda:inputParameter name="vcoHostname">${vcoHostname}</camunda:inputParameter>
+          <camunda:inputParameter name="vcoUsername">${vcoUsername}</camunda:inputParameter>
+          <camunda:inputParameter name="vcoPassword">${vcoPassword}</camunda:inputParameter>
+          <camunda:outputParameter name="xlsx">${xlsx}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0favobl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0fo5cdg</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0fo5cdg" sourceRef="Task-GenerateMdsVelocloud" targetRef="Task-PaperplaneSendEmail" />
+    <bpmn:endEvent id="Event_0muqo7i" name="End process">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="output" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1a7yy0j</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0favobl" sourceRef="StartEvent_1" targetRef="Task-GenerateMdsVelocloud" />
+    <bpmn:sequenceFlow id="Flow_1a7yy0j" sourceRef="Task-PaperplaneSendEmail" targetRef="Event_0muqo7i" />
+    <bpmn:serviceTask id="Task-PaperplaneSendEmail" name="Send E-mail via Paperplane" camunda:type="external" camunda:topic="X-PaperplaneSendEmailXlsx">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="xlsx">${xlsx}</camunda:inputParameter>
+          <camunda:inputParameter name="emails">${emails}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0fo5cdg</bpmn:incoming>
+      <bpmn:outgoing>Flow_1a7yy0j</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MdsVelocloud">
+      <bpmndi:BPMNEdge id="Flow_1a7yy0j_di" bpmnElement="Flow_1a7yy0j">
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="562" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0favobl_di" bpmnElement="Flow_0favobl">
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0fo5cdg_di" bpmnElement="Flow_0fo5cdg">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="410" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="145" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0yuod6y_di" bpmnElement="Task-GenerateMdsVelocloud">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0muqo7i_di" bpmnElement="Event_0muqo7i">
+        <dc:Bounds x="562" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="549" y="145" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vjy5cj_di" bpmnElement="Task-PaperplaneSendEmail">
+        <dc:Bounds x="410" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

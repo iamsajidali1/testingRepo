@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0q8hi1t" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0">
+  <bpmn:process id="RequestCrypt" name="RequestCrypt" isExecutable="true" camunda:versionTag="1.0" camunda:historyTimeToLive="90">
+    <bpmn:startEvent id="StartEvent_1" name="Start process">
+      <bpmn:outgoing>Flow_0d3c22g</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:callActivity id="Activity_19evg82" name="Crypt" calledElement="HttpRequestAaf">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">post</camunda:inputParameter>
+          <camunda:inputParameter name="url">https://crypt.web.att.com/api/v1/credentials/</camunda:inputParameter>
+          <camunda:inputParameter name="body">${body}</camunda:inputParameter>
+          <camunda:inputParameter name="ignoreCertificate">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="headers">X-Authorization: Token 0ed5f6f6b1c1936d31b6ae50f6a68e65ed908ffc
+Content-Type: application/json</camunda:inputParameter>
+          <camunda:inputParameter name="useProxy">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">http</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">pxyapp.proxy.att.com</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${8080}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0d3c22g</bpmn:incoming>
+      <bpmn:outgoing>Flow_1k1j440</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1k1j440" sourceRef="Activity_19evg82" targetRef="Activity_17wqdf1" />
+    <bpmn:callActivity id="Activity_17wqdf1" name="Decode bytes" calledElement="Base64Decode">
+      <bpmn:extensionElements>
+        <camunda:in source="bytes" target="input" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1k1j440</bpmn:incoming>
+      <bpmn:outgoing>Flow_03okrpu</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0d3c22g" sourceRef="StartEvent_1" targetRef="Activity_19evg82" />
+    <bpmn:endEvent id="Event_0ddzsab" name="End process">
+      <bpmn:incoming>Flow_03okrpu</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_03okrpu" sourceRef="Activity_17wqdf1" targetRef="Event_0ddzsab" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RequestCrypt">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="157" y="78" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19evg82_di" bpmnElement="Activity_19evg82">
+        <dc:Bounds x="260" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_17wqdf1_di" bpmnElement="Activity_17wqdf1">
+        <dc:Bounds x="410" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ddzsab_di" bpmnElement="Event_0ddzsab">
+        <dc:Bounds x="562" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="549" y="145" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1k1j440_di" bpmnElement="Flow_1k1j440">
+        <di:waypoint x="360" y="120" />
+        <di:waypoint x="410" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0d3c22g_di" bpmnElement="Flow_0d3c22g">
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="260" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03okrpu_di" bpmnElement="Flow_03okrpu">
+        <di:waypoint x="510" y="120" />
+        <di:waypoint x="562" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

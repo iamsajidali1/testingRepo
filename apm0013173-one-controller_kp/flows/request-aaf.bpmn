@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0q8hi1t" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.22.0">
+  <bpmn:process id="RequestPickAAFNode" name="RequestPickAAFNode" isExecutable="true" camunda:versionTag="0.9" camunda:historyTimeToLive="90">
+    <bpmn:startEvent id="StartEvent_1" name="Start process">
+      <bpmn:outgoing>Flow_0favobl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_0muqo7i" name="End process">
+      <bpmn:incoming>Flow_1og4jon</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0favobl" sourceRef="StartEvent_1" targetRef="Activity_0may034" />
+    <bpmn:callActivity id="Activity_0may034" name="Locate AAF" calledElement="HttpRequestAaf">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">get</camunda:inputParameter>
+          <camunda:inputParameter name="url">https://aaf.it.att.com/locate/com.att.aaf.service</camunda:inputParameter>
+          <camunda:inputParameter name="body" />
+          <camunda:inputParameter name="ignoreCertificate">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="headers" />
+          <camunda:inputParameter name="useProxy">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">http</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">pxyapp.proxy.att.com</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${8080}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0favobl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rkyczd</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_0q1g7mv" name="Parse Host" camunda:asyncBefore="true" camunda:exclusive="false" calledElement="ParseJsonPath">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="jsonpath">$.endpoint[*][hostname]</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:in source="bytes" target="json" />
+        <camunda:out source="result" target="resultHost" />
+        <camunda:in source="jsonpath" target="jsonpath" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04q6bn3</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xy1piv</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0grkjp2" sourceRef="Activity_0v04q0b" targetRef="Gateway_0puq062" />
+    <bpmn:sequenceFlow id="Flow_1xy1piv" sourceRef="Activity_0q1g7mv" targetRef="Activity_0v04q0b" />
+    <bpmn:callActivity id="Activity_0v04q0b" name="Print" calledElement="Print">
+      <bpmn:extensionElements>
+        <camunda:in source="resultHost" target="input" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1xy1piv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0grkjp2</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:parallelGateway id="Gateway_1hk68yd" camunda:asyncAfter="true" camunda:exclusive="false">
+      <bpmn:incoming>Flow_0rkyczd</bpmn:incoming>
+      <bpmn:outgoing>Flow_04q6bn3</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0da2vhm</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_0rkyczd" sourceRef="Activity_0may034" targetRef="Gateway_1hk68yd" />
+    <bpmn:sequenceFlow id="Flow_04q6bn3" sourceRef="Gateway_1hk68yd" targetRef="Activity_0q1g7mv" />
+    <bpmn:sequenceFlow id="Flow_11e6cpv" sourceRef="Gateway_0puq062" targetRef="Activity_0zeg4wv" />
+    <bpmn:parallelGateway id="Gateway_0puq062" camunda:asyncBefore="true" camunda:exclusive="false">
+      <bpmn:incoming>Flow_0grkjp2</bpmn:incoming>
+      <bpmn:incoming>Flow_1qdxai2</bpmn:incoming>
+      <bpmn:outgoing>Flow_11e6cpv</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:callActivity id="Activity_182l172" name="Parse Port" camunda:asyncBefore="true" camunda:exclusive="false" calledElement="ParseJsonPath">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="jsonpath">$.endpoint[*][port]</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:in source="bytes" target="json" />
+        <camunda:out source="result" target="resultPort" />
+        <camunda:in source="jsonpath" target="jsonpath" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0da2vhm</bpmn:incoming>
+      <bpmn:outgoing>Flow_0j1jkku</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0da2vhm" sourceRef="Gateway_1hk68yd" targetRef="Activity_182l172" />
+    <bpmn:callActivity id="Activity_0ut9kwd" name="Print" calledElement="Print">
+      <bpmn:extensionElements>
+        <camunda:in source="resultPort" target="input" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0j1jkku</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qdxai2</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0j1jkku" sourceRef="Activity_182l172" targetRef="Activity_0ut9kwd" />
+    <bpmn:sequenceFlow id="Flow_1qdxai2" sourceRef="Activity_0ut9kwd" targetRef="Gateway_0puq062" />
+    <bpmn:callActivity id="Activity_0jcnofz" name="Print&#10;(single node)" calledElement="Print">
+      <bpmn:extensionElements>
+        <camunda:in source="result" target="input" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0290x9z</bpmn:incoming>
+      <bpmn:outgoing>Flow_1og4jon</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1og4jon" sourceRef="Activity_0jcnofz" targetRef="Event_0muqo7i" />
+    <bpmn:scriptTask id="Activity_0zeg4wv" name="Pick single node" scriptFormat="javascript" camunda:resultVariable="result">
+      <bpmn:documentation>Zip hosts and ports into an array of objects and randomly provide single object from the array as a response.</bpmn:documentation>
+      <bpmn:incoming>Flow_11e6cpv</bpmn:incoming>
+      <bpmn:outgoing>Flow_0290x9z</bpmn:outgoing>
+      <bpmn:script>// Parse incoming JSON object (Jackson Java node)
+var hosts = JSON.parse(resultHost);
+var ports = JSON.parse(resultPort);
+var left = hosts.length;
+var right = ports.length;
+var length = Math.min(left, right);
+
+var result = [];
+
+// Zip and concatenate array values
+let idx;
+for (idx = 0; idx &lt; left; idx++) {
+    result.push(hosts[idx] + ":" + ports[idx].toString());
+}
+
+// Create pseudo-random index
+idx = Math.floor(Math.random() * (length - 1));
+result = result[idx];
+
+// Return single string "host:port"
+result;</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0290x9z" sourceRef="Activity_0zeg4wv" targetRef="Activity_0jcnofz" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RequestPickAAFNode">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="172" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="205" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0muqo7i_di" bpmnElement="Event_0muqo7i">
+        <dc:Bounds x="1162" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1149" y="205" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1rmshc6_di" bpmnElement="Activity_0may034">
+        <dc:Bounds x="250" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vxcy3a_di" bpmnElement="Activity_0q1g7mv">
+        <dc:Bounds x="480" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0mq5t9p_di" bpmnElement="Activity_0v04q0b">
+        <dc:Bounds x="630" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1a9362m_di" bpmnElement="Gateway_1hk68yd">
+        <dc:Bounds x="395" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_12y3hod_di" bpmnElement="Gateway_0puq062">
+        <dc:Bounds x="775" y="155" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_182l172_di" bpmnElement="Activity_182l172">
+        <dc:Bounds x="480" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ut9kwd_di" bpmnElement="Activity_0ut9kwd">
+        <dc:Bounds x="630" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jcnofz_di" bpmnElement="Activity_0jcnofz">
+        <dc:Bounds x="1010" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gm5e53_di" bpmnElement="Activity_0zeg4wv">
+        <dc:Bounds x="860" y="140" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0favobl_di" bpmnElement="Flow_0favobl">
+        <di:waypoint x="208" y="180" />
+        <di:waypoint x="250" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0grkjp2_di" bpmnElement="Flow_0grkjp2">
+        <di:waypoint x="730" y="120" />
+        <di:waypoint x="800" y="120" />
+        <di:waypoint x="800" y="155" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xy1piv_di" bpmnElement="Flow_1xy1piv">
+        <di:waypoint x="580" y="120" />
+        <di:waypoint x="630" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rkyczd_di" bpmnElement="Flow_0rkyczd">
+        <di:waypoint x="350" y="180" />
+        <di:waypoint x="395" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04q6bn3_di" bpmnElement="Flow_04q6bn3">
+        <di:waypoint x="420" y="155" />
+        <di:waypoint x="420" y="120" />
+        <di:waypoint x="480" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11e6cpv_di" bpmnElement="Flow_11e6cpv">
+        <di:waypoint x="825" y="180" />
+        <di:waypoint x="860" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0da2vhm_di" bpmnElement="Flow_0da2vhm">
+        <di:waypoint x="420" y="205" />
+        <di:waypoint x="420" y="240" />
+        <di:waypoint x="480" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0j1jkku_di" bpmnElement="Flow_0j1jkku">
+        <di:waypoint x="580" y="240" />
+        <di:waypoint x="630" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qdxai2_di" bpmnElement="Flow_1qdxai2">
+        <di:waypoint x="730" y="240" />
+        <di:waypoint x="800" y="240" />
+        <di:waypoint x="800" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1og4jon_di" bpmnElement="Flow_1og4jon">
+        <di:waypoint x="1110" y="180" />
+        <di:waypoint x="1162" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0290x9z_di" bpmnElement="Flow_0290x9z">
+        <di:waypoint x="960" y="180" />
+        <di:waypoint x="1010" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

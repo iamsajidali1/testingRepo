@@ -1,0 +1,71 @@
+leam_db.js
+mongoDB.js
+credentials
+.eslintcache
+/api/controllers/certs/client.cert.x509
+/api/controllers/certs/mcap.pem
+
+# Emacs trash
+*~
+*#*
+*.#*
+
+# Created by https://www.gitignore.io/api/angular,visualstudiocode
+
+### Angular ###
+## Angular ##
+# compiled output
+/dist
+/tmp
+/app/**/*.js
+/app/**/*.js.map
+
+# dependencies
+/node_modules
+/bower_components
+
+# IDEs and editors
+/.idea
+/.vscode
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage/*
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+#System Files
+.DS_Store
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+
+
+# End of https://www.gitignore.io/api/angular,visualstudiocode
+**/config.json
+.nyc_output
+out
+*.log
+__pycache__
+*.pem
+*.cert
+*.key
+*.x509
+# sed -e on macos
+*-e
+
+*.dockerenv
+.scannerwork
+.npmrc

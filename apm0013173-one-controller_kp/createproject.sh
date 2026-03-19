@@ -1,0 +1,13 @@
+cdpcreator createproject \
+    --app-name one-controller \
+    --namespace com.att.bok \
+    --output ./ \
+    --load-image-arg \
+    --jenkins-credentials-id 'com.att.bok_docker' \
+    --proxy pxyapp.proxy.att.com:8080 \
+    --no-proxy .att.com \
+    --no-deploy \
+    --run-pre-docker-build ./pre-build.sh \
+    --run-post-docker-build "['./post-build.sh', 'one-controller']" \
+    --run-post-docker-publish-logout ./upgrade.sh \
+    --overwrite

@@ -1,0 +1,63 @@
+{{- if .Values.cronjobs }}
+{{- if .Values.cronjobs.enabled }}
+{{- if .Values.cronjobs.syncSiteDetails.enabled }}
+{{ $module := .Values.cronjobs.syncSiteDetails }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "one-controller.fullname" . }}-sync-site-details
+  labels:
+    {{- include "one-controller.labels" . | nindent 4 }}
+  namespace: {{ .Values.namespace }}
+spec:
+  schedule: "{{ $module.schedule }}"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      completions: 1
+      activeDeadlineSeconds: 30
+      template:
+        metadata:
+          {{- with .Values.cronjobs.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        spec:
+          restartPolicy: Never
+          containers:
+          - image: {{ $module.image }}
+            name: {{ include "one-controller.fullname" . }}-sync-site-details
+            resources:
+              {{- toYaml $module.resources | nindent 14 }}
+            {{- with $module.env }}
+            env:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            args:
+            args:
+            - curl
+            - -fsSL
+            - -X
+            - POST
+            - --user
+            - "$(AAF_USERNAME):$(AAF_PASSWORD)"
+            - -H
+            - "Content-Type: application/json"
+            - -d
+            - |
+              [
+                { "orchestratorUrl":"vco206-fra1.velocloud.net", "tenantId":13, "customerId":6 },
+                { "orchestratorUrl":"velocloud1.sst.net.cn", "tenantId":257, "customerId":6 },
+                { "orchestratorUrl":"vco128-usvi1.velocloud.net", "tenantId":469, "customerId":615 },
+                { "orchestratorUrl":"velocloud1.sst.net.cn", "tenantId":313, "customerId":615 }
+
+              ]
+            - http://{{ $module.host }}:{{ $module.port }}/api/jobs/site-details
+            - --verbose
+            
+          restartPolicy: OnFailure
+{{- end }}
+{{- end }}
+{{- end }}

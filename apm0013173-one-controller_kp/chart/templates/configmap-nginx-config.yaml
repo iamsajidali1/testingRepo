@@ -1,0 +1,13 @@
+{{- if .Values.modules.proxy.install -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-conf
+  namespace: {{ .Values.namespace }}
+  {{- with .Values.configMapAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  nginx.conf: {{ toYaml .Values.modules.proxy.nginxConf | indent 2 }}
+{{- end }}

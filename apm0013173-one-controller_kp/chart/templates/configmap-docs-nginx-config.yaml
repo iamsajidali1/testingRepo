@@ -1,0 +1,13 @@
+{{- if .Values.modules.docs.install -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docs-nginx-conf
+  namespace: {{ .Values.namespace }}
+  {{- with .Values.configMapAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  nginx.conf: {{ toYaml .Values.modules.docs.nginxConf | indent 2 }}
+{{- end }}

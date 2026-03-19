@@ -1,0 +1,235 @@
+/**
+ * @param {import("sequelize").QueryInterface} queryInterface
+ * @param {import("sequelize").DataTypes} Sequelize
+ */
+function up(queryInterface, Sequelize) {
+  return queryInterface.bulkInsert(
+    "CSS_ORCHESTRATOR_LIST_FOR_LICENSE",
+    [
+      {
+        ID: 1,
+        ORCHESTRATOR: "https://vco206-fra1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 2,
+        ORCHESTRATOR: "https://vco128-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 3,
+        ORCHESTRATOR: "https://vco160-usca1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 4,
+        ORCHESTRATOR: "https://vco109-usca1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 5,
+        ORCHESTRATOR: "https://vco8-fra1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 6,
+        ORCHESTRATOR: "https://vco7-sin1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 7,
+        ORCHESTRATOR: "https://vco21-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 8,
+        ORCHESTRATOR: "https://vco91-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 9,
+        ORCHESTRATOR: "https://vco93-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 10,
+        ORCHESTRATOR: "https://vco206-fra1.velocloud.net",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 11,
+        ORCHESTRATOR: "https://vco92-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "ATT",
+        LEVEL: "MSP",
+        TAGS: "management:ATT,level:MSP",
+      },
+      {
+        ID: 12,
+        ORCHESTRATOR: "https://vco47-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 57,
+        MANAGEMENT: "FNF",
+        LEVEL: "MSP",
+        TAGS: "management:FNF,level:MSP",
+      },
+      {
+        ID: 13,
+        ORCHESTRATOR: "https://vco160-usca1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 14,
+        ORCHESTRATOR: "https://vco124-usca1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 15,
+        ORCHESTRATOR: "https://vco75-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 16,
+        ORCHESTRATOR: "https://vco129-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 17,
+        ORCHESTRATOR: "https://vco109-usca1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 18,
+        ORCHESTRATOR: "https://vco47-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 19,
+        ORCHESTRATOR: "https://vco21-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "CONFIGUREINC",
+        LEVEL: "MSP",
+        TAGS: "management:CONFIGUREINC,level:MSP",
+      },
+      {
+        ID: 20,
+        ORCHESTRATOR: "https://vco109-usca1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "NCR",
+        LEVEL: "MSP",
+        TAGS: "management:NCR,level:MSP",
+      },
+      {
+        ID: 21,
+        ORCHESTRATOR: "https://vco21-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "NCR",
+        LEVEL: "MSP",
+        TAGS: "management:NCR,level:MSP",
+      },
+      {
+        ID: 22,
+        ORCHESTRATOR: "https://vco22-fra1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "NCR",
+        LEVEL: "MSP",
+        TAGS: "management:NCR,level:MSP",
+      },
+      {
+        ID: 23,
+        ORCHESTRATOR: "https://vco47-usvi1.velocloud.net/",
+        VENDOR_TYPE_ID: 4,
+        TENANT_ID: 1,
+        MANAGEMENT: "NCR",
+        LEVEL: "MSP",
+        TAGS: "management:NCR,level:MSP",
+      },
+    ],
+    {}
+  );
+}
+
+/**
+ * @param {import("sequelize").QueryInterface} queryInterface
+ * @param {import("sequelize").DataTypes} Sequelize
+ */
+function down(queryInterface, Sequelize) {
+  return queryInterface.bulkDelete(
+    "CSS_ORCHESTRATOR_LIST_FOR_LICENSE",
+    {
+      ID: { [Sequelize.Op.lte]: 23 },
+    },
+    {}
+  );
+}
+
+module.exports = { up, down };

@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0npr23n" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.27.0">
+  <bpmn:process id="RAReport" name="Reports flow" isExecutable="true" camunda:versionTag="1" camunda:historyTimeToLive="90">
+    <bpmn:callActivity id="Activity_04t3am9" name="Decode bytes" calledElement="Base64Decode">
+      <bpmn:extensionElements>
+        <camunda:in source="bytes" target="input" />
+        <camunda:out variables="all" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_12fehc8</bpmn:incoming>
+      <bpmn:outgoing>Flow_06efneu</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:callActivity id="Activity_0gh9l0a" name="POST report to RA" calledElement="HttpRequest">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">post</camunda:inputParameter>
+          <camunda:inputParameter name="url">
+            <camunda:script scriptFormat="JavaScript">var baseurl = java.lang.System.getenv("RA_VELOCLOUD_URL") 
+var endpoint = execution.getVariable("apiEndpoint");
+baseurl + endpoint;</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:script scriptFormat="javascript">// Retrieve variables from execution context
+var devices = execution.getVariable("devices");
+var params = execution.getVariable("params");
+
+// Create JSON objects from the retrieved variables
+var json = S('{}');
+var jsonDevices = S(devices);
+var jsonParams = S(params);
+
+// Set properties in the JSON object
+json.prop("devices", jsonDevices);
+json.prop("params", jsonParams);
+
+// Assign the JSON object to the body variable
+var body = json;</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="ignoreCertificate">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="headers">
+            <camunda:script scriptFormat="JavaScript">// Retrieve and parse the output variable
+var output = JSON.parse(execution.getVariable("output"))[0];
+
+// Retrieve other variables
+var cryptBody = execution.getVariable("cryptBody");
+var iteration = execution.getVariable("crypt_iteration");
+
+// Parse the cryptBody JSON and get the specific body element
+var json = S(cryptBody);
+var bodies = json.elements();
+var body = bodies.get(iteration);
+
+// Extract necessary values
+var url = output["url"];
+var user = output["username"];
+var pass = output["password"];
+var tenant = body.prop("tenantid").value();
+
+// Prepare headers
+var headers = [
+    "Content-Type: application/json",
+    "X-Url: " + url,
+    "X-Username: " + user,
+    "X-Password: " + pass,
+    "X-Tenant-Id: " + tenant
+];
+
+// Join headers into a single string
+var headersString = headers.join("\n");
+
+// Set the headersString as a process variable if needed
+execution.setVariable("headersString", headersString);</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="useProxy">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">http</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">pxyapp.proxy.att.com</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${8080}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_06efneu</bpmn:incoming>
+      <bpmn:outgoing>Flow_0mxey3o</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="Event_1uztklq" name="End process">
+      <bpmn:incoming>Flow_1akdvfe</bpmn:incoming>
+      <bpmn:incoming>Flow_19regen</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:callActivity id="Activity_0ovl3n0" name="Crypt" calledElement="HttpRequest">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">post</camunda:inputParameter>
+          <camunda:inputParameter name="url">
+            <camunda:script scriptFormat="JavaScript">// http://crypt-on-k8s/api/v1/credentials/
+java.lang.System.getenv("CRYPT_URL") + "/api/v1/credentials/";</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:script scriptFormat="javascript">var crypt_body = execution.getVariable("cryptBody");
+var iteration = execution.getVariable("crypt_iteration");
+var json = S(crypt_body);
+var bodies = json.elements();
+body = bodies.get(iteration);
+</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="ignoreCertificate">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="headers">
+            <camunda:script scriptFormat="JavaScript">var token = java.lang.System.getenv("CRYPT_API_TOKEN")
+token = "Authorization: Token " + token;
+headers = token + "\r\nContent-Type: application/json";</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="useProxy">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">http</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">pxyapp.proxy.att.com</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${8080}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14pb8ku</bpmn:incoming>
+      <bpmn:incoming>Flow_1c3hze9</bpmn:incoming>
+      <bpmn:outgoing>Flow_12fehc8</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_12fehc8" sourceRef="Activity_0ovl3n0" targetRef="Activity_04t3am9" />
+    <bpmn:sequenceFlow id="Flow_06efneu" sourceRef="Activity_04t3am9" targetRef="Activity_0gh9l0a" />
+    <bpmn:startEvent id="Event_13jf6db" name="Start process">
+      <bpmn:outgoing>Flow_0cujpjh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_0fdrof9" name="Send E-mail via Paperplane" camunda:type="external" camunda:topic="X-PaperplaneSendEmailXlsx">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="emails">${emails}</camunda:inputParameter>
+          <camunda:inputParameter name="body">${execution.getVariable("emailBody")}</camunda:inputParameter>
+          <camunda:inputParameter name="filename">${execution.getVariable("filename")}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0cri8th</bpmn:incoming>
+      <bpmn:outgoing>Flow_1grjfi0</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1grjfi0" sourceRef="Activity_0fdrof9" targetRef="Gateway_0rktk5l" />
+    <bpmn:task id="Activity_0vrz9hj" name="Initialize Variables">
+      <bpmn:documentation>creates loop around cryptdata</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="crypt_iteration">
+            <camunda:script scriptFormat="groovy">int crypt_iteration = 0</camunda:script>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0cujpjh</bpmn:incoming>
+      <bpmn:outgoing>Flow_1cw8o3d</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1cw8o3d" sourceRef="Activity_0vrz9hj" targetRef="Gateway_06vi03y" />
+    <bpmn:sequenceFlow id="Flow_0cujpjh" sourceRef="Event_13jf6db" targetRef="Activity_0vrz9hj" />
+    <bpmn:exclusiveGateway id="Gateway_0rktk5l" name="Iteration decision" default="Flow_1jtye1j">
+      <bpmn:incoming>Flow_1grjfi0</bpmn:incoming>
+      <bpmn:outgoing>Flow_1akdvfe</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1jtye1j</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1akdvfe" name="end" sourceRef="Gateway_0rktk5l" targetRef="Event_1uztklq">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="groovy">import groovy.json.JsonSlurper
+iteration = execution.getVariable("crypt_iteration")
+iteration = iteration + 1
+println iteration
+crypt_array = execution.getVariable("cryptBody")
+def jsonSlurper = new JsonSlurper()
+def crypt_array_json = jsonSlurper.parseText(crypt_array)
+crypt_array_size = crypt_array_json.size()
+println crypt_array_size
+crypt_array_size == iteration
+
+</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:task id="Activity_04dqy73" name="iterate">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="crypt_iteration">
+            <camunda:script scriptFormat="groovy">iteration = execution.getVariable("crypt_iteration")
+crypt_iteration = iteration + 1</camunda:script>
+          </camunda:outputParameter>
+          <camunda:outputParameter name="xlsx">[]</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1jtye1j</bpmn:incoming>
+      <bpmn:outgoing>Flow_14pb8ku</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1jtye1j" name="else" sourceRef="Gateway_0rktk5l" targetRef="Activity_04dqy73" />
+    <bpmn:sequenceFlow id="Flow_14pb8ku" sourceRef="Activity_04dqy73" targetRef="Activity_0ovl3n0" />
+    <bpmn:sequenceFlow id="Flow_0mxey3o" sourceRef="Activity_0gh9l0a" targetRef="Activity_1xeh41q" />
+    <bpmn:sequenceFlow id="Flow_1ppql7f" sourceRef="Activity_1xeh41q" targetRef="Activity_0nqs7rd" />
+    <bpmn:callActivity id="Activity_1xeh41q" name="RA output parse" calledElement="ParseJsonPath">
+      <bpmn:extensionElements>
+        <camunda:in source="firstOnly" target="firstOnly" />
+        <camunda:in source="jsonpath" target="jsonpath" />
+        <camunda:in source="bytes" target="json" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="varname">json</camunda:inputParameter>
+          <camunda:inputParameter name="jsonpath">$.data[*].value</camunda:inputParameter>
+          <camunda:inputParameter name="firstOnly">1</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:out source="result" target="xlsx" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0mxey3o</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ppql7f</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:exclusiveGateway id="Gateway_06vi03y" default="Flow_1c3hze9">
+      <bpmn:incoming>Flow_1cw8o3d</bpmn:incoming>
+      <bpmn:outgoing>Flow_1c3hze9</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1il7j3u</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1c3hze9" name="sdwan path" sourceRef="Gateway_06vi03y" targetRef="Activity_0ovl3n0" />
+    <bpmn:callActivity id="Activity_19n4ngt" name="POST report to RA" calledElement="HttpRequest">
+      <bpmn:extensionElements>
+        <camunda:in variables="all" />
+        <camunda:out variables="all" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="method">post</camunda:inputParameter>
+          <camunda:inputParameter name="url">
+            <camunda:script scriptFormat="JavaScript">var baseurl = java.lang.System.getenv("RA_UTILITIES_URL") 
+var endpoint = execution.getVariable("apiEndpoint");
+baseurl + endpoint;</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="body">
+            <camunda:script scriptFormat="javascript">var device = execution.getVariable("devices");
+var param = execution.getVariable("params");
+//body = [];
+//body.add(device);
+//body.add(param);
+
+
+var json = S('{}');
+var json_d = S(device);
+var json_p = S(param)
+json.prop("devices",json_d);
+json.prop("params",json_p);
+body = json;</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="ignoreCertificate">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="headers">
+            <camunda:script scriptFormat="JavaScript">var headers = ["Content-Type: application/json"];
+headers.join("\n");</camunda:script>
+          </camunda:inputParameter>
+          <camunda:inputParameter name="useProxy">${false}</camunda:inputParameter>
+          <camunda:inputParameter name="proxyProtocol">http</camunda:inputParameter>
+          <camunda:inputParameter name="proxyHost">pxyapp.proxy.att.com</camunda:inputParameter>
+          <camunda:inputParameter name="proxyPort">${8080}</camunda:inputParameter>
+          <camunda:outputParameter name="status">${status}</camunda:outputParameter>
+          <camunda:outputParameter name="statusText">${statusText}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1il7j3u</bpmn:incoming>
+      <bpmn:outgoing>Flow_1liyqz7</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:serviceTask id="Activity_1hwnie8" name="Send E-mail via Paperplane" camunda:type="external" camunda:topic="X-PaperplaneSendEmailXlsx">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="emails">${emails}</camunda:inputParameter>
+          <camunda:inputParameter name="body">${execution.getVariable("emailBody")}</camunda:inputParameter>
+          <camunda:inputParameter name="filename">${execution.getVariable("filename")}</camunda:inputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_08vcsro</bpmn:incoming>
+      <bpmn:outgoing>Flow_19regen</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_19regen" sourceRef="Activity_1hwnie8" targetRef="Event_1uztklq" />
+    <bpmn:callActivity id="Activity_1i1ul5j" name="RA output parse" calledElement="ParseJsonPath">
+      <bpmn:extensionElements>
+        <camunda:in source="firstOnly" target="firstOnly" />
+        <camunda:in source="jsonpath" target="jsonpath" />
+        <camunda:in source="bytes" target="json" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="varname">json</camunda:inputParameter>
+          <camunda:inputParameter name="jsonpath">$.data[*].value</camunda:inputParameter>
+          <camunda:inputParameter name="firstOnly">1</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:out source="result" target="xlsx" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1liyqz7</bpmn:incoming>
+      <bpmn:outgoing>Flow_19pq5m6</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_1liyqz7" sourceRef="Activity_19n4ngt" targetRef="Activity_1i1ul5j" />
+    <bpmn:sequenceFlow id="Flow_19pq5m6" sourceRef="Activity_1i1ul5j" targetRef="Activity_1yq01om" />
+    <bpmn:sequenceFlow id="Flow_1il7j3u" name="utilities path" sourceRef="Gateway_06vi03y" targetRef="Activity_19n4ngt">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="groovy">String path;
+path = execution.getVariable("apiEndpoint");
+String comparing = "others";
+String[] output;
+output = path.split('/');
+pathcompare = output[2];
+pathcompare == comparing
+//assert output[1] == comparing</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:callActivity id="Activity_1yq01om" name="RA output parse" calledElement="ParseJsonPath">
+      <bpmn:extensionElements>
+        <camunda:in source="firstOnly" target="firstOnly" />
+        <camunda:in source="jsonpath" target="jsonpath" />
+        <camunda:in source="bytes" target="json" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="varname">json</camunda:inputParameter>
+          <camunda:inputParameter name="jsonpath">$.filename</camunda:inputParameter>
+          <camunda:inputParameter name="firstOnly">1</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:out source="result" target="filename" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_19pq5m6</bpmn:incoming>
+      <bpmn:outgoing>Flow_08vcsro</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_08vcsro" sourceRef="Activity_1yq01om" targetRef="Activity_1hwnie8" />
+    <bpmn:callActivity id="Activity_0nqs7rd" name="RA output parse" calledElement="ParseJsonPath">
+      <bpmn:extensionElements>
+        <camunda:in source="firstOnly" target="firstOnly" />
+        <camunda:in source="jsonpath" target="jsonpath" />
+        <camunda:in source="bytes" target="json" />
+        <camunda:inputOutput>
+          <camunda:inputParameter name="varname">json</camunda:inputParameter>
+          <camunda:inputParameter name="jsonpath">$.filename</camunda:inputParameter>
+          <camunda:inputParameter name="firstOnly">1</camunda:inputParameter>
+        </camunda:inputOutput>
+        <camunda:out source="result" target="filename" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ppql7f</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cri8th</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_0cri8th" sourceRef="Activity_0nqs7rd" targetRef="Activity_0fdrof9" />
+    <bpmn:textAnnotation id="TextAnnotation_0s9ls1a">
+      <bpmn:text>Parameters for API</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1rkzai5" sourceRef="Event_13jf6db" targetRef="TextAnnotation_0s9ls1a" />
+    <bpmn:textAnnotation id="TextAnnotation_05api67">
+      <bpmn:text>Pulls X-Authorization from CRYPT_API_TOKEN env var</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1noe657" sourceRef="Activity_0ovl3n0" targetRef="TextAnnotation_05api67" />
+    <bpmn:textAnnotation id="TextAnnotation_0kcnncc">
+      <bpmn:text>Pulls the first item from jsonpath results</bpmn:text>
+    </bpmn:textAnnotation>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RAReport">
+      <bpmndi:BPMNShape id="Activity_04t3am9_di" bpmnElement="Activity_04t3am9">
+        <dc:Bounds x="917" y="407" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0gh9l0a_di" bpmnElement="Activity_0gh9l0a">
+        <dc:Bounds x="1067" y="407" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1uztklq_di" bpmnElement="Event_1uztklq">
+        <dc:Bounds x="1762" y="429" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1749" y="475" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ovl3n0_di" bpmnElement="Activity_0ovl3n0">
+        <dc:Bounds x="767" y="407" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13jf6db_di" bpmnElement="Event_13jf6db">
+        <dc:Bounds x="192" y="429" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="177" y="475" width="65" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fdrof9_di" bpmnElement="Activity_0fdrof9">
+        <dc:Bounds x="1450" y="407" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vrz9hj_di" bpmnElement="Activity_0vrz9hj">
+        <dc:Bounds x="300" y="407" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0rktk5l_di" bpmnElement="Gateway_0rktk5l" isMarkerVisible="true">
+        <dc:Bounds x="1575" y="422" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1559" y="392" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_04dqy73_di" bpmnElement="Activity_04dqy73">
+        <dc:Bounds x="767" y="670" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_15zhgw5_di" bpmnElement="Activity_1xeh41q">
+        <dc:Bounds x="1210" y="407" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_06vi03y_di" bpmnElement="Gateway_06vi03y" isMarkerVisible="true">
+        <dc:Bounds x="515" y="422" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0b4oro4" bpmnElement="Activity_19n4ngt">
+        <dc:Bounds x="1067" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1fkb3k3" bpmnElement="Activity_1hwnie8">
+        <dc:Bounds x="1520" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1f3q9uz" bpmnElement="Activity_1i1ul5j">
+        <dc:Bounds x="1210" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_12uv3ov" bpmnElement="Activity_1yq01om">
+        <dc:Bounds x="1360" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1n3f8vm" bpmnElement="Activity_0nqs7rd">
+        <dc:Bounds x="1330" y="407" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0s9ls1a_di" bpmnElement="TextAnnotation_0s9ls1a">
+        <dc:Bounds x="153" y="256" width="113" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_05api67_di" bpmnElement="TextAnnotation_05api67">
+        <dc:Bounds x="762" y="560" width="313" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0kcnncc_di" bpmnElement="TextAnnotation_0kcnncc">
+        <dc:Bounds x="1155" y="560" width="230" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_12fehc8_di" bpmnElement="Flow_12fehc8">
+        <di:waypoint x="867" y="447" />
+        <di:waypoint x="917" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06efneu_di" bpmnElement="Flow_06efneu">
+        <di:waypoint x="1017" y="447" />
+        <di:waypoint x="1067" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1grjfi0_di" bpmnElement="Flow_1grjfi0">
+        <di:waypoint x="1550" y="447" />
+        <di:waypoint x="1575" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cw8o3d_di" bpmnElement="Flow_1cw8o3d">
+        <di:waypoint x="400" y="447" />
+        <di:waypoint x="515" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cujpjh_di" bpmnElement="Flow_0cujpjh">
+        <di:waypoint x="228" y="447" />
+        <di:waypoint x="300" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1akdvfe_di" bpmnElement="Flow_1akdvfe">
+        <di:waypoint x="1625" y="447" />
+        <di:waypoint x="1762" y="447" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1684" y="429" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jtye1j_di" bpmnElement="Flow_1jtye1j">
+        <di:waypoint x="1600" y="472" />
+        <di:waypoint x="1600" y="710" />
+        <di:waypoint x="867" y="710" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1605" y="588" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14pb8ku_di" bpmnElement="Flow_14pb8ku">
+        <di:waypoint x="767" y="710" />
+        <di:waypoint x="740" y="710" />
+        <di:waypoint x="740" y="460" />
+        <di:waypoint x="767" y="458" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mxey3o_di" bpmnElement="Flow_0mxey3o">
+        <di:waypoint x="1167" y="447" />
+        <di:waypoint x="1210" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ppql7f_di" bpmnElement="Flow_1ppql7f">
+        <di:waypoint x="1310" y="447" />
+        <di:waypoint x="1330" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c3hze9_di" bpmnElement="Flow_1c3hze9">
+        <di:waypoint x="565" y="447" />
+        <di:waypoint x="767" y="447" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="638" y="429" width="57" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19regen_di" bpmnElement="Flow_19regen">
+        <di:waypoint x="1620" y="120" />
+        <di:waypoint x="1780" y="120" />
+        <di:waypoint x="1780" y="429" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1liyqz7_di" bpmnElement="Flow_1liyqz7">
+        <di:waypoint x="1167" y="120" />
+        <di:waypoint x="1210" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19pq5m6_di" bpmnElement="Flow_19pq5m6">
+        <di:waypoint x="1310" y="120" />
+        <di:waypoint x="1360" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1il7j3u_di" bpmnElement="Flow_1il7j3u">
+        <di:waypoint x="540" y="422" />
+        <di:waypoint x="540" y="120" />
+        <di:waypoint x="1067" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="550" y="103" width="59" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08vcsro_di" bpmnElement="Flow_08vcsro">
+        <di:waypoint x="1460" y="120" />
+        <di:waypoint x="1520" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cri8th_di" bpmnElement="Flow_0cri8th">
+        <di:waypoint x="1430" y="447" />
+        <di:waypoint x="1450" y="447" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1rkzai5_di" bpmnElement="Association_1rkzai5">
+        <di:waypoint x="210" y="429" />
+        <di:waypoint x="210" y="286" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1noe657_di" bpmnElement="Association_1noe657">
+        <di:waypoint x="817" y="487" />
+        <di:waypoint x="817" y="550" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

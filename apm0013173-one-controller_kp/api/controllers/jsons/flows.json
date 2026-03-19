@@ -1,0 +1,951 @@
+[
+    {
+        "workflowId": 1,
+        "workflow": "Logical change",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": "0"
+            },
+            {
+                "label": "Pre Validation",
+                "routerLink": "pre-validation",
+                "tabindex": "1",
+                "title": "Pre-change Validation show commands"
+            },
+            {
+                "label": "Configuration",
+                "routerLink": "configuration",
+                "tabindex": "2",
+                "title": "Configuration Script"
+            },
+            {
+                "label": "Post Validation",
+                "routerLink": "post-validation",
+                "tabindex": "3",
+                "title": "Post-change Validation show commands"
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": "4",
+                "title": "Summary of the Change"
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Check Device Availability",
+                        "action": "checkDeviceAvailability",
+                        "status": "n/a",
+                        "message": "checking if the device is available for configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 2,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchFormControls",
+                        "status": "n/a",
+                        "message": "fetching the required form controls from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "data-collection",
+                "next": "pre-validation",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Run Pre-Validation Commands",
+                        "action": "runPreValidationCommands",
+                        "status": "n/a",
+                        "message": "executing pre-validation show commands onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "pre-validation",
+                "next": "configuration",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Generate Configuration",
+                        "action": "generateConfiguration",
+                        "status": "n/a",
+                        "message": "generating configuration using data collection variables",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "pre-validation",
+                "current": "configuration",
+                "next": "post-validation",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will push the configuration onto the target device.\n Do you want to continue?",
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Set Pre-Change Checkpoint",
+                        "action": "setPreChangeCheckpoint",
+                        "status": "n/a",
+                        "message": "capturing pre-change configuration state for rollback operation",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Execute Configuration Script",
+                        "action": "pushConfiguration",
+                        "status": "n/a",
+                        "message": "configuration script is now being executed onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 2,
+                        "title": "Run Post-Validation Commands",
+                        "action": "runPostValidationCommands",
+                        "status": "n/a",
+                        "message": "executing post-validation show commands onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "pre-validation",
+                "current": "post-validation",
+                "next": "summary",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Commit Configuration Changes",
+                        "action": "acceptConfigChanges",
+                        "status": "n/a",
+                        "message": "configuration changes are being committed onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Check For Change Requests",
+                        "action": "createChangeRequest",
+                        "status": "n/a",
+                        "message": "checking for the requirements to create a change request",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "workflowId": 2,
+        "workflow": "Data collection",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": "0"
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": "1"
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchFormControls",
+                        "status": "n/a",
+                        "message": "fetching the required form controls from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": null,
+                "current": "data-collection",
+                "next": "summary",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will save the entered information to the inventory.\n Do you want to continue?",
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Save Data Collection",
+                        "action": "saveDataCollection",
+                        "status": "n/a",
+                        "message": "saving the collected information into the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Generate Configuration",
+                        "action": "generateConfiguration",
+                        "status": "n/a",
+                        "message": "generating configuration using data collection variables",
+                        "shouldExecute": false,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 2,
+                        "title": "Upload Configuration",
+                        "action": "uploadSdsConfiguration",
+                        "status": "n/a",
+                        "message": "uploading the configuration onto ericsson orchestrator",
+                        "shouldExecute": false,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "workflowId": 3,
+        "workflow": "Show commands",
+        "steps": [
+            {
+                "label": "Show Commands",
+                "routerLink": "pre-validation",
+                "tabindex": "0"
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "pre-validation",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Run Validation Show Commands",
+                        "action": "runPreValidationCommands",
+                        "status": "n/a",
+                        "message": "executing validation show commands onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "pre-validation",
+                "next": null,
+                "processes": []
+            }
+        ]
+    },
+    {
+        "workflowId": 4,
+        "workflow": "Show commands with variables",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": "0"
+            },
+            {
+                "label": "Show Commands",
+                "routerLink": "pre-validation",
+                "tabindex": "1",
+                "title": "Validation Show Commands"
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchFormControls",
+                        "status": "n/a",
+                        "message": "fetching the required form controls from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": null,
+                "current": "data-collection",
+                "next": "pre-validation",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Run Validation Show Commands",
+                        "action": "runPreValidationCommands",
+                        "status": "n/a",
+                        "message": "executing validation show commands onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "pre-validation",
+                "next": null,
+                "processes": []
+            }
+        ]
+    },
+    {
+        "workflowId": 6,
+        "workflow": "Generate config",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": 0
+            },
+            {
+                "label": "Configuration",
+                "routerLink": "configuration",
+                "tabindex": 1,
+                "title": "Configuration Script"
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchFormControls",
+                        "status": "n/a",
+                        "message": "fetching the required form controls from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "data-collection",
+                "next": "configuration",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Generate Configuration",
+                        "action": "generateConfiguration",
+                        "status": "n/a",
+                        "message": "generating configuration using data collection variables",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "configuration",
+                "next": null,
+                "processes": []
+            }
+        ]
+    },
+    {
+        "workflowId": 8,
+        "workflow": "Bulk VCO edge provisioning",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": 0
+            },
+            {
+                "label": "Configuration",
+                "routerLink": "configuration",
+                "tabindex": 1,
+                "title": "Configuration Script"
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": 2
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchControlsFromInventory",
+                        "status": "n/a",
+                        "message": "fetching the list of orchestrators from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "data-collection",
+                "next": "configuration",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Generate Configuration",
+                        "action": "generateConfiguration",
+                        "status": "n/a",
+                        "message": "generating configuration using data collection variables",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "configuration",
+                "next": "summary",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will provision the edge(s) for selected orchestrator(s). \nDo you want to continue?",
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create VCO Edge(s)",
+                        "action": "provisionEdgesToOrchestrator",
+                        "status": "n/a",
+                        "message": "requesting to provision the edge(s) onto the selected vco(s)",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "configuration",
+                "current": "summary",
+                "next": null,
+                "processes": [],
+                "shouldConfirm": false,
+                "confirmMessage": null
+            }
+        ]
+    },
+    {
+        "workflowId": 9,
+        "workflow": "MDS config generator",
+        "steps": [
+            {
+                "label": "Credentials",
+                "routerLink": "credential",
+                "tabindex": 0,
+                "title": "Orchestrator Credentials"
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": 1
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "credential",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Cred Collection",
+                        "action": "getOrchestratorList",
+                        "status": "n/a",
+                        "message": "fetching the orchestrators from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "credential",
+                "next": "summary",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will download the MDS for selected VCO, if the credentials provided are valid. \nDo you want to continue?",
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Update Transaction",
+                        "action": "updateTransactionForSdWan",
+                        "status": "n/a",
+                        "message": "updating the transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Generate MDS Config",
+                        "action": "generateMdsConfig",
+                        "status": "n/a",
+                        "message": "generating the MDS config file for the selected velocloud orchestrator. please note that this might take a while",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "credential",
+                "current": "summary",
+                "next": null,
+                "processes": [],
+                "shouldConfirm": false,
+                "confirmMessage": null
+            }
+        ]
+    },
+    {
+        "workflowId": 10,
+        "workflow": "Bulk VCO users provisioning",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": 0
+            },
+            {
+                "label": "Configuration",
+                "routerLink": "configuration",
+                "tabindex": 1,
+                "title": "Configuration Script"
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": 2
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchControlsFromInventory",
+                        "status": "n/a",
+                        "message": "fetching the list of orchestrators from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "data-collection",
+                "next": "configuration",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Generate Configuration",
+                        "action": "generateConfiguration",
+                        "status": "n/a",
+                        "message": "generating configuration using data collection variables",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "configuration",
+                "next": "summary",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will onboard the user(s) for selected orchestrator(s). \nDo you want to continue?",
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Onboard VCO User(s)",
+                        "action": "provisionUsersToOrchestrator",
+                        "status": "n/a",
+                        "message": "requesting to onboard the user(s) to the selected vco",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "configuration",
+                "current": "summary",
+                "next": null,
+                "processes": [],
+                "shouldConfirm": false,
+                "confirmMessage": null
+            }
+        ]
+    },
+    {
+        "workflowId": 11,
+        "workflow": "Generate device report",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": 0
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": 1
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchControlsFromInventory",
+                        "status": "n/a",
+                        "message": "fetching the list of orchestrators from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": null,
+                "current": "data-collection",
+                "next": "summary",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will send the device report for selected orchestrators to the recipients. \nDo you want to continue?",
+                "processes": [
+                    {
+                        "order": 1,
+                        "title": "Generate Device Report",
+                        "action": "generateDeviceReports",
+                        "status": "n/a",
+                        "message": "requesting for the device reports for the selected orchestrators",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "summary",
+                "next": null,
+                "processes": [],
+                "shouldConfirm": false,
+                "confirmMessage": null
+            }
+        ]
+    },
+    {
+        "workflowId": 12,
+        "workflow": "LAN activation",
+        "steps": [
+            {
+                "label": "Lan Activation",
+                "routerLink": "data-collection",
+                "tabindex": 0
+            },
+            {
+                "label": "Post Validation",
+                "routerLink": "post-validation",
+                "tabindex": 1,
+                "title": "Post-change Validation show commands"
+            },
+            {
+                "label": "Summary",
+                "routerLink": "summary",
+                "tabindex": 2,
+                "title": "Summary of the Change"
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Check Device Availability",
+                        "action": "checkDeviceAvailability",
+                        "status": "n/a",
+                        "message": "checking if the device is available for configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 2,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchFormControls",
+                        "status": "n/a",
+                        "message": "fetching the required form controls from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "landing",
+                "current": "data-collection",
+                "next": "post-validation",
+                "shouldConfirm": true,
+                "confirmMessage": "Please note, this action is going to unshut the LAN Interface on the selected device.\n This will trigger the advertisement of the LAN subnets from this router into the WAN network. \n\n Would you like to continue?",
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Activate LAN Interface",
+                        "action": "activateLan",
+                        "status": "n/a",
+                        "message": "activating lan interface for the selected host device, this process might take a while",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "post-validation",
+                "next": "summary",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Commit Configuration Changes",
+                        "action": "acceptConfigChanges",
+                        "status": "n/a",
+                        "message": "configuration changes are being committed onto the device",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Execute Cleanup Activities",
+                        "action": "cleanupAfterLanActivation",
+                        "status": "n/a",
+                        "message": "post lan activation cleanup activities are in progress",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "workflowId": 14,
+        "workflow": "Network insights",
+        "steps": [
+            {
+                "label": "Data Collection",
+                "routerLink": "data-collection",
+                "tabindex": 0
+            },
+            {
+                "label": "Network Insights",
+                "routerLink": "network-insights",
+                "tabindex": 1
+            }
+        ],
+        "drivers": [
+            {
+                "previous": null,
+                "current": "landing",
+                "next": "data-collection",
+                "shouldConfirm": false,
+                "confirmMessage": null,
+                "processes": [
+                    {
+                        "order": 0,
+                        "title": "Create New Transaction",
+                        "action": "createTransaction",
+                        "status": "n/a",
+                        "message": "creating a new transaction for this configuration",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    },
+                    {
+                        "order": 1,
+                        "title": "Prepare for Data Collection",
+                        "action": "fetchControlsFromInventory",
+                        "status": "n/a",
+                        "message": "fetching the list of orchestrators from the inventory",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": null,
+                "current": "data-collection",
+                "next": "network-insights",
+                "shouldConfirm": true,
+                "confirmMessage": "This action will pull network insights report for selected orchestrators. \nDo you want to continue?",
+                "processes": [
+                    {
+                        "order": 1,
+                        "title": "Generate Network Insights",
+                        "action": "fetchNetworkInsights",
+                        "status": "n/a",
+                        "message": "generating network insights for the selected orchestrator",
+                        "shouldExecute": true,
+                        "allowSkipOnFail": false
+                    }
+                ]
+            },
+            {
+                "previous": "data-collection",
+                "current": "network-insights",
+                "next": null,
+                "processes": [],
+                "shouldConfirm": false,
+                "confirmMessage": null
+            }
+        ]
+    }
+]
