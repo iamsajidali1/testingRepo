@@ -24,14 +24,57 @@
       </div>
     </div>
   </section>
-  <section *ngIf="!hasLoadError">
+  <section *ngIf="!hasLoadError && reports.length > 0">
+    <div class="report-toolbar" *ngIf="!reportsLoading">
+      <span class="p-input-icon-left report-search">
+        <i class="pi pi-search"></i>
+        <input
+          pInputText
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchTermChange()"
+          placeholder="Search by report name or vendor"
+        />
+      </span>
+      <div class="view-toggle">
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-th-large"
+          label="Cards"
+          class="p-button-rounded p-button-outlined"
+          [ngClass]="{ 'active-toggle': viewMode === 'card' }"
+          (click)="setViewMode('card')"
+        ></button>
+        <button
+          pButton
+          pRipple
+          type="button"
+          icon="pi pi-table"
+          label="Table"
+          class="p-button-rounded p-button-outlined"
+          [ngClass]="{ 'active-toggle': viewMode === 'table' }"
+          (click)="setViewMode('table')"
+        ></button>
+      </div>
+    </div>
     <div class="row" *ngIf="reportsLoading">
       <div class="col-4 mb-2" *ngFor="let dummy of [1, 2, 3]">
         <p-skeleton height="20rem" borderRadius="1rem"></p-skeleton>
       </div>
     </div>
-    <div class="row" *ngIf="!reportsLoading">
-      <div class="col-4 mb-2" *ngFor="let report of reports">
+    <div class="row" *ngIf="!reportsLoading && filteredReports.length === 0">
+      <div class="col-12">
+        <div class="empty-filter-state">
+          <i class="pi pi-search"></i>
+          <h4>No matching reports found</h4>
+          <p>Try a different report name or vendor keyword.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row" *ngIf="!reportsLoading && viewMode === 'card'">
+      <div class="col-4 mb-2" *ngFor="let report of filteredReports">
         <p-card>
           <div class="report-card">
             <h3>{{ report.name }}</h3>
@@ -39,7 +82,7 @@
               class="chip-wrapper mr-1"
               [ngStyle]="{ background: report.colors.service }"
             >
-              {{ report.services }}
+              {{ getServiceLabel(report) }}
             </div>
             <div
               class="chip-wrapper"
@@ -77,5 +120,69 @@
         </p-card>
       </div>
     </div>
+    <p-table
+      *ngIf="!reportsLoading && viewMode === 'table' && filteredReports.length > 0"
+      [value]="filteredReports"
+      responsiveLayout="scroll"
+      styleClass="p-datatable-sm report-table"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Report name</th>
+          <th>Service</th>
+          <th>Vendor</th>
+          <th>Description</th>
+          <th class="action-column">Action</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-report>
+        <tr>
+          <td class="report-name">{{ report.name }}</td>
+          <td>
+            <span
+              class="chip-wrapper"
+              [ngStyle]="{ background: report.colors.service }"
+            >
+              {{ getServiceLabel(report) }}
+            </span>
+          </td>
+          <td>
+            <span
+              class="chip-wrapper"
+              [ngStyle]="{ background: report.colors.vendor }"
+            >
+              {{ report.vendor | uppercase }}
+            </span>
+          </td>
+          <td class="report-description">{{ report.description }}</td>
+          <td class="action-column">
+            <button
+              pButton
+              pRipple
+              type="button"
+              size="small"
+              [icon]="
+                isLoading && selectedReportId === report.id
+                  ? 'pi pi-spin pi-spinner'
+                  : report.workflowId === REPORT_WORKFLOW_ID
+                  ? 'pi pi-at'
+                  : 'pi pi-chart-bar'
+              "
+              [disabled]="isLoading"
+              [label]="
+                report.workflowId === REPORT_WORKFLOW_ID
+                  ? 'Generate'
+                  : 'Visualize'
+              "
+              class="p-button-rounded"
+              [ngClass]="{
+                'p-button-success': report.workflowId === METRICS_WORKFLOW_ID || report.workflowId === NETWORK_STATISTICS_ID
+              }"
+              (click)="generateReport(report.id)"
+            ></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
   </section>
 </section>
