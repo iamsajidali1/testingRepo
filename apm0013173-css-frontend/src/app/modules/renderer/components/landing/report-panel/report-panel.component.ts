@@ -25,6 +25,20 @@ const DASHBOARD_WORKFLOW_ID = 14;
 const NETWORK_STATISTICS_ID = 16;
 const BVOIP_REPORTS_ID = 18;
 
+interface LandingReportViewModel {
+  id: number;
+  name: string;
+  description: string;
+  workflowId: number;
+  workflow: string;
+  services: string[];
+  vendor: string;
+  colors: {
+    service: string;
+    vendor: string;
+  };
+}
+
 @Component({
   selector: 'app-report-panel',
   templateUrl: './report-panel.component.html',
@@ -35,8 +49,11 @@ export class ReportPanelComponent implements OnInit, OnDestroy, OnChanges {
   isLoading: boolean;
   hasLoadError: boolean;
   reportsLoading: boolean;
-  reports: any[];
+  reports: LandingReportViewModel[];
+  filteredReports: LandingReportViewModel[];
   selectedReportId: number;
+  searchTerm: string;
+  viewMode: 'card' | 'table';
   actions: ActionModel[] = [];
   subscriptions: Subscription[] = [];
 
@@ -53,6 +70,10 @@ export class ReportPanelComponent implements OnInit, OnDestroy, OnChanges {
     this.isLoading = false;
     this.reportsLoading = false;
     this.hasLoadError = false;
+    this.searchTerm = '';
+    this.viewMode = 'card';
+    this.reports = [];
+    this.filteredReports = [];
     this.loadReports();
   }
 
@@ -83,6 +104,7 @@ export class ReportPanelComponent implements OnInit, OnDestroy, OnChanges {
   loadReports() {
     // Set the loading state to true
     this.reportsLoading = true;
+    this.hasLoadError = false;
     // Create the params object for the getActions method
     const params: any[] = [REPORT_SERVICE_ID];
     // If not BC user add customer and AttUid
@@ -110,14 +132,14 @@ export class ReportPanelComponent implements OnInit, OnDestroy, OnChanges {
           // Set the reportActions array to the received actions
           this.actions = actions;
           // Map the actions to the reports array
-          const reportCards: any[] = actions.map((action) => ({
+          const reportCards: LandingReportViewModel[] = actions.map((action) => ({
             id: action.id,
             name: action.name,
             description: action.description,
             workflowId: action.workflowId,
             workflow: action.workflow,
-            services: action.services,
-            vendor: action.vendorType,
+            services: this.normalizeServices(action.services),
+            vendor: action.vendorType || 'Any',
             colors: {
               service: '#e9e787',
               vendor: '#f4caca'
@@ -137,13 +159,69 @@ export class ReportPanelComponent implements OnInit, OnDestroy, OnChanges {
               (report) => report.workflowId === REPORT_WORKFLOW_ID
             )
           ];
+          this.applyFilters();
         },
         // Log any errors that occur during the request
-        error: (error) => console.error(error)
+        error: (error) => {
+          this.hasLoadError = true;
+          this.reports = [];
+          this.filteredReports = [];
+          console.error(error);
+        }
       });
 
     // Add the subscription to the subscriptions array for later cleanup
     this.subscriptions.push(subscription);
+  }
+
+  onSearchTermChange() {
+    this.applyFilters();
+  }
+
+  setViewMode(mode: 'card' | 'table') {
+    this.viewMode = mode;
+  }
+
+  getServiceLabel(report: LandingReportViewModel) {
+    return report.services.join(', ');
+  }
+
+  private applyFilters() {
+    const normalizedSearch = this.searchTerm.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      this.filteredReports = this.sortReportsByName(this.reports);
+      return;
+    }
+
+    this.filteredReports = this.sortReportsByName(
+      this.reports.filter((report) => {
+        const nameMatch = report.name.toLowerCase().includes(normalizedSearch);
+        const vendorMatch = (report.vendor || '')
+          .toLowerCase()
+          .includes(normalizedSearch);
+
+        return nameMatch || vendorMatch;
+      })
+    );
+  }
+
+  private sortReportsByName(reports: LandingReportViewModel[]) {
+    return [...reports].sort((first, second) =>
+      first.name.localeCompare(second.name)
+    );
+  }
+
+  private normalizeServices(services: string[] | string | undefined): string[] {
+    if (Array.isArray(services)) {
+      return services.filter(Boolean);
+    }
+
+    if (typeof services === 'string' && services.trim().length > 0) {
+      return [services];
+    }
+
+    return ['Any'];
   }
   /**
    * This method is used to generate a report based on the provided action ID.
