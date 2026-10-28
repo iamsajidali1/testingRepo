@@ -1,0 +1,25 @@
+#+--------------------+
+#|    Azure          |
+#+--------------------+
+azure:
+  subscription-id: '3979412d-ca10-46c2-bb75-4672bd6a1448'
+  tenant-id: 'e741d71c-c6b6-47b0-803c-0f3b32b07556'
+  aks:
+    resource-group: 'one-eastus2-nprd-infr-rg'
+    cluster-name: 'eastus2-one-nprd-aks'
+    namespace: 'com-att-one'
+  auth-mode: federated
+
+#+--------------------+
+#|    Helm            |
+#+--------------------+
+helm:
+  release-name: 'css-ra-velocloud-nprd'
+
+#+--------------------+
+#|    Proxy          |
+#+--------------------+
+proxy:
+  host: 'proxy.conexus.svc.private' # Currently, known proxy 
+  port: 3128
+  no-proxy: api.sourceclear.io,api.veracode.com,download.sourceclear.com,sca.analysiscenter.veracode.com,analysiscenter.veracode.com,localhost,127.0.0.1,*.svc.local,*.internal.cloudapp.net,*.windows.net,*.usgov.cloudapi.net,*.microsoftonline.com,*.azure.com,*.azurecr.io,*.azmk8s.io,*.cloudbees.com,*.jenkins-ci.org,*.jenkins.io,*.maven.org,*.oracle.com,*.apache.org,nodejs.org,download.docker.com,*.xmission.com,*.osuosl.org,*.veracode.com

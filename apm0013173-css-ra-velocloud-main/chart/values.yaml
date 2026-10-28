@@ -1,0 +1,134 @@
+# This is a YAML-formatted file.
+# Declare COMMON (irrespective of ENV) variables to be passed into your templates.
+
+serviceName: css-ra-velocloud
+namespace: com-att-one
+replicaCount: 1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  fullReference: ""
+  repository: oneeastus2cr2azn0hvf.azurecr.io/css-ra-velocloud
+  pullPolicy: Always
+  tag: ""
+  containerPort: 8000
+  env:
+    - name: SCRIPT_NAME
+      value: "/svc/velocloud"
+    - name: VELO_DB_USER
+      value: "one_rw"
+    - name: https_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: http_proxy
+      value: "http://proxy.conexus.svc.local:3128"
+    - name: no_proxy
+      value: ".extensions.svc,.vault.azure.net,localhost,127.0.0.1,10.0.16.0/24,.svc.cluster.local,.azurecr.io,.azure.com"
+    # Orchestrator hosts outside *.velocloud.net that API requests may target (comma-separated).
+    - name: API_BASE_ALLOWED_HOSTS
+      value: "velocloud1.sst.net.cn"
+  extraEnv: []
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# Azure Key Vault Provider for Secrets Store CSI Driver + Azure Workload Identity.
+# Secret values stay in Key Vault; configure their environment-variable mappings here.
+# Set clientId and keyVaultName per deployment, not plaintext credentials.
+secretsStore:
+  enabled: true
+  clientId: ""
+  tenantId: "e741d71c-c6b6-47b0-803c-0f3b32b07556"
+  keyVaultName: ""
+  kubernetesSecretName: css-ra-velocloud-runtime
+  objects:
+    - objectName: one-aaf-username
+      objectAlias: AAF_USERNAME
+    - objectName: one-aaf-password
+      objectAlias: AAF_PASSWORD
+    - objectName: velocloud-django-secret
+      objectAlias: DJANGO_SECRET
+    - objectName: one-paperplane-token
+      objectAlias: PAPERPLANE_TOKEN
+    - objectName: one-mysql-password
+      objectAlias: VELO_DB_PASS
+
+podAnnotations: 
+  linkerd.io/inject: enabled
+  config.linkerd.io/proxy-cpu-limit: 250m
+  config.linkerd.io/proxy-memory-limit: 6Gi
+  config.linkerd.io/proxy-cpu-request: 250m
+  config.linkerd.io/proxy-memory-request: 2Gi
+  config.linkerd.io/skip-outbound-ports: "443,3128,8443"
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: 
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 10001
+
+service:
+  type: ClusterIP
+  port: 8000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    linkerd.io/inject: enabled
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+  paths:
+    - path: /svc/velocloud(/|$)(.*)
+      pathType: ImplementationSpecific
+  hosts: []
+  tls: []
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+resources:
+  requests:
+    cpu: 250m
+
+volumeMounts:
+  - mountPath: /app/static/
+    name: velo-config
+  - mountPath: /app/config/
+    name: velo-config
+  - mountPath: /var/lib/nginx/logs/
+    name: nginx-config
+  - mountPath: /var/lib/nginx/tmp/
+    name: nginx-config
+  - mountPath: /tmp
+    name: nginx-config
+
+volumes:
+  - name: velo-config
+    emptyDir: {}
+  - name: nginx-config
+    emptyDir: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

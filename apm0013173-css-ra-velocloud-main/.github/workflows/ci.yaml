@@ -1,0 +1,70 @@
+name: CI - Python Build
+
+on:
+  push:
+    branches: [ "main" ]
+
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches: [ "main" ]
+
+  workflow_dispatch:
+    ## This workflow can be manually triggered via the GitHub UI.
+    ## The inputs defined below determine the steps to execute.
+    ## The `default` value specifies the initial option displayed in the UI only.
+    inputs:
+      enable_sonar:
+        description: 'Enable Sonar'
+        default: true
+        required: true
+        type: boolean
+      enable_veracode_sast:
+        description: 'Enable VeraCode SAST'
+        default: true
+        required: true
+        type: boolean
+      enable_veracode_sca:
+        description: 'Enable VeraCode SCA'
+        default: true
+        required: true
+        type: boolean
+      enable_veracode_pipeline_scan:
+        description: 'Enable VeraCode Pipeline Scan'
+        default: true
+        required: false
+        type: boolean
+      enable_deployment:
+        description: 'Enable Deployment'
+        default: true
+        required: true
+        type: boolean
+      log_level:
+        description: 'Log level'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - debug
+
+permissions:
+  actions: write
+  attestations: write
+  contents: write
+  id-token: write
+  pull-requests: write
+  security-events: write
+
+jobs:
+  run:
+    name: Run Python CI Workflow
+    secrets: inherit
+    uses: ATT-IDP/revup-workflows/.github/workflows/reusable_workflow_python_ci.yaml@d269b7bc7790d5929c37a2a76f205d70be582986 # v5
+    with:
+      enable_sonar: ${{ github.event.inputs.enable_sonar }}
+      enable_veracode_sast: ${{ github.event.inputs.enable_veracode_sast }}
+      enable_veracode_sca: ${{ github.event.inputs.enable_veracode_sca }}
+      enable_veracode_pipeline_scan: ${{ github.event.inputs.enable_veracode_pipeline_scan }}
+      enable_deployment: ${{ (github.event_name == 'workflow_dispatch' && inputs.enable_deployment) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+      log_level: ${{ github.event_name == 'workflow_dispatch' && inputs.log_level || 'info' }}
+      runner_group: 'concordia-linux-cpu4-ram14gi'

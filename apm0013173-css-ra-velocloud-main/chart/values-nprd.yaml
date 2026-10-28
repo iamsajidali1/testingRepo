@@ -1,0 +1,32 @@
+# Development Environment values for css-ra-velocloud.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+secretsStore:
+  clientId: "96367da0-a8a9-423a-ac68-e211a0f0c5d4"
+  keyVaultName: eastus2-one-nprdkv
+
+image:
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "dev-latest"
+  extraEnv:
+    - name: VELO_DB_HOST
+      value: "one-eastus2-nprd-mysql.mysql.database.azure.com"
+
+ingress:
+  hosts:
+    - host: selfservice.dev.att.com
+  tls:
+    - secretName: selfservice-dev-tls-certificate
+      hosts:
+        - selfservice.dev.att.com
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 3Gi
+  requests:
+    memory: 1Gi
+
+autoscaling:
+  maxReplicas: 3

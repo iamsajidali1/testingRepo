@@ -1,0 +1,10 @@
+[run]
+relative_files = True
+source = .
+omit =
+    api/tests/*
+
+[report]
+include =
+    api/*
+    velocloud_app/*

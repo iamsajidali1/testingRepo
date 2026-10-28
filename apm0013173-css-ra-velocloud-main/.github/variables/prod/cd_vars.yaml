@@ -1,0 +1,38 @@
+#+--------------------+
+#|    JFrog Gold     |
+#+--------------------+
+artifacts-server: 'https://artifact-gold.it.att.com'
+
+docker:
+  repository: 'apm0013173-dkr-bok-gold'
+  repository-path: 'css-ra-velocloud'
+  image-name: 'css-ra-velocloud'
+
+helm:
+  repository: 'apm0013173-hlm-gold'
+  repository-path: 'css-ra-velocloud'
+  chart-name: 'css-ra-velocloud'
+  chart-path: 'chart'
+  timeout: '10m'
+  spec-image: 'image.fullReference'
+  release-name: 'css-ra-velocloud-prod'
+
+#+--------------------+
+#|    Azure          |
+#+--------------------+
+azure:
+  subscription-id: 'b9a346d2-c8ed-4ee7-b23a-021b28e2b0ca'
+  tenant-id: 'e741d71c-c6b6-47b0-803c-0f3b32b07556'
+  aks:
+    resource-group: 'one-eastus2-prod-infr-rg'
+    cluster-name: 'eastus2-one-prod-aks'
+    namespace: 'com-att-one'
+  auth-mode: federated
+
+#+--------------------+
+#|    Proxy          |
+#+--------------------+
+proxy:
+  host: 'proxy.conexus.svc.private'
+  port: 3128
+  no-proxy: api.sourceclear.io,api.veracode.com,download.sourceclear.com,sca.analysiscenter.veracode.com,analysiscenter.veracode.com,localhost,127.0.0.1,*.svc.local,*.internal.cloudapp.net,*.windows.net,*.usgov.cloudapi.net,*.microsoftonline.com,*.azure.com,*.azurecr.io,*.azmk8s.io,*.cloudbees.com,*.jenkins-ci.org,*.jenkins.io,*.maven.org,*.oracle.com,*.apache.org,nodejs.org,download.docker.com,*.xmission.com,*.osuosl.org,*.veracode.com

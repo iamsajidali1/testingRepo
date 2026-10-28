@@ -1,0 +1,35 @@
+# Production Environment values for css-ra-velocloud.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+secretsStore:
+  clientId: "3393c748-bd68-478b-9330-9e57d930c226"
+  keyVaultName: eastus2-one-prodkv
+
+image:
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "prod-latest"
+  extraEnv:
+    - name: VELO_DB_HOST
+      value: "one-eastus2-prod-mysql.mysql.database.azure.com"
+
+ingress:
+  className: ""
+  hosts:
+    - host: selfservice.web.att.com
+  tls:
+    - secretName: selfservice-web-tls-certificate
+      hosts:
+        - selfservice.web.att.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 10Gi
+  requests:
+    memory: 2Gi
+
+autoscaling:
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 75
+  targetMemoryUtilizationPercentage: 75

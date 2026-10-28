@@ -1,0 +1,10 @@
+.DS_Store
+.vscode
+.scannerwork
+.env
+build.env
+Dockerfile.local
+__pycache__/
+.coverage
+coverage.xml
+junit/
