@@ -1,5 +1,5 @@
 """ api ser """
-from rest_framework import serializers as ser
+from api import validation as ser
 
 
 class RAGenericInput(ser.Serializer):

@@ -1,7 +1,7 @@
 #!/bin/sh
-set -xe
+set -e
 
-# static files such as DRF CSS + JS
+# Native asset collection for the alternative nginx container startup path.
 python3 manage.py collectstatic --noinput
 
 ls -lah /var/log/nginx
@@ -10,6 +10,5 @@ ls -lah /var/log/nginx
 nginx -c $APP_DIR/nginx.conf
 
 # fg
-#uwsgi --ini $APP_DIR/uwsgi.ini > /dev/stdout
 export SCRIPT_NAME=""
-gunicorn -c gunicorn.py > /dev/stdout
+exec gunicorn -c gunicorn.py

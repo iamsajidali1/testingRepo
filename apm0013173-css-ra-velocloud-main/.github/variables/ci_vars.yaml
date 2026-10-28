@@ -3,7 +3,7 @@
 #+--------------------+
 build:
   project-dir: '.'
-  install_dependencies: pip install -r requirements.txt
+  install_dependencies: pip install -r requirements-dev.txt
 #+--------------------+
 #|    Sonar           |------------------------------------------------------------------------------------------------
 #+--------------------+
@@ -124,7 +124,7 @@ tests:
   lint:
     enable: 'true'
     tool: 'flake8'
-    command: 'flake8 . --max-line-length=120 --ignore=E203,W503,E501 --count --select=E9,F63,F7,F82 --show-source --statistics'
+    command: 'flake8 api velocloud_app manage.py gunicorn.py --max-line-length=120 --ignore=E203,W503,E501 --count --select=E9,F63,F7,F82 --show-source --statistics'
   tox:
     enable: 'false'
 

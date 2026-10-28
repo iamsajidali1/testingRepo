@@ -9,10 +9,17 @@ from base64 import b64decode
 from functools import lru_cache
 
 import requests
-from django.shortcuts import redirect
-from django.conf import settings
-from django.http import HttpResponse
-from django.contrib.auth import get_user_model
+from starlette.responses import RedirectResponse
+from velocloud_app import settings, auth_state
+from api.http import HttpResponse
+
+
+def redirect(url):
+    if urlparse(url).scheme not in ("", "http", "https", "ftp"):
+        raise ValueError("Unsafe redirect scheme")
+    response = RedirectResponse(url, status_code=302)
+    response.headers["Content-Type"] = "text/html; charset=utf-8"
+    return response
 
 LETTERS = (
     ascii_letters
@@ -60,15 +67,14 @@ def attuid_from_atteshr(cookie: str) -> str:
 
 def create_user(username: str, email: str = ""):
     print(f"Create user: {username}")
-    model = get_user_model()
     username = username.replace("@att.com", "")
     print(f"Real username: {username}")
 
-    user = model.objects.filter(username=username).first()
+    user = auth_state.get_user(username=username)
     print(f"Search for user: {user!r}")
 
-    if not user:
-        user = model.objects.create_user(
+    if not user.is_authenticated:
+        user = auth_state.create_user(
             email=email or f"{username}@att.com", username=username,
             password="".join(choice(LETTERS) for _ in range(64))
         )

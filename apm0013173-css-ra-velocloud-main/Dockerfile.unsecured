@@ -25,7 +25,7 @@ RUN --mount=type=secret,id=build_secrets \
 
 # install os packages
 RUN apk update && apk upgrade --no-cache --allow-untrusted
-RUN apk add --update --no-cache --allow-untrusted uwsgi-python3 \
+RUN apk add --update --no-cache --allow-untrusted \
     nginx ca-certificates build-base python3-dev py3-pip tzdata
 
 ENV TZ=UTC
@@ -44,7 +44,7 @@ RUN --mount=type=secret,id=build_secrets \
     pip install --no-cache-dir --break-system-packages -r requirements.txt && \
     pip uninstall -y wheel --break-system-packages 2>/dev/null || true
 
-COPY nginx.conf uwsgi.ini run.sh $APP_DIR/
+COPY nginx.conf run.sh $APP_DIR/
 
 CMD [ "/app/run.sh" ]
 

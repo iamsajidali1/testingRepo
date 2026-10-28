@@ -1,6 +1,6 @@
 [run]
 relative_files = True
-source = .
+source = api,velocloud_app
 omit =
     api/tests/*
 

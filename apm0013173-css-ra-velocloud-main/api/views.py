@@ -8,11 +8,7 @@ import uuid
 import time
 import math
 import mysql.connector
-from rest_framework import generics, status
-from rest_framework.response import Response
-from django.utils.decorators import method_decorator
-from django.http import HttpResponse
-from drf_yasg.utils import swagger_auto_schema
+from api.http import GenericAPIView, Response, HttpResponse, status
 from jsonpath_ng import ext
 import pandas as pd
 from api import serializers
@@ -170,8 +166,7 @@ def _provision_rma_edge(url, ses, tenant_id, source_edge, payload, latest_operat
     }
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class BillingReport(generics.GenericAPIView):
+class BillingReport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -221,8 +216,7 @@ class BillingReport(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class ServiceManagerReport(generics.GenericAPIView):
+class ServiceManagerReport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -274,8 +268,7 @@ class ServiceManagerReport(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class staticRoutesExport(generics.GenericAPIView):
+class staticRoutesExport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -326,8 +319,7 @@ class staticRoutesExport(generics.GenericAPIView):
                     "value":
                         encodedfile
                         }]})
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class citizenswanlinks(generics.GenericAPIView):
+class citizenswanlinks(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -378,8 +370,7 @@ class citizenswanlinks(generics.GenericAPIView):
                     "value":
                         encodedfile
                         }]})
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class publicIpExport(generics.GenericAPIView):
+class publicIpExport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -432,8 +423,7 @@ class publicIpExport(generics.GenericAPIView):
 
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class getEdgeNames(generics.GenericAPIView):
+class getEdgeNames(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -465,8 +455,7 @@ class getEdgeNames(generics.GenericAPIView):
         return Response({"data": hostname})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class LinkMetricReport(generics.GenericAPIView):
+class LinkMetricReport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -560,8 +549,7 @@ class LinkMetricReport(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class licenses(generics.GenericAPIView):
+class licenses(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -634,8 +622,7 @@ class licenses(generics.GenericAPIView):
                                 edge["site"]["state"], edge["site"]["postalCode"], edge["site"]["country"] ])
             return Response({"data": data_file})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class siteInfoDetail(generics.GenericAPIView):
+class siteInfoDetail(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -724,8 +711,7 @@ class siteInfoDetail(generics.GenericAPIView):
         return Response({"data": data_file})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class aggregatedLinksStatistics(generics.GenericAPIView):
+class aggregatedLinksStatistics(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -769,8 +755,7 @@ class aggregatedLinksStatistics(generics.GenericAPIView):
             }
         })
         
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class aggregatedEdgeStatistics(generics.GenericAPIView):
+class aggregatedEdgeStatistics(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -807,8 +792,7 @@ class aggregatedEdgeStatistics(generics.GenericAPIView):
         })
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class UtilisationMetrics(generics.GenericAPIView):
+class UtilisationMetrics(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     use on Tenant level
@@ -871,8 +855,7 @@ class UtilisationMetrics(generics.GenericAPIView):
                 ]
             })
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class GetNetworkOverviewInfo(generics.GenericAPIView):
+class GetNetworkOverviewInfo(GenericAPIView):
     """
     Sample request, requires doesn't require anything:
     use on Tenant level
@@ -897,8 +880,7 @@ class GetNetworkOverviewInfo(generics.GenericAPIView):
 
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class QOEReport(generics.GenericAPIView):
+class QOEReport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -958,8 +940,7 @@ class QOEReport(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class applicationInsight(generics.GenericAPIView):
+class applicationInsight(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1032,8 +1013,7 @@ class applicationInsight(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class gamingApplicationInsight(generics.GenericAPIView):
+class gamingApplicationInsight(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1105,8 +1085,7 @@ class gamingApplicationInsight(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class flowsExportGE5(generics.GenericAPIView):
+class flowsExportGE5(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1179,8 +1158,7 @@ class flowsExportGE5(generics.GenericAPIView):
 
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class linkStatistics(generics.GenericAPIView):
+class linkStatistics(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1225,8 +1203,7 @@ class linkStatistics(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class edgeMetricsInfo(generics.GenericAPIView):
+class edgeMetricsInfo(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1307,8 +1284,7 @@ class edgeMetricsInfo(generics.GenericAPIView):
                         encodedfile
                         }]}, status=status.HTTP_200_OK)
         
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class dailyEdgeStatistics(generics.GenericAPIView):
+class dailyEdgeStatistics(GenericAPIView):
     """
     Sample request, requires a single parameter with name ":
     {
@@ -1377,8 +1353,7 @@ class dailyEdgeStatistics(generics.GenericAPIView):
                 "userMessage": "Failed to return calculated edge statistics"
             })
         
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class dailyCircuitStatistics(generics.GenericAPIView):
+class dailyCircuitStatistics(GenericAPIView):
     """
     Sample request, requires a single parameter with name ":
     {
@@ -1468,8 +1443,7 @@ class dailyCircuitStatistics(generics.GenericAPIView):
 
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class tunnelsExport(generics.GenericAPIView):
+class tunnelsExport(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1543,8 +1517,7 @@ class tunnelsExport(generics.GenericAPIView):
                         encodedfile
                         }]})
         
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class packetLoss(generics.GenericAPIView):
+class packetLoss(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1602,8 +1575,7 @@ class packetLoss(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class linksDownParser(generics.GenericAPIView):
+class linksDownParser(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1648,8 +1620,7 @@ class linksDownParser(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class Sephora_list_paths(generics.GenericAPIView):
+class Sephora_list_paths(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1735,8 +1706,7 @@ class Sephora_list_paths(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class bgpFromGateway(generics.GenericAPIView):
+class bgpFromGateway(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1825,8 +1795,7 @@ class bgpFromGateway(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class objectgroups(generics.GenericAPIView):
+class objectgroups(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1872,8 +1841,7 @@ class objectgroups(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class troughputMax(generics.GenericAPIView):
+class troughputMax(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -1980,8 +1948,7 @@ class troughputMax(generics.GenericAPIView):
                 "userMessage": "Max Agr troughput report is not finished due to an unexpected error"
             })
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class DeviceCount(generics.GenericAPIView):
+class DeviceCount(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -2030,8 +1997,7 @@ class DeviceCount(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class UserAdd(generics.GenericAPIView):
+class UserAdd(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -2079,8 +2045,7 @@ class UserAdd(generics.GenericAPIView):
         return Response(response_lst)
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class Mds(generics.GenericAPIView):
+class Mds(GenericAPIView):
     """ old MDS method """
     serializer_class = serializers.MdsSerializer
     permission_classes = []
@@ -2141,8 +2106,7 @@ class Mds(generics.GenericAPIView):
             return HttpResponse(exc)
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class MdsGenerate(generics.GenericAPIView):
+class MdsGenerate(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -2240,8 +2204,7 @@ class MdsGenerate(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class DanoneBPExtract(generics.GenericAPIView):
+class DanoneBPExtract(GenericAPIView):
     """Generate Danone BP extract with QOS business policy data only."""
     permission_classes = []
     serializer_class = serializers.RAGenericInput
@@ -2334,8 +2297,7 @@ class DanoneBPExtract(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class LMAC(generics.GenericAPIView):
+class LMAC(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3122,8 +3084,7 @@ class LMAC(generics.GenericAPIView):
 
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class VcoGetSpecificConfig(generics.GenericAPIView):
+class VcoGetSpecificConfig(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3174,8 +3135,7 @@ class VcoGetSpecificConfig(generics.GenericAPIView):
                             }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class VCOGetRoutingTable(generics.GenericAPIView):
+class VCOGetRoutingTable(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3220,8 +3180,7 @@ class VCOGetRoutingTable(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class VCOGetCSSList(generics.GenericAPIView):
+class VCOGetCSSList(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3264,8 +3223,7 @@ class VCOGetCSSList(generics.GenericAPIView):
                         }]})
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class VCOGatewayMigration(generics.GenericAPIView):
+class VCOGatewayMigration(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3407,7 +3365,7 @@ class VCOGatewayMigration(generics.GenericAPIView):
                         encodedfile
                         }]})
 
-class msimLicense(generics.GenericAPIView):
+class msimLicense(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3512,8 +3470,7 @@ class msimLicense(generics.GenericAPIView):
         })
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class EdgeProvision(generics.GenericAPIView):
+class EdgeProvision(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -3695,8 +3652,7 @@ class EdgeProvision(generics.GenericAPIView):
                         })
         return Response(response_lst)
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class AAEdgeProvision(generics.GenericAPIView):
+class AAEdgeProvision(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -4031,8 +3987,7 @@ class AAEdgeProvision(generics.GenericAPIView):
 
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class EdgeProvisionCitizens(generics.GenericAPIView):
+class EdgeProvisionCitizens(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -4371,8 +4326,7 @@ class EdgeProvisionCitizens(generics.GenericAPIView):
                             f"{newedge['site']['name']} activation key: {edge['activationKey']}"
                         })
         return Response(response_lst)
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class EdgeRMA(generics.GenericAPIView):
+class EdgeRMA(GenericAPIView):
     """
     Create replacement edges based on existing edge inventory.
 
@@ -4455,8 +4409,7 @@ class EdgeRMA(generics.GenericAPIView):
             )
         return Response(response_lst)
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class AdidasLMAC(generics.GenericAPIView):
+class AdidasLMAC(GenericAPIView):
     """
     Sample request, requires a single parameter with name "csv":
     {
@@ -5314,52 +5267,7 @@ class AdidasLMAC(generics.GenericAPIView):
             "data": update_results
         })
 
-@method_decorator(name="post", decorator=swagger_auto_schema(
-    tags=["v1"],
-    operation_summary="Get hardware utilisation statistics",
-    operation_description=(
-        "Returns CPU and memory utilisation per device for a given customer and date range.\n\n"
-        "**Body parameters:**\n"
-        "- `startDate` (required): Start date in `YYYY-MM-DD` format (e.g. `2026-04-01`)\n"
-        "- `endDate` (required): End date in `YYYY-MM-DD` format (e.g. `2026-04-21`)\n"
-        "- `customerName` (required): Customer CSS name (e.g. `acme-corp`)\n"
-        "- `output` (optional): `xlsx` (default) or `json`.\n\n"
-        "**Colour coding (xlsx output only):**\n"
-        "- CPU / Memory **< 50 %** → green\n"
-        "- CPU / Memory **50 – 70 %** → orange\n"
-        "- CPU / Memory **> 70 %** → red\n\n"
-        "**Example POST body:**\n"
-        "```json\n"
-        "{\n"
-        '  "startDate": "2026-04-01",\n'
-        '  "endDate": "2026-04-21",\n'
-        '  "customerName": "acme-corp",\n'
-        '  "output": "xlsx"\n'
-        "}\n"
-        "```\n\n"
-        "If `output` is not provided, response defaults to `xlsx`. Use `output=json` for JSON response.\n\n"
-        "**Example JSON response:**\n"
-        "```json\n"
-        "{\n"
-        '  "data": [\n'
-        "    {\n"
-        '      "hostname": "edge-site-01",\n'
-        '      "datetime": "2026-04-01T08:00:00",\n'
-        '      "cpu": 23.5,\n'
-        '      "memory": 61.2\n'
-        "    },\n"
-        "    {\n"
-        '      "hostname": "edge-site-02",\n'
-        '      "datetime": "2026-04-01T08:00:00",\n'
-        '      "cpu": 45.1,\n'
-        '      "memory": 78.9\n'
-        "    }\n"
-        "  ]\n"
-        "}\n"
-        "```"
-    )
-))
-class HWStats(generics.GenericAPIView):
+class HWStats(GenericAPIView):
     """
     Returns CPU and memory utilisation statistics from the ONE database
     for a given customer and date range.
@@ -5480,8 +5388,7 @@ class HWStats(generics.GenericAPIView):
         return Response({"data": rows}, status=status.HTTP_200_OK)
 
 
-@method_decorator(name="post", decorator=swagger_auto_schema(tags=["v1"]))
-class CapacityPlanner(generics.GenericAPIView):
+class CapacityPlanner(GenericAPIView):
     """
     Capacity Planner report – 4 week link utilization & license analysis.
     Returns an Excel workbook with README, Link Details, Edge Summary,

@@ -1,7 +1,8 @@
 """Gunicorn *development* config file"""
 
-# Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
-wsgi_app = "velocloud_app.wsgi:application"
+# FastAPI ASGI application (Gunicorn's setting retains its historical name).
+wsgi_app = "velocloud_app.asgi:application"
+worker_class = "uvicorn_worker.UvicornWorker"
 # The granularity of Error log outputs
 loglevel = "debug"
 # The number of worker processes for handling requests

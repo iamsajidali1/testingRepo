@@ -62,4 +62,4 @@ EXPOSE 8000
 USER 10001:10001
 
 ENTRYPOINT ["/app/venv/bin/gunicorn"]
-CMD ["--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "10000", "--access-logfile", "-", "--error-logfile", "-", "velocloud_app.wsgi:application"]
+CMD ["--bind", "0.0.0.0:8000", "--workers", "2", "--worker-class", "uvicorn_worker.UvicornWorker", "--timeout", "10000", "--access-logfile", "-", "--error-logfile", "-", "velocloud_app.asgi:application"]

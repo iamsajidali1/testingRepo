@@ -3,16 +3,38 @@
 ## Install and test
 
 ```sh
-python -m pip install -r requirements.txt
-python -m pip install pytest pytest-cov flake8
+python -m pip install -r requirements-dev.txt
 python -m pytest api/tests --junitxml=junit/test-results.xml
-flake8 . --max-line-length=120 --ignore=E203,W503,E501 --count --select=E9,F63,F7,F82 --show-source --statistics
+flake8 api velocloud_app manage.py gunicorn.py --max-line-length=120 --ignore=E203,W503,E501 --count --select=E9,F63,F7,F82 --show-source --statistics
 ```
 
 The tests mock upstream services and do not need production credentials.
 Pytest generates `coverage.xml` with repository-relative source paths for SonarQube.
 CI installs the test tools through the shared Python build action.
 Quality-gate thresholds and source exclusions remain unchanged.
+
+The HTTP runtime is FastAPI/ASGI. Install only `requirements.txt` in the deployed
+image: Django, DRF and drf-yasg are test-oracle dependencies in
+`requirements-dev.txt`, and are not needed by the runtime. The original source
+used by differential tests is retained in `api/tests/fixtures/django_baseline.zip`
+from baseline commit `063da1e`.
+
+Existing paths, case and trailing slashes remain unchanged, including
+`/api/swagger.json`, `/api/swagger.yaml`, `/api/swagger/` and `/api/redoc/`.
+The Swagger 2 schema and browser assets are retained as static artifacts;
+the runtime does not load a Django template engine or fetch assets from a CDN.
+FastAPI's default `/docs` and `/openapi.json` routes are disabled.
+
+For development, set `APP_DIR`, `DJANGO_SECRET` and the existing application
+environment variables, then run `python manage.py runserver --noreload`.
+On Linux the container uses `velocloud_app.asgi:application` with two Gunicorn
+`uvicorn_worker.UvicornWorker` processes, retaining the original port and timeout.
+Each worker handles one complete request at a time, preserving the original
+synchronous-worker capacity; business functions retain their internal executors.
+
+Migration evidence, exact limitations and the release-validation gates are in
+`migration_docs/12_final_migration_report.md`. Local tests do not establish full
+production equivalence or replace Linux/container and authorized dev/test checks.
 
 Report regression tests decode the generated Excel workbooks and check worksheet
 structure, headers, calculations, formatting, and charts. They also cover policy
@@ -35,7 +57,7 @@ listed in `API_BASE_ALLOWED_HOSTS`; `.velocloud.net` hosts remain trusted.
 
 ## SQLite runtime storage
 
-Outside test mode, Django uses `css-ra-velocloud/velocloud.sqlite3` beneath
+Outside test mode, the application uses `css-ra-velocloud/velocloud.sqlite3` beneath
 Python's temporary directory (normally `/tmp` in the container). The parent
 directory must be owned by the runtime user and private (mode `0700`).
 Unsafe existing directories, database symlinks, and files owned by another
@@ -51,9 +73,13 @@ determine whether its Django authentication/session data must be retained.
 If so, stop writers, verify the old file's ownership and integrity, and have
 an operator back up and restore it into the private directory as the runtime
 user. The application never automatically copies an untrusted temporary file.
-For a fresh database, run Django migrations as the runtime user against the
-new path before serving database-backed requests. Run migrations against any
-restored database as required by the deployed Django version.
+For a fresh empty database, run `python manage.py migrate --noinput` as the runtime
+user before serving database-backed requests. This restores the original schema,
+captured from the Django baseline. An existing database is checked without schema
+changes or rebuilding its tables. Existing users, token keys and signed sessions
+retain their table formats. Keep the existing `DJANGO_SECRET` value so active
+signed records continue to verify. Reuse restored databases with their existing
+schema; the FastAPI runtime does not run Django schema upgrades.
 
 ## Capacity-report timezones
 

@@ -1,0 +1,9 @@
+-r requirements.txt
+pytest~=9.2.0
+pytest-cov~=7.1.0
+httpx~=0.28.1
+flake8
+# Original Django baseline schema/view decorators used by differential tests.
+Django~=6.0.0
+djangorestframework~=3.16.0
+drf-yasg~=1.21.18

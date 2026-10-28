@@ -1,0 +1,343 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+
+      
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="robots" content="NONE,NOARCHIVE" />
+      
+
+      <title>__NAME__ – Django REST framework</title>
+
+      
+        
+          <link rel="stylesheet" type="text/css" href="__STATIC__rest_framework/css/bootstrap.min.css"/>
+          <link rel="stylesheet" type="text/css" href="__STATIC__rest_framework/css/bootstrap-tweaks.css"/>
+        
+
+        <link rel="stylesheet" type="text/css" href="__STATIC__rest_framework/css/prettify.css"/>
+        <link rel="stylesheet" type="text/css" href="__STATIC__rest_framework/css/default.css"/>
+        <style>pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #F00 } /* Error */
+.highlight .k { color: #A2F; font-weight: bold } /* Keyword */
+.highlight .o { color: #666 } /* Operator */
+.highlight .ch { color: #080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #080 } /* Comment.Preproc */
+.highlight .cpf { color: #080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #080; font-weight: bold } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.highlight .gr { color: #F00 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #04D } /* Generic.Traceback */
+.highlight .kc { color: #A2F; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #A2F; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #A2F; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #A2F } /* Keyword.Pseudo */
+.highlight .kr { color: #A2F; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #0B0; font-weight: bold } /* Keyword.Type */
+.highlight .m { color: #666 } /* Literal.Number */
+.highlight .s { color: #B44 } /* Literal.String */
+.highlight .na { color: #B44 } /* Name.Attribute */
+.highlight .nb { color: #A2F } /* Name.Builtin */
+.highlight .nc { color: #00F } /* Name.Class */
+.highlight .no { color: #800 } /* Name.Constant */
+.highlight .nd { color: #A2F } /* Name.Decorator */
+.highlight .ni { color: #999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #00A000 } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #00F; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #B8860B } /* Name.Variable */
+.highlight .ow { color: #A2F; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #BBB } /* Text.Whitespace */
+.highlight .mb { color: #666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666 } /* Literal.Number.Float */
+.highlight .mh { color: #666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666 } /* Literal.Number.Oct */
+.highlight .sa { color: #B44 } /* Literal.String.Affix */
+.highlight .sb { color: #B44 } /* Literal.String.Backtick */
+.highlight .sc { color: #B44 } /* Literal.String.Char */
+.highlight .dl { color: #B44 } /* Literal.String.Delimiter */
+.highlight .sd { color: #B44; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #B44 } /* Literal.String.Double */
+.highlight .se { color: #B62; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #B44 } /* Literal.String.Heredoc */
+.highlight .si { color: #B68; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #B68 } /* Literal.String.Regex */
+.highlight .s1 { color: #B44 } /* Literal.String.Single */
+.highlight .ss { color: #B8860B } /* Literal.String.Symbol */
+.highlight .bp { color: #A2F } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #00A000 } /* Name.Function.Magic */
+.highlight .vc { color: #B8860B } /* Name.Variable.Class */
+.highlight .vg { color: #B8860B } /* Name.Variable.Global */
+.highlight .vi { color: #B8860B } /* Name.Variable.Instance */
+.highlight .vm { color: #B8860B } /* Name.Variable.Magic */
+.highlight .il { color: #666 } /* Literal.Number.Integer.Long */</style>
+      
+
+    
+  </head>
+
+  
+  <body class="">
+
+    <div class="wrapper">
+      
+        <div class="navbar navbar-static-top navbar-inverse"
+             role="navigation" aria-label="navbar">
+          <div class="container">
+            <span>
+              
+                <a class='navbar-brand' rel="nofollow" href='https://www.django-rest-framework.org/'>
+                    Django REST framework
+                </a>
+              
+            </span>
+            <ul class="nav navbar-nav pull-right">
+              
+                
+                  
+                
+              
+            </ul>
+          </div>
+        </div>
+      
+
+      <div class="container">
+        
+          <ul class="breadcrumb">
+            
+              
+                <li class="active"><a href="__PATH__">__NAME__</a></li>
+              
+            
+          </ul>
+        
+
+        <!-- Content -->
+        <div id="content" role="main" aria-label="content">
+          
+
+          <div class="region"  aria-label="request form">
+          
+
+          
+
+          
+            <form class="button-form" action="__PATH__" data-method="OPTIONS">
+              <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the __NAME__ resource">OPTIONS</button>
+            </form>
+          
+
+          
+
+          
+
+          
+
+          
+          </div>
+
+            <div class="content-main" role="main"  aria-label="main content">
+              <div class="page-header">
+                <h1>__NAME__</h1>
+              </div>
+              <div class="pull-left">
+                
+                  __DESCRIPTION__
+                
+              </div>
+
+              
+
+              <div class="request-info" aria-label="request info">
+                <pre class="prettyprint"><b>__METHOD__</b> __PATH__</pre>
+              </div>
+
+              <div class="response-info" aria-label="response info">
+                <pre class="prettyprint"><span class="meta nocode">__RESPONSE__</pre>
+              </div>
+            </div>
+
+            
+              
+                <div class="tabbable">
+                  
+                    <ul class="nav nav-tabs form-switcher">
+                      <li>
+                        <a name='html-tab' href="#post-object-form" data-toggle="tab">HTML form</a>
+                      </li>
+                      <li>
+                        <a name='raw-tab' href="#post-generic-content-form" data-toggle="tab">Raw data</a>
+                      </li>
+                    </ul>
+                  
+
+                  <div class="well tab-content">
+                    
+                      <div class="tab-pane" id="post-object-form">
+                        
+                          <form action="__PATH__" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+                            <fieldset>
+                              <input type="hidden" name="csrfmiddlewaretoken" value="__CSRF__">
+                              
+
+  
+    <div class="form-group">
+  
+    <label class="col-sm-2 control-label ">
+      Params
+    </label>
+  
+
+  <div class="col-sm-10">
+    <p class="form-control-static">Lists are not currently supported in HTML input.</p>
+  </div>
+</div>
+
+  
+
+  
+    <div class="form-group">
+  
+    <label class="col-sm-2 control-label ">
+      Devices
+    </label>
+  
+
+  <div class="col-sm-10">
+    <p class="form-control-static">Lists are not currently supported in HTML input.</p>
+  </div>
+</div>
+
+  
+
+  
+    <div class="form-group ">
+  
+    <label class="col-sm-2 control-label ">
+      Output
+    </label>
+  
+
+  <div class="col-sm-10">
+    <input name="output" class="form-control" type="text"  value="" >
+
+    
+
+    
+  </div>
+</div>
+
+  
+
+
+                              <div class="form-actions">
+                                <button class="btn btn-primary js-tooltip" title="Make a POST request on the __NAME__ resource">POST</button>
+                              </div>
+                            </fieldset>
+                          </form>
+                        
+                      </div>
+                    
+
+                    <div class="tab-pane" id="post-generic-content-form">
+                      
+                        <form action="__PATH__" method="POST" class="form-horizontal">
+                          <fieldset>
+                            
+
+
+  <div class="form-group">
+    <label for="id__content_type" class="col-sm-2 control-label">Media type:</label>
+    <div class="col-sm-10">
+      <select name="_content_type" data-override="content-type" id="id__content_type" class="form-control">
+  <option value="application/json" selected>application/json</option>
+
+  <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded</option>
+
+  <option value="multipart/form-data">multipart/form-data</option>
+
+</select>
+      <span class="help-block"></span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="id__content" class="col-sm-2 control-label">Content:</label>
+    <div class="col-sm-10">
+      <textarea name="_content" cols="40" rows="10" data-override="content" id="id__content" class="form-control">
+{
+    &quot;params&quot;: [],
+    &quot;devices&quot;: [],
+    &quot;output&quot;: &quot;&quot;
+}</textarea>
+      <span class="help-block"></span>
+    </div>
+  </div>
+
+
+                            <div class="form-actions">
+                              <button class="btn btn-primary js-tooltip" title="Make a POST request on the __NAME__ resource">POST</button>
+                            </div>
+                          </fieldset>
+                        </form>
+                      
+                    </div>
+                  </div>
+                </div>
+              
+
+              
+            
+          
+        </div><!-- /.content -->
+      </div><!-- /.container -->
+    </div><!-- ./wrapper -->
+
+    
+
+    
+      <script type="application/json" id="drf_csrf">
+        {
+          "csrfHeaderName": "X-CSRFTOKEN",
+          "csrfToken": "__CSRF__"
+        }
+      </script>
+      <script src="__STATIC__rest_framework/js/jquery-3.7.1.min.js"></script>
+      <script src="__STATIC__rest_framework/js/ajax-form.js"></script>
+      <script src="__STATIC__rest_framework/js/csrf.js"></script>
+      <script src="__STATIC__rest_framework/js/bootstrap.min.js"></script>
+      <script src="__STATIC__rest_framework/js/prettify-min.js"></script>
+      <script src="__STATIC__rest_framework/js/default.js"></script>
+      <script src="__STATIC__rest_framework/js/load-ajax-form.js"></script>
+    
+
+  </body>
+  
+</html>

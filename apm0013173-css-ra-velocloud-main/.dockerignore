@@ -6,3 +6,12 @@ local.sh
 build.env
 ymls
 chart
+.venv
+.venv-runtime
+.migration-baseline
+.baseline.zip
+.pytest_cache
+.coverage
+coverage.xml
+migration_docs
+api/tests

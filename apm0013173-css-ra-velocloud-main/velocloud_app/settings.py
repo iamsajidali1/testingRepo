@@ -1,5 +1,5 @@
 """
-Django settings for project.
+Runtime configuration for the FastAPI resource adapter.
 """
 
 import os
@@ -15,7 +15,7 @@ ENV = environ.get("ENV", "dev").lower()
 UNITTEST = "test" in sys.argv or ENV == "unittest"
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# NOTE: not used
+# Retained environment name: signs existing authentication/session records.
 SECRET_KEY = environ.get("DJANGO_SECRET")
 assert SECRET_KEY
 
@@ -34,65 +34,6 @@ ALLOWED_HOSTS = [
 ]
 
 # Application definition
-
-INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "rest_framework",
-    "rest_framework.authtoken",
-    "drf_yasg",
-    "velocloud_app",
-    "api"
-]
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication'
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
-}
-
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    #"velocloud_app.middleware.auth.AAFAuthorization",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.auth.middleware.RemoteUserMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware"
-]
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.RemoteUserBackend",
-    "django.contrib.auth.backends.ModelBackend"
-]
-
-ROOT_URLCONF = 'velocloud_app.urls'
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'velocloud_app.wsgi.application'
 
 
 # Database
@@ -118,25 +59,13 @@ def _private_database_path():
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": "sqlite3",
         "NAME": _private_database_path() if not UNITTEST else "unittest"
     }
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [{
-    "NAME": (
-        "django.contrib.auth.password_validation"
-        ".UserAttributeSimilarityValidator"
-    ),
-}, {
-    "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-}, {
-    "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-}, {
-    "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-}]
 
 
 # Internationalization
@@ -146,9 +75,6 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
-
-USE_L10N = True
 
 USE_TZ = True
 

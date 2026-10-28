@@ -1,10 +1,77 @@
+# Local editor and analysis output
 .DS_Store
-.vscode
-.scannerwork
+.vscode/
+.idea/
+.scannerwork/
+.mypy_cache/
+.ruff_cache/
+
+# Private configuration and credentials (examples must contain no real secrets)
 .env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.dockerenv
+.dockerenv.*
+!.dockerenv.example
 build.env
+build_secrets
+build_secrets.*
+build-secrets
+build-secrets.*
+.secrets/
+secrets/
+credentials.json
+credentials.local.*
+secrets.local.*
+*.key
+*.pem
+*.p12
+*.pfx
 Dockerfile.local
+
+# Python environments, bytecode and test output
+.venv*/
+/venv/
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.tox/
+.nox/
 .coverage
+.coverage.*
 coverage.xml
+htmlcov/
 junit/
+*.log
+
+# Local database state, including SQLite transaction files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite3-journal
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Generated packages and collected static output; retain bundled source assets
+/build/
+/dist/
+/static/
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+# This original-source fixture is intentional, required test evidence.
+!/api/tests/fixtures/django_baseline.zip
+
+# Local migration exports/results; migration Markdown documents remain tracked
+.migration-baseline/
+migration_docs/test-results/
+migration_docs/baseline-environment.txt
